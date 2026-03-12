@@ -43,7 +43,7 @@ agent/
 | `crates/robot-kit/` | separate Rust crate for robot/peripheral abstractions |
 | `docs/` | public docs, references, ops, contributor material, and migration framing |
 | `dev/`, `scripts/`, `.github/` | local dev, CI, release, and automation surfaces |
-| `graph-concept-ref.md` | target GraphClaw context-engine framing, not proof of implementation |
+| `docs/architecture/graph-context-engine.md` | target GraphClaw context-engine framing, not proof of implementation |
 
 ## Runtime Areas That Matter First
 
@@ -87,7 +87,7 @@ These are the safest first seams to explore:
 2. `src/agent/memory_loader.rs`
    Replace flat recall hydration gradually with explicit context selection inputs.
 3. `src/agent/loop_.rs`
-   Introduce first-class runtime artifacts such as `SessionWindow`, `ContextPack`, or resolution traces without replacing the whole loop.
+   Introduce first-class runtime artifacts such as `SessionWindow`, `ContextPack`, or `ResolutionTrace` records without replacing the whole loop.
 4. `src/memory/traits.rs` and `src/memory/backend.rs`
    Add a graph-facing storage boundary behind traits instead of deleting existing backends.
 5. `src/tools/traits.rs` and `src/tools/mod.rs`
@@ -111,7 +111,7 @@ For implementation planning, the shortest useful path is:
 
 1. `README.md`
 2. `CONTEXT.md`
-3. `graph-concept-ref.md`
+3. `docs/architecture/graph-context-engine.md`
 4. `src/CONTEXT.md`
 5. `src/agent/CONTEXT.md`
 6. `src/memory/CONTEXT.md`

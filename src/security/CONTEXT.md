@@ -1,8 +1,22 @@
 # Security Context
 
-## Purpose
+## Local Purpose
 
 `src/security/` handles runtime safety controls: policy enforcement, secret handling, sandbox helpers, audit paths, prompt guardrails, pairing, OTP, and emergency stop controls.
+
+This subtree owns safety constraints for the current runtime. Future GraphClaw context work may depend on these controls, but it must not silently absorb or bypass them.
+
+## What Belongs Here
+
+- runtime safety and policy enforcement;
+- secret protection and audit support;
+- sandbox and operator-control security flows.
+
+## What Does Not Belong Here
+
+- generic context-resolution logic;
+- provider integration detail that belongs in `src/providers/`;
+- transport contract ownership that belongs in `src/gateway/`.
 
 ## File / Folder Map
 
@@ -26,15 +40,37 @@
 
 This is one of the highest-risk inherited runtime areas. It contains real safety controls used by the current system, not just future-facing placeholders.
 
+It should be described as the policy and protection boundary around the runtime, not as a future graph-native policy engine already in place.
+
+## Current Dependency Direction
+
+- Called by execution-sensitive paths in `src/tools/`, `src/runtime/`, `src/gateway/`, and agent-driven workflows that require approval or protection checks.
+- Constrains how current and future `ContextPack`-driven actions can be executed, persisted, or exposed.
+- Emits or shapes audit-relevant information that may later intersect with `ResolutionTrace`, while remaining a distinct safety layer.
+
+## Routing
+
+- transport auth and session protocols belong in `src/gateway/`
+- runtime adapter constraints belong in `src/runtime/`
+- stable policy-facing GraphClaw concepts belong in `docs/architecture/`
+
 ## GraphClaw Evolution Note
 
 Do not describe this folder as if GraphClaw already ships a new graph-native policy engine. Current safety behavior is implemented through inherited runtime controls here.
+
+Today, this area contributes to the model by enforcing the policy boundary around context-driven actions rather than by defining context semantics itself.
 
 ## Constraints / Cautions
 
 - Do not weaken protections casually.
 - Security changes usually require tests, docs, and careful threat reasoning.
 - Keep policy, storage, auditing, and sandbox concerns distinct.
+
+## References
+
+- `src/runtime/CONTEXT.md` - execution boundary
+- `src/gateway/CONTEXT.md` - transport and external-session boundary
+- `docs/architecture/graph-context-engine.md` - target model whose future policies must still pass through explicit safety controls
 
 ## How Agents Should Work Here
 

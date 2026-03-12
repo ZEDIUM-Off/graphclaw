@@ -43,7 +43,7 @@ Choose the nearest guidance before editing:
 
 ## Migration Framing
 
-Use [`graph-concept-ref.md`](graph-concept-ref.md) as a design reference for where GraphClaw is intended to move. Treat it as migration framing, not as proof that the runtime already has those components.
+Use [`docs/architecture/graph-context-engine.md`](docs/architecture/graph-context-engine.md) as a design reference for where GraphClaw is intended to move. Treat it as migration framing, not as proof that the runtime already has those components.
 
 Current implementation reality still includes inherited `zeroclaw` names across crates, binaries, commands, configuration, tests, and firmware. Keep documentation and change descriptions truthful about that distinction.
 
@@ -101,4 +101,5 @@ Then make the smallest defensible change, validate at the right risk level, and 
 - repo identity and root map: [`README.md`](README.md), [`CONTEXT.md`](CONTEXT.md)
 - repo-wide agent rules: [`AGENTS.md`](AGENTS.md)
 - documentation hub: [`docs/README.md`](docs/README.md)
+- architecture references: [`docs/architecture/README.md`](docs/architecture/README.md)
 - contributor references: [`docs/contributing/README.md`](docs/contributing/README.md)

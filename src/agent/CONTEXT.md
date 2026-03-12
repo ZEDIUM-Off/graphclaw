@@ -1,8 +1,22 @@
 # Agent Context
 
-## Purpose
+## Local Purpose
 
 `src/agent/` holds the core chat-loop machinery: prompt assembly, dispatch, classification, and loading memory into each run.
+
+This subtree owns the current agent loop. It does not yet own a standalone Graph Context Engine, even though several of its files are likely insertion points for future context-resolution artifacts.
+
+## What Belongs Here
+
+- turn orchestration and dispatch behavior;
+- prompt assembly and run preparation;
+- session-adjacent runtime flow for current agent execution.
+
+## What Does Not Belong Here
+
+- persistence backends and retrieval implementation details that belong in `src/memory/`;
+- execution-environment adapter logic that belongs in `src/runtime/`;
+- backend-agnostic concept definitions that belong in `docs/architecture/`.
 
 ## File / Folder Map
 
@@ -25,11 +39,20 @@
 
 This is still the inherited agent runtime path. It is one of the most likely future insertion points for richer GraphClaw context resolution, but the area today is still prompt-and-dispatch centric.
 
+The important documentary rule here is that the agent loop and the future context engine are adjacent concerns, not identical ones.
+
 ## Current Dependency Direction
 
 - Usually entered from `src/main.rs` command paths, channel routing in `src/channels/`, and gateway-driven runs in `src/gateway/`.
 - Calls outward into `src/providers/` for model inference, `src/tools/` for capability execution, `src/memory/` for recall and autosave, `src/security/` for policy checks, and `src/observability/` for trace/log emission.
 - Uses `src/agent/prompt.rs` for system prompt assembly and `src/agent/memory_loader.rs` for pre-run context hydration.
+
+## Routing
+
+- changes to persistence, embeddings, or ranking logic belong in `src/memory/`
+- changes to tool contracts belong in `src/tools/`
+- changes to execution adapters belong in `src/runtime/`
+- changes to stable context concepts belong in `docs/architecture/`
 
 ## GraphClaw Evolution Note
 
@@ -39,8 +62,14 @@ Do not document this folder as if GraphClaw already has a graph-native runtime p
 
 1. `src/agent/prompt.rs` is the clearest seam for separating static system prompt sections from future dynamic context-pack overlays.
 2. `src/agent/memory_loader.rs` is the seam where flat recall can eventually give way to richer context selection and graph-backed evidence assembly.
-3. `src/agent/loop_.rs` is the seam for introducing explicit turn artifacts such as `SessionWindow`, `ContextPack`, and resolution traces without rewriting the whole loop at once.
-4. `src/agent/dispatcher.rs` is where tool-call planning and provider response handling may later consume structured context artifacts instead of only prompt text.
+3. `src/agent/loop_.rs` is the seam for introducing explicit turn artifacts such as `SessionWindow`, `ContextPack`, and `ResolutionTrace` records without rewriting the whole loop at once.
+4. `src/agent/dispatcher.rs` is where tool-call planning and provider response handling may later consume a selected `ContextPack` and emit information that contributes to a `ResolutionTrace`, instead of only prompt text.
+
+Future GraphClaw framing in this subtree should preserve these distinctions:
+
+- `ThinkingContext` is not the same thing as provider-visible prompt text;
+- `ContextPack` is not the same thing as the whole turn loop;
+- the agent loop may consume a `ContextPack` and related `ResolutionTrace` information without owning all context-resolution policy itself.
 
 ## What Must Stay Stable During Migration
 
@@ -54,6 +83,15 @@ Do not document this folder as if GraphClaw already has a graph-native runtime p
 - Small changes can affect every user interaction.
 - Prompt, dispatch, and memory loading are separate concerns; keep them separate.
 - Preserve inherited `zeroclaw` names unless the task is explicitly a rename migration.
+- Do not relabel current memory hydration as a completed `SessionWindow` implementation without explicit runtime support.
+
+## References
+
+- `src/CONTEXT.md` - parent runtime routing
+- `src/memory/CONTEXT.md` - persistence and retrieval boundary
+- `src/tools/CONTEXT.md` - tool exposure boundary
+- `docs/architecture/graph-context-engine.md` - target context-resolution model
+- `docs/architecture/glossary.md` - stable concept vocabulary
 
 ## How Agents Should Work Here
 

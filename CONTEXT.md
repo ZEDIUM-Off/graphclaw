@@ -4,11 +4,14 @@
 
 This repository is GraphClaw: a transitional fork baseline being evolved from ZeroClaw toward a graph-native context engine.
 
+At the root level, documentation is expected to fix meaning before it fixes implementation details.
+
 ## What Belongs Here
 
 - repo-wide narrative and agent rules;
 - top-level entry documents and workspace metadata;
-- framing that applies across multiple subtrees.
+- framing that applies across multiple subtrees;
+- routing into the conceptual architecture and backend reference branches under `docs/`.
 
 ## What Does Not Belong Here
 
@@ -19,14 +22,16 @@ This repository is GraphClaw: a transitional fork baseline being evolved from Ze
 
 - `README.md` - canonical GraphClaw root README
 - `AGENTS.md` - repo-wide agent contract
-- `graph-concept-ref.md` - target architecture framing
+- `docs/architecture/graph-context-engine.md` - conceptual architecture reference
+- `docs/architecture/glossary.md` - stable GraphClaw vocabulary
+- `docs/backends/memgraph.md` - Memgraph backend reference
 - `src/`, `docs/`, `tests/`, `web/`, `python/`, `firmware/` - main working areas
 
 ## Current State
 
 The repo still builds and runs through inherited `zeroclaw` technical surfaces. The new context layer exists to make the transition explicit and navigable without forcing a risky rename-first migration.
 
-Do not interpret target-architecture references as proof of implementation. [`graph-concept-ref.md`](graph-concept-ref.md) is a design reference for migration direction, not a statement that the graph-native context engine already exists in the current runtime.
+Do not interpret target-architecture references as proof of implementation. The architecture docs under `docs/architecture/` are design references for migration direction, not statements that the graph-native context engine already exists in the current runtime.
 
 ## Root File Map
 
@@ -38,7 +43,8 @@ Do not interpret target-architecture references as proof of implementation. [`gr
 | `Makefile` | convenience entrypoint for common local build, test, docs, web, CI, and dev commands |
 | `CONTRIBUTING.md` | contributor workflow, scope control, and validation expectations |
 | `docs/README.md` | documentation hub and docs-specific routing |
-| `graph-concept-ref.md` | migration framing for the target graph-native context-engine direction |
+| `docs/architecture/` | stable concept definitions, glossary, and target runtime framing |
+| `docs/backends/` | backend integration references and coupling guidance |
 | `src/`, `crates/`, `web/`, `python/`, `firmware/`, `tests/` | primary implementation surfaces |
 | `scripts/`, `dev/`, `.github/` | automation, CI, and repository maintenance surfaces |
 
@@ -55,6 +61,8 @@ Use these routes:
 | Task | Read next |
 | --- | --- |
 | root documentation or repo framing | `README.md`, `AGENTS.md`, `CONTRIBUTING.md` |
+| Graph Context Engine concepts | `docs/architecture/README.md`, `docs/architecture/graph-context-engine.md` |
+| backend integration framing | `docs/backends/README.md`, `docs/backends/memgraph.md` |
 | common local build/test/dev entrypoints | `Makefile`, `dev/CONTEXT.md`, `scripts/CONTEXT.md` |
 | documentation trees | `docs/README.md`, `docs/CONTEXT.md` |
 | Rust runtime behavior | `src/CONTEXT.md` |
@@ -70,7 +78,8 @@ Use these routes:
 - `README.md` for the canonical top-level repository narrative
 - `docs/README.md` for documentation navigation
 - `CONTRIBUTING.md` for contribution workflow and validation
-- `graph-concept-ref.md` for migration framing
+- `docs/architecture/graph-context-engine.md` for migration framing
+- `docs/backends/memgraph.md` for backend reference mapping
 - local `CONTEXT.md` files for area-specific expectations
 
 ## Migration Track
@@ -86,7 +95,7 @@ The practical sequence is:
 5. migrate packaging, binding, and portable knowledge surfaces after those seams exist;
 6. rename inherited `zeroclaw` technical surfaces only when the implementation has truly crossed the boundary.
 
-When a task touches migration design, read both this file and `graph-concept-ref.md`, then move to the nearest runtime-area `CONTEXT.md`.
+When a task touches migration design, read both this file and `docs/architecture/graph-context-engine.md`, then move to the nearest runtime-area `CONTEXT.md`.
 
 ## How Agents Should Work Here
 

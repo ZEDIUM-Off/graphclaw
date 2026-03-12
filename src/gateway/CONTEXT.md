@@ -1,8 +1,22 @@
 # Gateway Context
 
-## Purpose
+## Local Purpose
 
 `src/gateway/` is the HTTP boundary for the runtime: REST-like endpoints, SSE, WebSocket handling, and static asset serving.
+
+This subtree owns external transport contracts. It may later expose GraphClaw-facing session or context endpoints, but today it remains an inherited API boundary over the current runtime.
+
+## What Belongs Here
+
+- HTTP, SSE, and WebSocket transport behavior;
+- request and response contract ownership;
+- delivery of the current web-facing runtime surface.
+
+## What Does Not Belong Here
+
+- stable GraphClaw concept definitions that belong in `docs/architecture/`;
+- internal context-resolution policy that belongs in the future owning runtime seam;
+- web application implementation that belongs in `web/`.
 
 ## File / Folder Map
 
@@ -23,11 +37,20 @@
 
 This is a major inherited boundary between the runtime and external clients, including the web app and automation consumers.
 
+It should be documented as a transport surface, not as proof that GraphClaw already has a public graph-native control plane.
+
 ## Current Dependency Direction
 
 - Entered from runtime startup and command wiring in `src/main.rs` and daemon orchestration paths.
 - Calls into channels, providers, memory, tools, security, and cost tracking from `src/gateway/mod.rs` and `src/gateway/api.rs`.
 - Serves `web/` through `static_files.rs` and exposes streaming/session behavior through `sse.rs` and `ws.rs`.
+
+## Routing
+
+- transport contract changes belong here
+- web UI behavior belongs in `web/`
+- stable context-model questions belong in `docs/architecture/`
+- runtime internals behind the transport belong in their owning `src/*` subtree
 
 ## GraphClaw Evolution Note
 
@@ -36,7 +59,7 @@ Do not document the gateway as exposing a finished graph-native control plane. I
 ## Likely Migration Seams
 
 1. `src/gateway/api.rs` is the seam for any future GraphClaw session, context, or package-management endpoints.
-2. `src/gateway/sse.rs` and `src/gateway/ws.rs` are likely seams for streaming richer runtime artifacts such as resolution traces or context-pack summaries.
+2. `src/gateway/sse.rs` and `src/gateway/ws.rs` are likely seams for streaming richer runtime artifacts such as `ResolutionTrace` records or `ContextPack` summaries.
 3. `src/gateway/static_files.rs` is strictly a delivery seam for the current web app and should not absorb backend architecture logic.
 
 ## What Must Stay Stable During Migration
@@ -50,6 +73,12 @@ Do not document the gateway as exposing a finished graph-native control plane. I
 - Protocol changes are compatibility-sensitive.
 - Gateway behavior affects clients, docs, and deployment setups.
 - Authentication, pairing, and streaming semantics must stay explicit.
+
+## References
+
+- `src/CONTEXT.md` - parent runtime routing
+- `web/CONTEXT.md` - UI boundary
+- `docs/architecture/graph-context-engine.md` - target model for sessions, packs, and traces
 
 ## How Agents Should Work Here
 

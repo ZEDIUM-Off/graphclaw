@@ -1,12 +1,36 @@
 # GraphClaw
 
-GraphClaw is the repository identity.
+GraphClaw is a documentation-led fork of an inherited ZeroClaw baseline.
 
-This repository currently runs on an inherited ZeroClaw baseline. Many technical surfaces still use `zeroclaw` names across crates, binaries, CLI commands, configuration, tests, manifests, and firmware. Those names remain the current implementation reality until an explicit migration task changes them.
+The repository identity is `GraphClaw`, but the current implementation still exposes many inherited `zeroclaw` technical surfaces across crates, binaries, CLI commands, configuration, tests, manifests, and firmware. Those names remain the current implementation reality until an explicit migration task changes them.
 
-GraphClaw should therefore be read as a transitional scaffold: a working inherited runtime being reorganized and documented so it can evolve toward a graph-native context engine without a rename-first rewrite.
+GraphClaw should therefore be read as a transitional scaffold: a working inherited runtime being reorganized so it can evolve toward a graph-native context engine without a rename-first rewrite.
 
-[`graph-concept-ref.md`](graph-concept-ref.md) is the migration framing document for that direction. It describes the target architecture and vocabulary to steer toward. It does not mean that the target architecture is already implemented in this repository.
+## What GraphClaw Is Trying To Become
+
+The target is not a renamed ZeroClaw and not a thin graph wrapper around an existing prompt stack.
+
+The target is a `Graph Context Engine` where:
+
+- context is a governed artifact rather than an implicit byproduct of prompts, history, and recall;
+- views and sets are first-class objects instead of ad hoc query results;
+- context selection is budgeted, policy-aware, and traceable;
+- reflective context resolution happens before final response packing;
+- portable agent behavior is modeled as packages, instances, bindings, and sessions rather than just repo-local files.
+
+The context engine and the packaging model are adjacent but not identical layers. The engine governs context resolution for turns; packaging governs portability and installation of agent behavior.
+
+That target is documented first and implemented progressively afterward.
+
+## Current Status
+
+This repository is still in the documentation-and-boundary phase of migration.
+
+- the inherited runtime is still the source of operational truth;
+- documentation now carries the reference vocabulary and conceptual boundaries the target system is trying to stabilize;
+- Memgraph is the reference backend for the first graph-native architecture axis, but it is not the business model of the project.
+
+Do not read target-architecture documents as proof that the current runtime already contains those components.
 
 ## Read First
 
@@ -16,6 +40,22 @@ Use this order before making changes:
 2. [`CONTEXT.md`](CONTEXT.md) for the root map and task routing.
 3. The nearest local `CONTEXT.md` for the area you will edit.
 4. [`docs/README.md`](docs/README.md) or [`CONTRIBUTING.md`](CONTRIBUTING.md) if the task is documentation, review, or process related.
+5. [`docs/architecture/graph-context-engine.md`](docs/architecture/graph-context-engine.md) when the task touches GraphClaw concepts, invariants, or target runtime seams.
+
+## Documentation Architecture
+
+GraphClaw documentation is intentionally layered:
+
+| Level | Primary question | Typical locations |
+| --- | --- | --- |
+| intent | why does GraphClaw exist | `README.md`, strategy docs |
+| conceptual architecture | what are the reference concepts being stabilized | `docs/architecture/graph-context-engine.md`, `docs/architecture/glossary.md` |
+| project architecture | how is the repo divided | `CONTEXT.md`, local `CONTEXT.md` files |
+| runtime logic | how should a turn resolve logically | `docs/architecture/graph-context-engine.md`, runtime-area docs |
+| backend integration | how does a concrete graph backend support the model | `docs/backends/memgraph.md` |
+| implementation | what code exists today | source-adjacent docs and code |
+
+The intended order is: semantics first, boundaries second, mechanisms third, implementation last.
 
 ## Task Routing
 
@@ -24,6 +64,8 @@ Use these entry points to orient work quickly:
 | If you are working on... | Read first |
 | --- | --- |
 | repo identity, root framing, agent rules | [`README.md`](README.md), [`AGENTS.md`](AGENTS.md), [`CONTEXT.md`](CONTEXT.md) |
+| Graph Context Engine concepts or invariants | [`docs/architecture/README.md`](docs/architecture/README.md), [`docs/architecture/graph-context-engine.md`](docs/architecture/graph-context-engine.md) |
+| backend mapping or Memgraph constraints | [`docs/backends/README.md`](docs/backends/README.md), [`docs/backends/memgraph.md`](docs/backends/memgraph.md) |
 | Rust runtime behavior | [`src/CONTEXT.md`](src/CONTEXT.md) |
 | workspace crates | [`crates/CONTEXT.md`](crates/CONTEXT.md) |
 | web UI | [`web/CONTEXT.md`](web/CONTEXT.md) |
@@ -45,11 +87,10 @@ Always move from the root framing to the closest local `CONTEXT.md` before editi
 | `python/` | inherited Python tooling and integrations |
 | `firmware/` | hardware-side experiments and board support |
 | `tests/` | component, integration, live, manual, and system test areas |
-| `docs/` | documentation hub, references, contributor guides, and operations material |
+| `docs/` | documentation hub, architecture references, backend references, contributor guides, and operations material |
 | `scripts/` | CI, release, and maintenance scripts |
 | `dev/` | local development and CI helper surfaces |
 | `.github/` | workflow automation and repository policy metadata |
-| `graph-concept-ref.md` | migration framing for the graph-native context-engine direction |
 
 ## Current Technical Reality
 
@@ -68,13 +109,14 @@ GraphClaw is not migrating by renaming the whole repository first. The safer pat
 
 The intended order is:
 
-1. Context seam: introduce a first-class context boundary inside the Rust runtime so turn assembly is no longer scattered across prompt construction, memory recall, and tool orchestration.
-2. Runtime artifacts: make concepts such as `SessionWindow`, `ContextPack`, and resolution traces explicit runtime objects rather than implicit text concatenation.
-3. Graph adapter boundary: add a graph-facing storage interface behind traits so graph-native retrieval and topology-aware context selection can be introduced without replacing every inherited backend at once.
-4. Package and binding layer: define how agents, skills, bundles, and policies become portable installation units instead of only repo-local files and conventions.
-5. Naming migration: only rename inherited `zeroclaw` surfaces when the underlying runtime boundaries are stable enough that the rename reflects real architecture rather than wishful branding.
+1. Documentation and glossary: stabilize the meaning of `View`, `GraphSet`, `SessionWindow`, `ThinkingContext`, `ContextPack`, `ContextMutationProposal`, `ResolutionTrace`, and portable agent packaging boundaries.
+2. Boundary docs: make repository and subsystem responsibilities explicit through `CONTEXT.md` files and architecture references.
+3. Runtime artifacts: make context-resolution objects explicit instead of relying on implicit prompt concatenation.
+4. Graph adapter boundary: add a graph-facing storage interface behind traits so topology-aware context selection can arrive without replacing every inherited backend at once.
+5. Package and binding layer: define how agents, skills, bundles, and policies become portable installation units instead of only repo-local files and conventions.
+6. Naming migration: rename inherited `zeroclaw` surfaces only when the underlying runtime boundaries are stable enough that the rename reflects real architecture rather than wishful branding.
 
-`graph-concept-ref.md` describes the target model in more detail. The current repository should be read as being between steps 0 and 1: documentation and navigation are being prepared first so later runtime changes can happen deliberately.
+The current repository should be read as being between steps 1 and 2: documentation and navigation are being hardened first so later runtime changes can happen deliberately.
 
 ## Working Rules
 

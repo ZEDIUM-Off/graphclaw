@@ -9,6 +9,7 @@ For contributors, reviewers, and maintainers.
 - Reviewer playbook: [./reviewer-playbook.md](./reviewer-playbook.md)
 - CI map and ownership: [./ci-map.md](./ci-map.md)
 - Actions source policy: [./actions-source-policy.md](./actions-source-policy.md)
+- `CONTEXT.md` template: [./context-template.md](./context-template.md)
 - Extension examples: [./extension-examples.md](./extension-examples.md)
 - Testing guide: [./testing.md](./testing.md)
 
@@ -16,5 +17,7 @@ For contributors, reviewers, and maintainers.
 
 1. `CONTRIBUTING.md`
 2. `pr-workflow.md`
-3. `reviewer-playbook.md`
-4. `ci-map.md`
+3. `docs-contract.md`
+4. `context-template.md`
+5. `reviewer-playbook.md`
+6. `ci-map.md`

@@ -1,8 +1,22 @@
 # Runtime Context
 
-## Purpose
+## Local Purpose
 
 `src/runtime/` defines execution-environment adapters such as native, Docker, and WASM, plus the contracts that tools and sandboxed execution depend on.
+
+This subtree exists to expose execution capabilities safely and consistently. It supports the agent and any future context engine, but it is not where GraphClaw context semantics should be defined.
+
+## What Belongs Here
+
+- execution-adapter contracts;
+- concrete native, Docker, and WASM runtime behavior;
+- capability surfaces needed by tools and security-sensitive execution.
+
+## What Does Not Belong Here
+
+- context-selection policy and packing logic;
+- memory persistence or retrieval rules that belong in `src/memory/`;
+- stable GraphClaw vocabulary that belongs in `docs/architecture/`.
 
 ## File / Folder Map
 
@@ -23,11 +37,19 @@
 
 This is a high-leverage inherited boundary because execution behavior fans out into tools, security, and operator expectations.
 
+It should be documented as infrastructure for the runtime, not as the owner of context reasoning.
+
 ## Current Dependency Direction
 
 - Consumed mainly by `src/tools/` and security-sensitive execution paths that need shell, filesystem, process, or storage behavior.
 - Adapter contracts are centralized in `src/runtime/traits.rs`; concrete behavior fans out into `native.rs`, `docker.rs`, and `wasm.rs`.
 - Runtime choices also shape daemon, gateway, and operator expectations even when those modules do not own adapter logic directly.
+
+## Routing
+
+- tool capability consumers belong in `src/tools/`
+- persistence and retrieval concerns belong in `src/memory/`
+- context-model questions belong in `docs/architecture/`
 
 ## GraphClaw Evolution Note
 
@@ -50,6 +72,12 @@ Do not portray these adapters as a finished GraphClaw execution graph. They are 
 - Runtime changes can affect security, filesystem access, and tool behavior.
 - Adapter contracts should stay explicit and testable.
 - Avoid leaking backend-specific assumptions into shared code.
+
+## References
+
+- `src/tools/CONTEXT.md` - main consumer boundary
+- `src/security/CONTEXT.md` - safety and policy boundary
+- `docs/architecture/graph-context-engine.md` - context-layer concepts that may sit above runtime adapters
 
 ## How Agents Should Work Here
 

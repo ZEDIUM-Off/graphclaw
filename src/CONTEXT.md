@@ -1,8 +1,22 @@
 # Src Context
 
-## Purpose
+## Local Purpose
 
 This is the main Rust runtime tree for GraphClaw. It still runs through inherited `zeroclaw` modules, commands, and config surfaces while the repository is being reshaped incrementally.
+
+This subtree is where most future GraphClaw runtime seams will eventually land, but it is not yet a standalone graph-native context-engine tree.
+
+## What Belongs Here
+
+- inherited runtime behavior and subsystem boundaries;
+- migration seams for future `SessionWindow`, `ContextPack`, `ResolutionTrace`, and graph-facing interfaces;
+- source-adjacent documentation that explains which subsystem owns which runtime concern.
+
+## What Does Not Belong Here
+
+- docs that present the target Graph Context Engine as already implemented here;
+- backend reference catalogs that belong in `docs/backends/`;
+- conceptual definitions that should stay stable in `docs/architecture/`.
 
 ## File / Folder Map
 
@@ -21,10 +35,22 @@ This is the main Rust runtime tree for GraphClaw. It still runs through inherite
 - Gateway, SSE, or WebSocket work: `src/gateway/`
 - Memory backends and recall flow: `src/memory/`
 - Runtime sandbox or execution adapters: `src/runtime/` and `src/security/`
+- GraphClaw concept definitions: `docs/architecture/`
+- backend integration framing: `docs/backends/`
 
 ## Current State
 
 The tree is broad, operational, and production-facing. Most modules are inherited from the ZeroClaw baseline, and the GraphClaw migration in this area is mainly about clearer seams, safer boundaries, and better context for future changes.
+
+There is no dedicated `src/context_engine/`, `src/graph/`, or `src/memgraph/` subtree yet. Until such seams exist, documents in `src/` should describe current owners precisely instead of implying a consolidated GraphClaw runtime layer.
+
+## Routing
+
+- turn assembly and orchestration concerns belong in `src/agent/`
+- persistence and recall concerns belong in `src/memory/`
+- capability exposure belongs in `src/tools/`
+- execution environment concerns belong in `src/runtime/`
+- gateway and external session boundaries belong in `src/gateway/`
 
 ## GraphClaw Evolution Note
 
@@ -40,11 +66,19 @@ The likely migration seams inside `src/` are:
 
 That means the first GraphClaw runtime work should usually add interfaces and explicit artifacts at those seams, not rename the tree or move everything into a new top-level module prematurely.
 
+## References
+
+- `README.md` - repo identity and migration framing
+- `docs/architecture/graph-context-engine.md` - stable GraphClaw concept model
+- `docs/architecture/glossary.md` - shared vocabulary for runtime docs
+- local subsystem `CONTEXT.md` files - owning boundaries for each runtime area
+
 ## Constraints / Cautions
 
 - Do not mass-rename `zeroclaw` identifiers without an explicit migration task.
 - Many modules are user-facing or protocol-facing; compatibility matters.
 - Documentation should distinguish current behavior from target architecture.
+- `memory`, `context`, `runtime`, and `tooling` are related but must not be collapsed into one catch-all description.
 
 ## How Agents Should Work Here
 

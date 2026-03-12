@@ -1,8 +1,22 @@
 # Tools Context
 
-## Purpose
+## Local Purpose
 
 `src/tools/` contains built-in tool implementations and tool contracts for filesystem, shell, web, memory, cron, browser, SOP, and hardware-adjacent runtime actions.
+
+This subtree owns capability exposure and execution contracts. It is adjacent to agent orchestration and future context ingestion, but it is not the Graph Context Engine itself.
+
+## What Belongs Here
+
+- tool registration and discovery;
+- shared tool contracts and schemas;
+- concrete tool execution behavior.
+
+## What Does Not Belong Here
+
+- turn orchestration policy that belongs in `src/agent/`;
+- runtime adapter implementation that belongs in `src/runtime/`;
+- stable context semantics that belong in `docs/architecture/`.
 
 ## File / Folder Map
 
@@ -26,11 +40,20 @@
 
 This is one of the broadest and highest-risk inherited runtime surfaces because tools bridge user intent, execution, security controls, and external systems.
 
+It should be described as a capability layer, not as the owner of context policy.
+
 ## Current Dependency Direction
 
 - Tool registration starts in `src/tools/mod.rs` and is consumed primarily by the agent loop in `src/agent/`.
 - Concrete tools call outward into `src/runtime/`, `src/security/`, `src/memory/`, `src/cron/`, `src/sop/`, web/network clients, and optional hardware integrations.
 - Tool schemas and contracts are centralized in `src/tools/traits.rs` and `src/tools/schema.rs`, while individual files own execution details.
+
+## Routing
+
+- context-selection logic belongs in `docs/architecture/` or the future owning runtime seam, not in generic tool docs
+- runtime execution semantics belong in `src/runtime/`
+- memory persistence and retrieval belong in `src/memory/`
+- agent-loop decisions about when tools run belong in `src/agent/`
 
 ## GraphClaw Evolution Note
 
@@ -54,6 +77,14 @@ Do not describe the tool layer as a completed GraphClaw orchestration fabric. It
 - Tool behavior is user-visible and trust-sensitive.
 - Security and runtime implications often sit outside the individual tool file.
 - Avoid adding tools or capabilities that quietly shift architecture without documentation.
+- Future context-aware tool ingestion should not retroactively redefine all tool output as a `ContextPack` or `ResolutionTrace`.
+
+## References
+
+- `src/agent/CONTEXT.md` - main orchestrator boundary
+- `src/runtime/CONTEXT.md` - execution adapter boundary
+- `src/memory/CONTEXT.md` - persistence and retrieval boundary
+- `docs/architecture/graph-context-engine.md` - target model for `ContextPack`, `ResolutionTrace`, and related context-engine behavior
 
 ## How Agents Should Work Here
 
