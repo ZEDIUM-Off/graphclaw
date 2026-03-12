@@ -1,90 +1,64 @@
-# ZeroClaw Documentation Hub
+# GraphClaw Documentation Hub
 
-This page is the primary entry point for the documentation system.
+This is the main documentation entry point for GraphClaw.
 
-Last refreshed: **February 21, 2026**.
+Most of the documentation tree is still inherited from the ZeroClaw baseline. Many pages therefore describe the current implementation using `zeroclaw` commands, config keys, and runtime names. Those pages remain useful because they describe the system as it exists today.
 
-Localized hubs: [简体中文](README.zh-CN.md) · [日本語](README.ja.md) · [Русский](README.ru.md) · [Français](README.fr.md) · [Tiếng Việt](i18n/vi/README.md).
+Read the docs with the transition in mind:
+
+- GraphClaw is the repository identity;
+- the current runtime is still the inherited baseline;
+- the future direction is a graph-native context engine introduced progressively, not all at once.
 
 ## Start Here
 
-| I want to… | Read this |
-|---|---|
-| Install and run ZeroClaw quickly | [README.md (Quick Start)](../README.md#quick-start) |
-| Bootstrap in one command | [one-click-bootstrap.md](setup-guides/one-click-bootstrap.md) |
-| Update or uninstall on macOS | [macos-update-uninstall.md](setup-guides/macos-update-uninstall.md) |
-| Find commands by task | [commands-reference.md](reference/cli/commands-reference.md) |
-| Check config defaults and keys quickly | [config-reference.md](reference/api/config-reference.md) |
-| Configure custom providers/endpoints | [custom-providers.md](contributing/custom-providers.md) |
-| Configure Z.AI / GLM provider | [zai-glm-setup.md](setup-guides/zai-glm-setup.md) |
-| Use LangGraph integration patterns | [langgraph-integration.md](contributing/langgraph-integration.md) |
-| Operate runtime (day-2 runbook) | [operations-runbook.md](ops/operations-runbook.md) |
-| Troubleshoot install/runtime/channel issues | [troubleshooting.md](ops/troubleshooting.md) |
-| Run Matrix encrypted-room setup and diagnostics | [matrix-e2ee-guide.md](security/matrix-e2ee-guide.md) |
-| Browse docs by category | [SUMMARY.md](SUMMARY.md) |
-| See project PR/issue docs snapshot | [project-triage-snapshot-2026-02-18.md](maintainers/project-triage-snapshot-2026-02-18.md) |
+- repo identity and transition framing: [`../README.md`](../README.md)
+- repo-wide agent rules: [`../AGENTS.md`](../AGENTS.md)
+- root repository map: [`../CONTEXT.md`](../CONTEXT.md)
+- contributor workflow: [`../CONTRIBUTING.md`](../CONTRIBUTING.md)
 
-## Quick Decision Tree (10 seconds)
+## Docs Routing
 
-- Need first-time setup or install? → [setup-guides/README.md](setup-guides/README.md)
-- Need exact CLI/config keys? → [reference/README.md](reference/README.md)
-- Need production/service operations? → [ops/README.md](ops/README.md)
-- Seeing failures or regressions? → [troubleshooting.md](ops/troubleshooting.md)
-- Working on security hardening or roadmap? → [security/README.md](security/README.md)
-- Working with boards/peripherals? → [hardware/README.md](hardware/README.md)
-- Contributing/reviewing/CI workflow? → [contributing/README.md](contributing/README.md)
-- Want the full map? → [SUMMARY.md](SUMMARY.md)
+Use this page to choose the right documentation branch before editing or relying on a section.
 
-## Collections (Recommended)
+| If you need... | Read |
+| --- | --- |
+| contributor and review process | [`contributing/README.md`](contributing/README.md) |
+| setup and onboarding instructions | [`setup-guides/README.md`](setup-guides/README.md) |
+| CLI, API, and SOP references | [`reference/README.md`](reference/README.md) |
+| operations, deployment, or troubleshooting | [`ops/README.md`](ops/README.md) |
+| security guidance | [`security/README.md`](security/README.md) |
+| hardware and peripherals | [`hardware/README.md`](hardware/README.md) |
+| maintainer responsibilities | [`maintainers/README.md`](maintainers/README.md) |
+| localization and translations | [`i18n/README.md`](i18n/README.md), [`vi/README.md`](vi/README.md) |
 
-- Getting started: [setup-guides/README.md](setup-guides/README.md)
-- Reference catalogs: [reference/README.md](reference/README.md)
-- Operations & deployment: [ops/README.md](ops/README.md)
-- Security docs: [security/README.md](security/README.md)
-- Hardware/peripherals: [hardware/README.md](hardware/README.md)
-- Contributing/CI: [contributing/README.md](contributing/README.md)
-- Project snapshots: [maintainers/README.md](maintainers/README.md)
+## Main Documentation Areas
 
-## By Audience
+- getting started and setup: [`setup-guides/README.md`](setup-guides/README.md)
+- CLI and API references: [`reference/README.md`](reference/README.md)
+- operations and troubleshooting: [`ops/README.md`](ops/README.md)
+- security guidance: [`security/README.md`](security/README.md)
+- hardware and peripherals: [`hardware/README.md`](hardware/README.md)
+- contributor and maintainer material: [`contributing/README.md`](contributing/README.md), [`maintainers/README.md`](maintainers/README.md)
+- localization and translation surfaces: [`i18n/README.md`](i18n/README.md), [`vi/README.md`](vi/README.md)
 
-### Users / Operators
+## Docs Map
 
-- [commands-reference.md](reference/cli/commands-reference.md) — command lookup by workflow
-- [providers-reference.md](reference/api/providers-reference.md) — provider IDs, aliases, credential env vars
-- [channels-reference.md](reference/api/channels-reference.md) — channel capabilities and setup paths
-- [matrix-e2ee-guide.md](security/matrix-e2ee-guide.md) — Matrix encrypted-room (E2EE) setup and no-response diagnostics
-- [config-reference.md](reference/api/config-reference.md) — high-signal config keys and secure defaults
-- [custom-providers.md](contributing/custom-providers.md) — custom provider/base URL integration templates
-- [zai-glm-setup.md](setup-guides/zai-glm-setup.md) — Z.AI/GLM setup and endpoint matrix
-- [langgraph-integration.md](contributing/langgraph-integration.md) — fallback integration for model/tool-calling edge cases
-- [operations-runbook.md](ops/operations-runbook.md) — day-2 runtime operations and rollback flow
-- [troubleshooting.md](ops/troubleshooting.md) — common failure signatures and recovery steps
+| Path | Purpose |
+| --- | --- |
+| `docs/contributing/` | contributor workflow, CI, review, and process references |
+| `docs/setup-guides/` | setup and getting-started material |
+| `docs/reference/` | CLI, API, and SOP references |
+| `docs/ops/` | operations, troubleshooting, and runtime procedures |
+| `docs/security/` | security guidance and policies |
+| `docs/hardware/` | hardware, peripherals, and device notes |
+| `docs/maintainers/` | maintainer-facing responsibilities and runbooks |
+| `docs/i18n/` | localization guidance and translation structure |
+| `docs/vi/` | Vietnamese documentation surfaces |
 
-### Contributors / Maintainers
+## Reading Guidance
 
-- [../CONTRIBUTING.md](../CONTRIBUTING.md)
-- [pr-workflow.md](contributing/pr-workflow.md)
-- [reviewer-playbook.md](contributing/reviewer-playbook.md)
-- [ci-map.md](contributing/ci-map.md)
-- [actions-source-policy.md](contributing/actions-source-policy.md)
-
-### Security / Reliability
-
-> Note: this area includes proposal/roadmap docs. For current behavior, start with [config-reference.md](reference/api/config-reference.md), [operations-runbook.md](ops/operations-runbook.md), and [troubleshooting.md](ops/troubleshooting.md).
-
-- [security/README.md](security/README.md)
-- [agnostic-security.md](security/agnostic-security.md)
-- [frictionless-security.md](security/frictionless-security.md)
-- [sandboxing.md](security/sandboxing.md)
-- [audit-logging.md](security/audit-logging.md)
-- [resource-limits.md](ops/resource-limits.md)
-- [security-roadmap.md](security/security-roadmap.md)
-
-## System Navigation & Governance
-
-- Unified TOC: [SUMMARY.md](SUMMARY.md)
-- Docs structure map (language/part/function): [structure/README.md](maintainers/structure-README.md)
-- Documentation inventory/classification: [docs-inventory.md](maintainers/docs-inventory.md)
-- i18n docs index: [i18n/README.md](i18n/README.md)
-- i18n coverage map: [i18n-coverage.md](maintainers/i18n-coverage.md)
-- Project triage snapshot: [project-triage-snapshot-2026-02-18.md](maintainers/project-triage-snapshot-2026-02-18.md)
+- If a page still says ZeroClaw, interpret it as inherited implementation documentation unless the page explicitly states a new GraphClaw framing.
+- If you are modifying a directory represented in docs, read that directory's `CONTEXT.md` first.
+- Do not infer that the target GraphClaw architecture is already implemented just because the design direction exists.
+- Use [`../graph-concept-ref.md`](../graph-concept-ref.md) as migration framing only; do not rewrite inherited documentation as if that target state already exists.
