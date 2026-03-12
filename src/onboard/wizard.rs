@@ -447,6 +447,27 @@ async fn run_quick_setup_with_home(
     force: bool,
     home: &Path,
 ) -> Result<Config> {
+    run_quick_setup_with_home_and_mode(
+        credential_override,
+        provider,
+        model_override,
+        memory_backend,
+        force,
+        home,
+        stdin_stdout_are_terminals(),
+    )
+    .await
+}
+
+async fn run_quick_setup_with_home_and_mode(
+    credential_override: Option<&str>,
+    provider: Option<&str>,
+    model_override: Option<&str>,
+    memory_backend: Option<&str>,
+    force: bool,
+    home: &Path,
+    interactive: bool,
+) -> Result<Config> {
     println!("{}", style(BANNER).cyan().bold());
     println!(
         "  {}",
@@ -459,7 +480,7 @@ async fn run_quick_setup_with_home(
     let (zeroclaw_dir, workspace_dir) = resolve_quick_setup_dirs_with_home(home);
     let config_path = zeroclaw_dir.join("config.toml");
 
-    ensure_onboard_overwrite_allowed(&config_path, force)?;
+    ensure_onboard_overwrite_allowed_with_mode(&config_path, force, interactive)?;
     fs::create_dir_all(&workspace_dir)
         .await
         .context("Failed to create workspace directory")?;
@@ -2019,7 +2040,19 @@ fn resolve_interactive_onboarding_mode(
     }
 }
 
+fn stdin_stdout_are_terminals() -> bool {
+    std::io::stdin().is_terminal() && std::io::stdout().is_terminal()
+}
+
 fn ensure_onboard_overwrite_allowed(config_path: &Path, force: bool) -> Result<()> {
+    ensure_onboard_overwrite_allowed_with_mode(config_path, force, stdin_stdout_are_terminals())
+}
+
+fn ensure_onboard_overwrite_allowed_with_mode(
+    config_path: &Path,
+    force: bool,
+    interactive: bool,
+) -> Result<()> {
     if !config_path.exists() {
         return Ok(());
     }
@@ -2033,7 +2066,7 @@ fn ensure_onboard_overwrite_allowed(config_path: &Path, force: bool) -> Result<(
         return Ok(());
     }
 
-    if !std::io::stdin().is_terminal() || !std::io::stdout().is_terminal() {
+    if !interactive {
         bail!(
             "Refusing to overwrite existing config at {} in non-interactive mode. Re-run with --force if overwrite is intentional.",
             config_path.display()
@@ -5898,13 +5931,14 @@ mod tests {
             .await
             .unwrap();
 
-        let err = run_quick_setup_with_home(
+        let err = run_quick_setup_with_home_and_mode(
             Some("sk-existing"),
             Some("openrouter"),
             Some("custom-model"),
             Some("sqlite"),
             false,
             tmp.path(),
+            false,
         )
         .await
         .expect_err("quick setup should refuse overwrite without --force");
