@@ -35,6 +35,7 @@ Do not interpret target-architecture references as proof of implementation. [`gr
 | `README.md` | repo identity, current state, top-level map, and validation entry point |
 | `AGENTS.md` | repo-wide agent operating rules and reading order |
 | `CONTEXT.md` | root routing map for where to read before changing areas |
+| `Makefile` | convenience entrypoint for common local build, test, docs, web, CI, and dev commands |
 | `CONTRIBUTING.md` | contributor workflow, scope control, and validation expectations |
 | `docs/README.md` | documentation hub and docs-specific routing |
 | `graph-concept-ref.md` | migration framing for the target graph-native context-engine direction |
@@ -54,6 +55,7 @@ Use these routes:
 | Task | Read next |
 | --- | --- |
 | root documentation or repo framing | `README.md`, `AGENTS.md`, `CONTRIBUTING.md` |
+| common local build/test/dev entrypoints | `Makefile`, `dev/CONTEXT.md`, `scripts/CONTEXT.md` |
 | documentation trees | `docs/README.md`, `docs/CONTEXT.md` |
 | Rust runtime behavior | `src/CONTEXT.md` |
 | crate-level work | `crates/CONTEXT.md` |
