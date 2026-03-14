@@ -42,6 +42,13 @@ This is one of the broadest and highest-risk inherited runtime surfaces because 
 
 It should be described as a capability layer, not as the owner of context policy.
 
+Current process ownership in this subtree is roughly:
+
+- registering callable capabilities;
+- validating tool schemas and contracts;
+- executing concrete tool actions;
+- returning results that may later become structured evidence.
+
 ## Current Dependency Direction
 
 - Tool registration starts in `src/tools/mod.rs` and is consumed primarily by the agent loop in `src/agent/`.
@@ -65,6 +72,20 @@ Do not describe the tool layer as a completed GraphClaw orchestration fabric. It
 2. `src/tools/mod.rs` is the seam for future GraphClaw capability exposure, selective tool packing, and context-aware tool registration.
 3. Tool result handling is a likely seam for future context ingestion, where execution output can become structured runtime evidence rather than only text fed back to the model.
 4. `delegate.rs` is a likely seam for future graph-aware sub-agent orchestration, but it should stay compatible with current delegation behavior until that work is explicit.
+
+The key architectural caution here is that `ThinkingContext` and graph navigation before response are not ordinary tools. They are system phases that may use tool-like operations internally.
+
+That means this subtree may later provide:
+
+- callable tools whose outputs feed context resolution;
+- capability metadata that helps context packing decide what can be executed or exposed.
+
+It should not become the canonical home for:
+
+- `View` governance;
+- `GraphSet` semantics;
+- final `ContextPack` ownership;
+- the whole reflective context phase.
 
 ## What Must Stay Stable During Migration
 

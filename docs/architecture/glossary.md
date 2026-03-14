@@ -16,6 +16,16 @@ A governed projection over the graph that can expose one or more policy-constrai
 
 A first-class logical set of node references that can be produced, filtered, combined, ranked, budgeted, summarized, or packed.
 
+`GraphSet` may be lazy or materialized, and it can include or reference relations, provenance, construction metadata, and attached readable content.
+
+### `Packable Subgraph`
+
+A bounded projection derived from one or more `GraphSet` objects and prepared for possible inclusion in the final `ContextPack`.
+
+### `Packability`
+
+The conditional property that some graph material may be suitable for packing in a given turn, view, policy state, and budget. Packability is not an absolute property of a node or relation.
+
 ### `Bounded Complement`
 
 The subset of nodes inside an explicitly bounded universe that are not in a given `GraphSet`. This is never an unbounded "everything else" operation over the whole graph.
@@ -35,6 +45,8 @@ The currently visible and mobilizable subgraph for a turn or a short sequence of
 ### `ThinkingContext`
 
 The temporary reflection context used to explore, compare, and arbitrate before final response packing.
+
+This is a system phase, not merely an ordinary tool call.
 
 ### `ContextPack`
 
@@ -81,4 +93,5 @@ Packaging may depend on graph-native concepts, but it should not be confused wit
 - the graph backend is not the same thing as the Graph Context Engine
 - a `View` is not an arbitrary query alias
 - a `GraphSet` is not just a bag of prompt fragments
+- a `GraphSet` is not the same thing as a packable subgraph
 - a `ContextPack` is distinct from the `ThinkingContext` used to decide it

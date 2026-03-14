@@ -20,11 +20,18 @@ This subtree holds the stable conceptual architecture for GraphClaw. It defines 
 
 - `README.md` - entrypoint for conceptual architecture docs
 - `graph-context-engine.md` - reference model for the Graph Context Engine
+- `zero-to-graphclaw-transition.md` - migration framing from inherited runtime to interfacable context engine
+- `views-and-sets.md` - operational semantics for `View`, `GraphSet`, and packability
+- `context-artifacts.md` - distinctions between context artifacts and budget layers
+- `turn-runtime-logic.md` - logical turn phases and current runtime mapping
+- `future-integration-seams.md` - future interface families and likely seam placement
 - `glossary.md` - shared terminology and concise definitions
 
 ## Routing
 
 - concept definitions and invariants belong here
+- transition-thesis and seam-framing docs belong here when they stay above source-level ownership
+- artifact and turn-logic references belong here when they must remain stable even if code moves
 - backend capability mapping belongs in `docs/backends/`
 - repo and subtree ownership boundaries belong in the nearest `CONTEXT.md` files
 
@@ -51,6 +58,6 @@ This area should make the migration legible before the runtime is fully reworked
 ## Agent Workflow
 
 1. Read this file before editing conceptual architecture docs in this subtree.
-2. Check whether the task is about stable meaning, runtime logic, or backend support.
+2. Check whether the task is about stable meaning, transition framing, runtime logic, or backend support.
 3. Keep definitions backend-agnostic unless a backend reference is explicitly required.
 4. Update linked routing docs when a new architecture reference is added here.

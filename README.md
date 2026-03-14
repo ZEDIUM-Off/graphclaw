@@ -28,6 +28,7 @@ This repository is still in the documentation-and-boundary phase of migration.
 
 - the inherited runtime is still the source of operational truth;
 - documentation now carries the reference vocabulary and conceptual boundaries the target system is trying to stabilize;
+- documentation is also being used to mark which runtime processes should later become interfacable seams rather than implicit inherited pipelines;
 - Memgraph is the reference backend for the first graph-native architecture axis, but it is not the business model of the project.
 
 Do not read target-architecture documents as proof that the current runtime already contains those components.
@@ -50,8 +51,10 @@ GraphClaw documentation is intentionally layered:
 | --- | --- | --- |
 | intent | why does GraphClaw exist | `README.md`, strategy docs |
 | conceptual architecture | what are the reference concepts being stabilized | `docs/architecture/graph-context-engine.md`, `docs/architecture/glossary.md` |
+| transition architecture | how does the inherited runtime gain seams without a rewrite-first migration | `docs/architecture/zero-to-graphclaw-transition.md`, `docs/architecture/future-integration-seams.md` |
+| context semantics | how should views, sets, artifacts, and budgets work | `docs/architecture/views-and-sets.md`, `docs/architecture/context-artifacts.md`, `docs/architecture/turn-runtime-logic.md` |
 | project architecture | how is the repo divided | `CONTEXT.md`, local `CONTEXT.md` files |
-| runtime logic | how should a turn resolve logically | `docs/architecture/graph-context-engine.md`, runtime-area docs |
+| runtime logic | how should a turn resolve logically | `docs/architecture/turn-runtime-logic.md`, runtime-area docs |
 | backend integration | how does a concrete graph backend support the model | `docs/backends/memgraph.md` |
 | implementation | what code exists today | source-adjacent docs and code |
 
@@ -65,6 +68,8 @@ Use these entry points to orient work quickly:
 | --- | --- |
 | repo identity, root framing, agent rules | [`README.md`](README.md), [`AGENTS.md`](AGENTS.md), [`CONTEXT.md`](CONTEXT.md) |
 | Graph Context Engine concepts or invariants | [`docs/architecture/README.md`](docs/architecture/README.md), [`docs/architecture/graph-context-engine.md`](docs/architecture/graph-context-engine.md) |
+| migration seams, transition thesis, or future interface families | [`docs/architecture/zero-to-graphclaw-transition.md`](docs/architecture/zero-to-graphclaw-transition.md), [`docs/architecture/future-integration-seams.md`](docs/architecture/future-integration-seams.md) |
+| view, set, artifact, or turn-logic semantics | [`docs/architecture/views-and-sets.md`](docs/architecture/views-and-sets.md), [`docs/architecture/context-artifacts.md`](docs/architecture/context-artifacts.md), [`docs/architecture/turn-runtime-logic.md`](docs/architecture/turn-runtime-logic.md) |
 | backend mapping or Memgraph constraints | [`docs/backends/README.md`](docs/backends/README.md), [`docs/backends/memgraph.md`](docs/backends/memgraph.md) |
 | Rust runtime behavior | [`src/CONTEXT.md`](src/CONTEXT.md) |
 | workspace crates | [`crates/CONTEXT.md`](crates/CONTEXT.md) |
@@ -117,6 +122,21 @@ The intended order is:
 6. Naming migration: rename inherited `zeroclaw` surfaces only when the underlying runtime boundaries are stable enough that the rename reflects real architecture rather than wishful branding.
 
 The current repository should be read as being between steps 1 and 2: documentation and navigation are being hardened first so later runtime changes can happen deliberately.
+
+## Migration By Seams
+
+The main migration claim is not "the engine already exists." It is that some current runtime processes should be prepared to branch behind cleaner conceptual boundaries.
+
+The main process families to document this way are:
+
+- context creation for a turn;
+- memory loading and recall as one input into context selection;
+- `View` resolution and `GraphSet` manipulation;
+- budget estimation for packable candidates and final context;
+- final `ContextPack` assembly;
+- trace and mutation persistence where those artifacts become explicit.
+
+The intended end state is coexistence through interfaces: the inherited pipeline and a future Graph Context Engine should be able to sit behind the same high-level boundary for a transition period.
 
 ## Working Rules
 

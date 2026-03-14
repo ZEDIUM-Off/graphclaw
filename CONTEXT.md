@@ -23,6 +23,11 @@ At the root level, documentation is expected to fix meaning before it fixes impl
 - `README.md` - canonical GraphClaw root README
 - `AGENTS.md` - repo-wide agent contract
 - `docs/architecture/graph-context-engine.md` - conceptual architecture reference
+- `docs/architecture/zero-to-graphclaw-transition.md` - transition thesis and seam-first migration reference
+- `docs/architecture/views-and-sets.md` - operational semantics for views, sets, and packability
+- `docs/architecture/context-artifacts.md` - context artifact boundaries and budget layers
+- `docs/architecture/turn-runtime-logic.md` - logical turn phases and runtime mapping
+- `docs/architecture/future-integration-seams.md` - future interface families and likely runtime seams
 - `docs/architecture/glossary.md` - stable GraphClaw vocabulary
 - `docs/backends/memgraph.md` - Memgraph backend reference
 - `src/`, `docs/`, `tests/`, `web/`, `python/`, `firmware/` - main working areas
@@ -62,6 +67,8 @@ Use these routes:
 | --- | --- |
 | root documentation or repo framing | `README.md`, `AGENTS.md`, `CONTRIBUTING.md` |
 | Graph Context Engine concepts | `docs/architecture/README.md`, `docs/architecture/graph-context-engine.md` |
+| migration thesis, interface families, or future seams | `docs/architecture/zero-to-graphclaw-transition.md`, `docs/architecture/future-integration-seams.md` |
+| views, sets, artifacts, budget, or turn-logic semantics | `docs/architecture/views-and-sets.md`, `docs/architecture/context-artifacts.md`, `docs/architecture/turn-runtime-logic.md` |
 | backend integration framing | `docs/backends/README.md`, `docs/backends/memgraph.md` |
 | common local build/test/dev entrypoints | `Makefile`, `dev/CONTEXT.md`, `scripts/CONTEXT.md` |
 | documentation trees | `docs/README.md`, `docs/CONTEXT.md` |
@@ -90,10 +97,11 @@ The practical sequence is:
 
 1. clarify area boundaries and navigation through local `CONTEXT.md` files;
 2. isolate where turn context is assembled in the inherited runtime;
-3. introduce explicit runtime artifacts for context selection, packing, and traceability;
-4. add graph-facing interfaces behind stable Rust traits;
-5. migrate packaging, binding, and portable knowledge surfaces after those seams exist;
-6. rename inherited `zeroclaw` technical surfaces only when the implementation has truly crossed the boundary.
+3. document which runtime processes should become interfacable seams rather than remain implicit inherited flows;
+4. introduce explicit runtime artifacts for context selection, packing, and traceability;
+5. add graph-facing interfaces behind stable Rust traits;
+6. migrate packaging, binding, and portable knowledge surfaces after those seams exist;
+7. rename inherited `zeroclaw` technical surfaces only when the implementation has truly crossed the boundary.
 
 When a task touches migration design, read both this file and `docs/architecture/graph-context-engine.md`, then move to the nearest runtime-area `CONTEXT.md`.
 

@@ -16,6 +16,8 @@ Read the docs with the transition in mind:
 - repo-wide agent rules: [`../AGENTS.md`](../AGENTS.md)
 - root repository map: [`../CONTEXT.md`](../CONTEXT.md)
 - Graph Context Engine reference: [`architecture/README.md`](architecture/README.md)
+- transition thesis and future seams: [`architecture/zero-to-graphclaw-transition.md`](architecture/zero-to-graphclaw-transition.md), [`architecture/future-integration-seams.md`](architecture/future-integration-seams.md)
+- views, sets, artifacts, and turn logic: [`architecture/views-and-sets.md`](architecture/views-and-sets.md), [`architecture/context-artifacts.md`](architecture/context-artifacts.md), [`architecture/turn-runtime-logic.md`](architecture/turn-runtime-logic.md)
 - backend references: [`backends/README.md`](backends/README.md)
 - contributor workflow: [`../CONTRIBUTING.md`](../CONTRIBUTING.md)
 
@@ -26,6 +28,8 @@ Use this page to choose the right documentation branch before editing or relying
 | If you need... | Read |
 | --- | --- |
 | GraphClaw concepts, glossary, or target runtime framing | [`architecture/README.md`](architecture/README.md) |
+| transition seams or interface-oriented migration framing | [`architecture/zero-to-graphclaw-transition.md`](architecture/zero-to-graphclaw-transition.md), [`architecture/future-integration-seams.md`](architecture/future-integration-seams.md) |
+| operational semantics for views, sets, artifacts, budget, or turn logic | [`architecture/views-and-sets.md`](architecture/views-and-sets.md), [`architecture/context-artifacts.md`](architecture/context-artifacts.md), [`architecture/turn-runtime-logic.md`](architecture/turn-runtime-logic.md) |
 | backend reference mapping or Memgraph constraints | [`backends/README.md`](backends/README.md) |
 | contributor and review process | [`contributing/README.md`](contributing/README.md) |
 | setup and onboarding instructions | [`setup-guides/README.md`](setup-guides/README.md) |
@@ -39,6 +43,8 @@ Use this page to choose the right documentation branch before editing or relying
 ## Main Documentation Areas
 
 - conceptual architecture and glossary: [`architecture/README.md`](architecture/README.md)
+- transition, seams, and interface-oriented architecture references: [`architecture/zero-to-graphclaw-transition.md`](architecture/zero-to-graphclaw-transition.md), [`architecture/future-integration-seams.md`](architecture/future-integration-seams.md)
+- views, sets, artifacts, and turn-runtime logic: [`architecture/views-and-sets.md`](architecture/views-and-sets.md), [`architecture/context-artifacts.md`](architecture/context-artifacts.md), [`architecture/turn-runtime-logic.md`](architecture/turn-runtime-logic.md)
 - backend integration references: [`backends/README.md`](backends/README.md)
 - getting started and setup: [`setup-guides/README.md`](setup-guides/README.md)
 - CLI and API references: [`reference/README.md`](reference/README.md)
@@ -52,7 +58,7 @@ Use this page to choose the right documentation branch before editing or relying
 
 | Path | Purpose |
 | --- | --- |
-| `docs/architecture/` | stable GraphClaw concepts, glossary, and target runtime framing |
+| `docs/architecture/` | stable GraphClaw concepts, transition seams, artifact boundaries, and target runtime framing |
 | `docs/backends/` | backend integration references and coupling guidance |
 | `docs/contributing/` | contributor workflow, CI, review, and process references |
 | `docs/setup-guides/` | setup and getting-started material |

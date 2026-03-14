@@ -9,7 +9,7 @@ This subtree is where most future GraphClaw runtime seams will eventually land, 
 ## What Belongs Here
 
 - inherited runtime behavior and subsystem boundaries;
-- migration seams for future `SessionWindow`, `ContextPack`, `ResolutionTrace`, and graph-facing interfaces;
+- migration seams for future `SessionWindow`, `GraphSet`, packable-subgraph, `ContextPack`, `ResolutionTrace`, and graph-facing interfaces;
 - source-adjacent documentation that explains which subsystem owns which runtime concern.
 
 ## What Does Not Belong Here
@@ -36,6 +36,7 @@ This subtree is where most future GraphClaw runtime seams will eventually land, 
 - Memory backends and recall flow: `src/memory/`
 - Runtime sandbox or execution adapters: `src/runtime/` and `src/security/`
 - GraphClaw concept definitions: `docs/architecture/`
+- transition seams and interface families: `docs/architecture/zero-to-graphclaw-transition.md`, `docs/architecture/future-integration-seams.md`
 - backend integration framing: `docs/backends/`
 
 ## Current State
@@ -65,6 +66,8 @@ The likely migration seams inside `src/` are:
 5. gateway/session-facing orchestration in `src/gateway/`, `src/service/`, and related modules
 
 That means the first GraphClaw runtime work should usually add interfaces and explicit artifacts at those seams, not rename the tree or move everything into a new top-level module prematurely.
+
+The key documentation discipline is that these areas should often consume future interfaces rather than all define them locally. Keep the artifact meanings stable in `docs/architecture/`, then map likely consumers in source-adjacent docs.
 
 ## References
 

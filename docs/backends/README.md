@@ -6,6 +6,10 @@ Use it after reading the conceptual architecture docs. Backend pages should inhe
 
 ## Start Here
 
+- Graph Context Engine reference: [`../architecture/graph-context-engine.md`](../architecture/graph-context-engine.md)
+- transition framing and seams: [`../architecture/zero-to-graphclaw-transition.md`](../architecture/zero-to-graphclaw-transition.md)
+- views and sets semantics: [`../architecture/views-and-sets.md`](../architecture/views-and-sets.md)
+- context artifacts and budget layers: [`../architecture/context-artifacts.md`](../architecture/context-artifacts.md)
 - Memgraph backend reference: [`memgraph.md`](memgraph.md)
 
 ## Scope

@@ -41,6 +41,13 @@ This is still the inherited agent runtime path. It is one of the most likely fut
 
 The important documentary rule here is that the agent loop and the future context engine are adjacent concerns, not identical ones.
 
+Current process ownership in this subtree is roughly:
+
+- `prompt.rs`: provider-visible prompt construction;
+- `memory_loader.rs`: pre-inference memory hydration;
+- `loop_.rs`: turn orchestration and execution flow;
+- `dispatcher.rs`: dispatch and tool/provider result handling.
+
 ## Current Dependency Direction
 
 - Usually entered from `src/main.rs` command paths, channel routing in `src/channels/`, and gateway-driven runs in `src/gateway/`.
@@ -65,11 +72,24 @@ Do not document this folder as if GraphClaw already has a graph-native runtime p
 3. `src/agent/loop_.rs` is the seam for introducing explicit turn artifacts such as `SessionWindow`, `ContextPack`, and `ResolutionTrace` records without rewriting the whole loop at once.
 4. `src/agent/dispatcher.rs` is where tool-call planning and provider response handling may later consume a selected `ContextPack` and emit information that contributes to a `ResolutionTrace`, instead of only prompt text.
 
+Likely future artifacts consumed or emitted here include:
+
+- consumed: `View` decisions, candidate `GraphSet` results, packable-subgraph decisions, and final `ContextPack`;
+- emitted or forwarded: turn-scoped `ResolutionTrace` data and inputs to future `ContextMutationProposal` handling.
+
 Future GraphClaw framing in this subtree should preserve these distinctions:
 
 - `ThinkingContext` is not the same thing as provider-visible prompt text;
 - `ContextPack` is not the same thing as the whole turn loop;
 - the agent loop may consume a `ContextPack` and related `ResolutionTrace` information without owning all context-resolution policy itself.
+
+What should not slide into this subtree during migration:
+
+- canonical definitions of `View`, `GraphSet`, or packability;
+- the whole graph-backend model;
+- a habit of treating every reflective context step as merely more prompt assembly.
+
+This subtree should more often consume future context interfaces than define their full semantics.
 
 ## What Must Stay Stable During Migration
 

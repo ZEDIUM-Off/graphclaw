@@ -39,6 +39,13 @@ This is a high-leverage inherited boundary because execution behavior fans out i
 
 It should be documented as infrastructure for the runtime, not as the owner of context reasoning.
 
+Current process ownership in this subtree is roughly:
+
+- execution adapter selection;
+- filesystem and process capability exposure;
+- containerized or sandboxed execution behavior;
+- runtime storage-path and capability contracts consumed by higher layers.
+
 ## Current Dependency Direction
 
 - Consumed mainly by `src/tools/` and security-sensitive execution paths that need shell, filesystem, process, or storage behavior.
@@ -60,6 +67,15 @@ Do not portray these adapters as a finished GraphClaw execution graph. They are 
 1. `src/runtime/traits.rs` is the seam for any future context-engine runtime dependencies such as artifact storage, capability introspection, or graph-aware execution policies.
 2. `storage_path()` is a likely seam for future GraphClaw runtime artifacts, but that should happen by adding explicit artifact layers above the runtime, not by turning adapters into context engines.
 3. Adapter capability reporting is a likely seam for future context-packing policies that need to know whether a runtime can persist, execute, or maintain long-lived state.
+
+Likely future artifacts supported here include persisted traces, materialized helper subsets, or capability reports that higher-level context code consumes.
+
+Responsibilities that should not drift here:
+
+- canonical `View` semantics;
+- `GraphSet` manipulation rules;
+- final packing policy;
+- ownership of `ThinkingContext`.
 
 ## What Must Stay Stable During Migration
 

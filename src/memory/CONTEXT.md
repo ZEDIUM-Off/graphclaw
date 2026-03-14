@@ -42,6 +42,14 @@ This is one of the most important future seam areas for GraphClaw, but today it 
 
 The key documentation discipline here is to keep `memory`, `retrieval`, and `context resolution` separate. They may interact closely, but they are not interchangeable concepts.
 
+Current process ownership in this subtree is roughly:
+
+- backend selection and persistence plumbing;
+- embeddings and vector recall support;
+- chunking and derived retrieval units;
+- maintenance helpers such as snapshots and caches;
+- memory-facing CLI surfaces.
+
 ## Current Dependency Direction
 
 - Read by the agent loop through `src/agent/memory_loader.rs`, by gateway/webhook flows that persist message state, and by CLI-facing commands through `src/memory/cli.rs`.
@@ -67,7 +75,21 @@ Be precise: storage, recall, and future context resolution are related but not i
 4. `src/memory/chunker.rs` and category metadata are likely precursors to future graph nodes, evidence items, or packed context sections.
 5. `src/memory/snapshot.rs` and `response_cache.rs` should remain operational concerns, not become dumping grounds for context-engine logic.
 
+Likely future artifacts consumed or produced here include:
+
+- consumed: retrieval requests, graph-facing storage operations, and persistence commands for materialized helper artifacts;
+- produced: recall candidates, evidence items, summaries, or stored trace/materialization records that a context layer may later consume.
+
 If GraphClaw later introduces a graph-facing adapter boundary, this subtree should describe that as one source of context material, not as proof that memory and context have merged into one subsystem.
+
+Responsibilities that should not drift here:
+
+- final `View` governance;
+- packability policy;
+- complete `ThinkingContext` ownership;
+- final `ContextPack` policy semantics.
+
+This subtree should usually implement storage and retrieval interfaces that context creation consumes, rather than defining the full context model locally.
 
 ## What Must Stay Stable During Migration
 

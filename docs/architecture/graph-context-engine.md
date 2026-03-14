@@ -17,6 +17,8 @@ This reference exists to:
 - give maintainers and coding agents a shared model of where the project is moving;
 - make assumptions, invariants, and constraints reviewable before they become scattered implementation details.
 
+This document is the umbrella reference. Supporting documents under `docs/architecture/` break out the transition thesis, set semantics, artifact boundaries, turn logic, and future seams in more detail.
+
 ## Target Position
 
 GraphClaw is intended to become a `Graph Context Engine`.
@@ -27,6 +29,14 @@ That means:
 - the agent works against structured context objects rather than only receiving opaque text blobs;
 - views, sets, budgets, policies, mutations, and traces become first-class concepts;
 - reflection over context happens as a system phase before final response packing.
+
+That target should be read together with:
+
+- [`zero-to-graphclaw-transition.md`](zero-to-graphclaw-transition.md) for seam-first migration framing;
+- [`views-and-sets.md`](views-and-sets.md) for operational `View` and `GraphSet` semantics;
+- [`context-artifacts.md`](context-artifacts.md) for artifact boundaries and budget layers;
+- [`turn-runtime-logic.md`](turn-runtime-logic.md) for logical turn phases;
+- [`future-integration-seams.md`](future-integration-seams.md) for future interface families.
 
 ## Documentation Levels
 
@@ -59,6 +69,8 @@ A `View` must be documented in terms of:
 
 A `View` is not a screen, not a label, and not a synonym for an arbitrary query.
 
+The docs should distinguish between a maximum agent `View` and narrower composed or intermediate views derived inside that governed perimeter.
+
 ### `GraphSet`
 
 A `GraphSet` is a first-class logical set of node references, with explicit provenance, combination rules, and budget implications.
@@ -72,6 +84,14 @@ Each documented set should state:
 - policy constraints;
 - estimated cost shape;
 - role in final packing.
+
+`GraphSet` should be documented as a working object for navigation and selection, not merely as a pre-export list of nodes.
+
+GraphClaw should also distinguish:
+
+- lazy sets defined by rules or seeds;
+- materialized sets evaluated or persisted as explicit results;
+- the `GraphSet` itself from a later packable subgraph derived from it.
 
 ### `SessionWindow`
 
@@ -90,9 +110,13 @@ The `ThinkingContext` is the temporary reflection context used to explore, compa
 
 In the target model, this phase is mandatory. It should not be documented as a hidden chain-of-thought contract or as a merely optional skill.
 
+It is better described as a system phase than as a standard tool.
+
 ### `ContextPack`
 
 The `ContextPack` is the final budgeted context artifact retained for response generation after policy checks, ranking, degradation, summarization, and packing decisions.
+
+It is the model-visible result, not the whole exploration space.
 
 ### `ContextMutationProposal`
 
@@ -147,6 +171,8 @@ The documentation model should treat these as business operations before backend
 - replacement by summary;
 - projection into a packable subgraph.
 
+For the fuller operational treatment of lazy versus materialized sets, referenced content, and packability, see [`views-and-sets.md`](views-and-sets.md).
+
 The minimum meaning of the less obvious operators should stay fixed:
 
 - `bounded complement`: remove a set from an explicitly bounded working universe such as the current `View`, `SessionWindow`, or policy-limited candidate set. Never interpret it as "everything in the database except this set."
@@ -166,6 +192,12 @@ Every packable node or set should be described as having an estimated cost, with
 
 Without explicit cost, sets remain logical but not governable.
 
+The docs should distinguish between:
+
+- exploration cost inside `ThinkingContext`;
+- candidate cost for a packable subgraph;
+- final model-visible cost of the `ContextPack`.
+
 ## Logical Turn Pipeline
 
 The target runtime should be described as a logical sequence, even before the implementation is finalized:
@@ -180,6 +212,8 @@ The target runtime should be described as a logical sequence, even before the im
 8. pass the pack into response generation and any post-turn persistence flow.
 
 This is a runtime logic description, not a commitment to a specific class layout.
+
+For a more explicit mapping onto current runtime seams such as `src/agent/prompt.rs`, `memory_loader.rs`, `loop_.rs`, and `dispatcher.rs`, see [`turn-runtime-logic.md`](turn-runtime-logic.md).
 
 ## Project Invariants
 
@@ -207,6 +241,8 @@ This document therefore serves as:
 
 It does not claim that the current runtime already exposes a complete `SessionWindow`, `ThinkingContext`, `ContextPack`, or package protocol.
 
+The migration target is coexistence through cleaner boundaries: some future runtime processes should be able to branch either to inherited pipelines or to graph-native implementations behind explicit seams.
+
 ## Relationship To Backend References
 
 Backend documents must start from the GraphClaw concepts defined here and only then map them to required capability families and concrete backend mechanisms.
@@ -218,3 +254,12 @@ The correct direction is:
 3. backend-specific mechanisms
 
 Never reverse that order and let a backend procedure catalog define the GraphClaw architecture.
+
+## Companion References
+
+- [`zero-to-graphclaw-transition.md`](zero-to-graphclaw-transition.md)
+- [`views-and-sets.md`](views-and-sets.md)
+- [`context-artifacts.md`](context-artifacts.md)
+- [`turn-runtime-logic.md`](turn-runtime-logic.md)
+- [`future-integration-seams.md`](future-integration-seams.md)
+- [`glossary.md`](glossary.md)

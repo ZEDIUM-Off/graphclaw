@@ -21,7 +21,7 @@ This subtree is the primary human-facing documentation surface for GraphClaw. It
 ## File Map
 
 - `README.md` - primary docs entrypoint and navigation hub
-- `architecture/` - stable GraphClaw concepts, glossary, and target runtime framing
+- `architecture/` - stable GraphClaw concepts, transition seams, artifact boundaries, and target runtime framing
 - `backends/` - backend integration references and coupling guidance
 - `contributing/` - contributor process, CI, review, release, and docs workflow material
 - `hardware/` - board, peripheral, and device setup/design notes
@@ -37,6 +37,7 @@ This subtree is the primary human-facing documentation surface for GraphClaw. It
 
 - contributor workflow or review policy changes belong in `docs/contributing/`
 - concept-model and glossary work belong in `docs/architecture/`
+- transition-thesis, views-and-sets, context-artifact, and future-seam references belong in `docs/architecture/`
 - backend capability mapping belongs in `docs/backends/`
 - operator runbooks and runtime troubleshooting belong in `docs/ops/`
 - exact command, config, or interface references belong in `docs/reference/`
@@ -49,6 +50,10 @@ This subtree is the primary human-facing documentation surface for GraphClaw. It
 - `CONTEXT.md` - repo-wide migration and documentation truthfulness baseline
 - `README.md` - canonical docs landing page
 - `docs/architecture/graph-context-engine.md` - target concept model
+- `docs/architecture/zero-to-graphclaw-transition.md` - seam-first migration framing
+- `docs/architecture/views-and-sets.md` - `View`, `GraphSet`, and packability semantics
+- `docs/architecture/context-artifacts.md` - context artifact distinctions
+- `docs/architecture/future-integration-seams.md` - future interface-family framing
 - `docs/backends/memgraph.md` - Memgraph backend reference
 - `docs/maintainers/repo-map.md` - repository navigation support for maintainers
 - `docs/maintainers/docs-inventory.md` - documentation inventory snapshot
