@@ -12,6 +12,14 @@ Python-side validation for the companion package.
 
 Tests in this directory exercise `python/zeroclaw_tools/` without owning package logic themselves.
 
+## Coverage Map
+
+```mermaid
+flowchart LR
+    Tests[test_tools.py] --> Package[python/zeroclaw_tools/]
+    Package --> Tools[tools/]
+```
+
 ## Current State
 
 Coverage is intentionally small and focused on the inherited Python tool surface.

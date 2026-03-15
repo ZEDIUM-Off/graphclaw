@@ -23,6 +23,20 @@
 
 This is inherited operational infrastructure that sits near gateway and deployment behavior.
 
+## Interaction Sketch
+
+Current responsibilities and main neighboring modules:
+
+```mermaid
+flowchart LR
+    Config[config] --> Tunnel[tunnel selection]
+    Tunnel --> Gateway[gateway exposure]
+    Tunnel --> Cloudflare[cloudflare]
+    Tunnel --> Ngrok[ngrok]
+    Tunnel --> Tailscale[tailscale]
+    Tunnel --> Custom[custom or none]
+```
+
 ## GraphClaw Evolution Note
 
 Do not present tunnels as part of an already-built graph-native runtime layer. They remain conventional provider integrations for exposing services.

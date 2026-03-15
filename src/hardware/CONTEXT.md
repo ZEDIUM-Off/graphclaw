@@ -21,6 +21,19 @@
 
 This is inherited hardware support used to bridge the software runtime to physical boards and developer devices.
 
+## Interaction Sketch
+
+Current responsibilities and main neighboring modules:
+
+```mermaid
+flowchart LR
+    CLI[cli and runtime] --> Hardware[hardware discovery]
+    Hardware --> Discover[device discovery]
+    Hardware --> Registry[board registry]
+    Hardware --> Introspect[board introspection]
+    Hardware --> Peripherals[peripherals]
+```
+
 ## GraphClaw Evolution Note
 
 GraphClaw may eventually attach richer context to hardware state, but this folder is currently about discovery and identification, not graph-native modeling.

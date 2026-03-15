@@ -32,6 +32,16 @@ This subtree documents how to operate, troubleshoot, and deploy the current runt
 - service-specific installation guides belong in `docs/setup-guides/`
 - security posture and hardening details belong in `docs/security/`
 
+## Interaction Map
+
+```mermaid
+flowchart TD
+    Operators[Operators] --> Runbook[operations runbook]
+    Operators --> Troubleshooting[troubleshooting]
+    Operators --> Limits[resource limits]
+    Operators --> Network[network and proxy playbooks]
+```
+
 ## References
 
 - `docs/CONTEXT.md` - docs-tree framing

@@ -15,6 +15,15 @@ Human-run validation scripts and notes for flows that are awkward, expensive, or
 
 This subtree is procedure-oriented: markdown explains the flow, shell scripts execute steps, and small helper scripts prepare inputs.
 
+## Procedure Map
+
+```mermaid
+flowchart LR
+    Notes[markdown notes] --> Scripts[shell procedures]
+    Helpers[small helper scripts] --> Scripts
+    Scripts --> Human[human-run validation]
+```
+
 ## Current State
 
 Manual coverage here supports inherited operational surfaces and messaging flows. It complements, but does not replace, automated tests.

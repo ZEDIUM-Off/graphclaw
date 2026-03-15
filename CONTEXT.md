@@ -25,9 +25,16 @@ At the root level, documentation is expected to fix meaning before it fixes impl
 - `docs/architecture/graph-context-engine.md` - conceptual architecture reference
 - `docs/architecture/zero-to-graphclaw-transition.md` - transition thesis and seam-first migration reference
 - `docs/architecture/views-and-sets.md` - operational semantics for views, sets, and packability
-- `docs/architecture/context-artifacts.md` - context artifact boundaries and budget layers
-- `docs/architecture/turn-runtime-logic.md` - logical turn phases and runtime mapping
-- `docs/architecture/future-integration-seams.md` - future interface families and likely runtime seams
+- `docs/architecture/context-artifacts.md` - context artifact boundaries, explicit planning artifacts, and budget layers
+- `docs/architecture/turn-runtime-logic.md` - logical turn phases, strategy resolution, and runtime mapping
+- `docs/architecture/future-integration-seams.md` - future interface families, strategy seams, and orchestration hooks
+- `docs/architecture/session-window-interface.md` - interface fiche for governed visible-context runtime state
+- `docs/architecture/context-pack-interface.md` - interface fiche for final model-visible packed context
+- `docs/architecture/strategy-resolver-interface.md` - interface fiche for explicit turn-time strategy selection
+- `docs/architecture/graph-context-store-and-retriever-interface.md` - interface fiche for graph-aware and memory-aware context supply seams
+- `docs/architecture/mutation-guard-interface.md` - interface fiche for validating visible-context edits before state changes
+- `docs/architecture/orchestration-policies-interface.md` - interface fiche for routing, spawn, bounded sub-agent runtime, aggregation, and hooks
+- `docs/architecture/hook-bus-interface.md` - interface fiche for lifecycle-event publication and observability seams
 - `docs/architecture/glossary.md` - stable GraphClaw vocabulary
 - `docs/backends/memgraph.md` - Memgraph backend reference
 - `src/`, `docs/`, `tests/`, `web/`, `python/`, `firmware/` - main working areas
@@ -53,6 +60,24 @@ Do not interpret target-architecture references as proof of implementation. The 
 | `src/`, `crates/`, `web/`, `python/`, `firmware/`, `tests/` | primary implementation surfaces |
 | `scripts/`, `dev/`, `.github/` | automation, CI, and repository maintenance surfaces |
 
+## Routing Diagram
+
+```mermaid
+flowchart LR
+    Root[Root context]
+    Framing[README and AGENTS]
+    Docs[Docs subtree]
+    Runtime[Source and test subtrees]
+    Ops[Scripts and CI]
+
+    Root --> Framing
+    Root --> Docs
+    Root --> Runtime
+    Root --> Ops
+    Docs --> Runtime
+    Ops --> Runtime
+```
+
 ## Task Routing
 
 Start at the root, then move inward:
@@ -66,9 +91,9 @@ Use these routes:
 | Task | Read next |
 | --- | --- |
 | root documentation or repo framing | `README.md`, `AGENTS.md`, `CONTRIBUTING.md` |
-| Graph Context Engine concepts | `docs/architecture/README.md`, `docs/architecture/graph-context-engine.md` |
-| migration thesis, interface families, or future seams | `docs/architecture/zero-to-graphclaw-transition.md`, `docs/architecture/future-integration-seams.md` |
-| views, sets, artifacts, budget, or turn-logic semantics | `docs/architecture/views-and-sets.md`, `docs/architecture/context-artifacts.md`, `docs/architecture/turn-runtime-logic.md` |
+| Graph Context Engine concepts, strategy families, explicit planning artifacts, or first-seam interface fiches | `docs/architecture/README.md`, `docs/architecture/graph-context-engine.md`, `docs/architecture/context-artifacts.md`, `docs/architecture/session-window-interface.md`, `docs/architecture/context-pack-interface.md`, `docs/architecture/strategy-resolver-interface.md`, `docs/architecture/graph-context-store-and-retriever-interface.md`, `docs/architecture/mutation-guard-interface.md`, `docs/architecture/orchestration-policies-interface.md`, `docs/architecture/hook-bus-interface.md` |
+| migration thesis, strategy/interface families, or future seams | `docs/architecture/zero-to-graphclaw-transition.md`, `docs/architecture/future-integration-seams.md` |
+| views, sets, artifacts, strategy resolution, budget, or turn-logic semantics | `docs/architecture/views-and-sets.md`, `docs/architecture/context-artifacts.md`, `docs/architecture/turn-runtime-logic.md` |
 | backend integration framing | `docs/backends/README.md`, `docs/backends/memgraph.md` |
 | common local build/test/dev entrypoints | `Makefile`, `dev/CONTEXT.md`, `scripts/CONTEXT.md` |
 | documentation trees | `docs/README.md`, `docs/CONTEXT.md` |
@@ -98,8 +123,8 @@ The practical sequence is:
 1. clarify area boundaries and navigation through local `CONTEXT.md` files;
 2. isolate where turn context is assembled in the inherited runtime;
 3. document which runtime processes should become interfacable seams rather than remain implicit inherited flows;
-4. introduce explicit runtime artifacts for context selection, packing, and traceability;
-5. add graph-facing interfaces behind stable Rust traits;
+4. introduce explicit runtime artifacts for task intent, strategy resolution, context selection, packing, orchestration, and traceability;
+5. add graph-facing and strategy-facing interfaces behind stable Rust traits and bounded runtime contracts;
 6. migrate packaging, binding, and portable knowledge surfaces after those seams exist;
 7. rename inherited `zeroclaw` technical surfaces only when the implementation has truly crossed the boundary.
 

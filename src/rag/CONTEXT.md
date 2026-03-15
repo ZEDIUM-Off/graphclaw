@@ -38,6 +38,17 @@ If it grows, the documentation should explain why that growth belongs here inste
 - turn orchestration belongs in `src/agent/`
 - stable GraphClaw concept framing belongs in `docs/architecture/`
 
+## Interaction Sketch
+
+Current responsibilities and main neighboring modules:
+
+```mermaid
+flowchart LR
+    Agent[agent] --> RAG[rag entrypoints]
+    RAG --> Memory[memory retrieval]
+    RAG --> Runtime[thin runtime glue]
+```
+
 ## GraphClaw Evolution Note
 
 Do not claim a graph-native retrieval layer already exists here. If this area grows, describe the seam precisely.

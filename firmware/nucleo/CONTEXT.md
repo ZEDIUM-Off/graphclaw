@@ -13,6 +13,13 @@ Rust firmware for the Nucleo board target.
 
 This subtree is a small Cargo-driven firmware crate that routes directly into `src/main.rs`.
 
+```mermaid
+flowchart LR
+    Firmware[firmware/] --> Cargo[Cargo crate]
+    Cargo --> Main[src/main.rs]
+    Main --> Board[Nucleo board]
+```
+
 ## Current State
 
 The area is compact but tightly coupled to real hardware behavior and flashing workflows.

@@ -26,6 +26,19 @@
 
 This is inherited runtime-to-device plumbing for supported hardware boards and their capabilities.
 
+## Interaction Sketch
+
+Current responsibilities and main neighboring modules:
+
+```mermaid
+flowchart LR
+    CLI[cli and tools] --> Peripherals[peripheral management]
+    Hardware[hardware metadata] --> Peripherals
+    Peripherals --> Serial[serial transport]
+    Peripherals --> Flash[flashing and upload flows]
+    Peripherals --> Capabilities[capability helpers]
+```
+
 ## GraphClaw Evolution Note
 
 Do not present peripherals as already being modeled as a graph-native hardware layer. The current code is concrete device integration and transport management.

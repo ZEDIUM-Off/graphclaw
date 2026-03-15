@@ -29,6 +29,16 @@ This subtree feeds types outward into `lib/`, `hooks/`, and page components. It 
 - if a label is conceptual rather than contractual, document it in `docs/architecture/` instead of inventing an API type
 - if a type is page-local, keep it local instead of promoting it here
 
+## Contract Flow
+
+```mermaid
+flowchart LR
+    Gateway[src/gateway contracts] --> Types[types/api.ts]
+    Types --> Lib[web/src/lib/]
+    Types --> Hooks[web/src/hooks/]
+    Types --> Pages[web/src/pages/]
+```
+
 ## Current State
 
 The type surface is small and tracks the inherited gateway API rather than a GraphClaw-native contract layer.

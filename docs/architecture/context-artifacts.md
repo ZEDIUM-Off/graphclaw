@@ -24,14 +24,48 @@ Without that separation, context creation remains implicit and difficult to inte
 
 The conceptual chain should be documented as:
 
-1. one or more `GraphSet` objects are built or refined inside a `View`;
-2. `ThinkingContext` uses those sets to explore, compare, and arbitrate;
-3. a packable subgraph is derived from the candidate working sets;
-4. the final `ContextPack` is budgeted and assembled;
-5. `ResolutionTrace` records how the result was chosen;
-6. `ContextMutationProposal` can request changes to what remains visible or packable for later turns.
+1. `TaskIntent` frames the minimum structured task;
+2. `StrategyResolution` selects the governing strategies for the turn;
+3. one or more `GraphSet` objects are built or refined inside a `View`;
+4. `ThinkingContext` uses those sets and plans to explore, compare, and arbitrate;
+5. a packable subgraph is derived from the candidate working sets;
+6. the final `ContextPack` is budgeted and assembled;
+7. `ResolutionTrace` records how the result was chosen;
+8. `ContextMutationProposal` can request changes to what remains visible or packable for later turns.
 
 These artifacts are adjacent, but they are not synonyms.
+
+## Artifact Flow Diagram
+
+This is a target-architecture artifact map. It clarifies conceptual flow, not the current code path of the inherited runtime.
+
+```mermaid
+flowchart LR
+    I[TaskIntent]
+    S[StrategyResolution]
+    V[View]
+    G[GraphSet]
+    T[ThinkingContext]
+    P[Packable subgraph]
+    C[ContextPack]
+    R[ResolutionTrace]
+    M[ContextMutationProposal]
+    N[Navigation cost]
+    B[Packable subgraph cost]
+    F[Final context cost]
+
+    I --> S
+    S --> V
+    S --> T
+    V --> G --> T --> P --> C
+    T --> R
+    C --> R
+    M -. proposes changes for later selection .-> V
+    M -. proposes changes for later selection .-> G
+    N -. constrains exploration .-> T
+    B -. constrains candidate projection .-> P
+    F -. constrains model-visible result .-> C
+```
 
 ## `GraphSet`
 
@@ -40,6 +74,21 @@ A `GraphSet` is the reusable logical working set. It is useful for navigation, f
 It can exist before anything is ready for model injection.
 
 For deeper set semantics, see [`views-and-sets.md`](views-and-sets.md).
+
+## Planning Artifacts
+
+GraphClaw should distinguish context artifacts from the planning artifacts that govern them.
+
+The most important planning-side artifacts are:
+
+- `TaskIntent`: the minimum structured interpretation of the task;
+- `StrategyResolution`: the selected coherent strategy set for the turn;
+- `ReflectionPlan`: the explicit reasoning plan;
+- `ExplorationPlan`: the explicit graph-navigation plan;
+- `ContextEditPlan`: the explicit plan of requested context changes;
+- `OrchestrationPlan`: the explicit delegation and aggregation plan when the turn is not purely single-agent.
+
+These planning artifacts do not replace `ThinkingContext`, `ContextPack`, or `ResolutionTrace`. They make the path toward those artifacts more legible and governable.
 
 ## `ThinkingContext`
 

@@ -20,6 +20,18 @@
 
 This folder is about runtime behavior around installed skills. Repository agent instructions and authoring docs live elsewhere.
 
+## Interaction Sketch
+
+Current responsibilities and main neighboring modules:
+
+```mermaid
+flowchart LR
+    CLI[skill commands] --> Skills[installed skill handling]
+    Skills --> Audit[skill audit]
+    Skills --> Filesystem[install and symlink safety]
+    Skills --> Runtime[runtime-visible skills]
+```
+
 ## GraphClaw Evolution Note
 
 Do not blur runtime skill support with future GraphClaw capability graphs. Current behavior is still the inherited install/audit path.

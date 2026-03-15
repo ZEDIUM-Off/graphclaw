@@ -60,6 +60,72 @@ A structured proposal to change the visible or packable context, for example by 
 
 The explicit record of context-resolution decisions such as selection, rejection, degradation, summarization, and final packing.
 
+### `TaskIntent`
+
+The minimum structured interpretation of a task before deeper planning or execution, including goal, scope, ambiguity, risk, and likely delegation needs.
+
+### `StrategyResolution`
+
+The explicit result of choosing a coherent set of strategies for reflection, exploration, packing, and orchestration under current constraints.
+
+### `ReflectionPlan`
+
+An explicit reasoning plan derived from the selected reflection strategy, including phases, stop rules, budget, and verification expectations.
+
+### `ExplorationPlan`
+
+An explicit graph-navigation plan derived from the selected exploration strategy, including seeds, allowed operations, limits, and stop policy.
+
+### `ContextEditPlan`
+
+An explicit plan of requested changes to visible or packable context, such as add, remove, pin, expand, collapse, or replace-with-summary operations.
+
+### `MutationGuard`
+
+The validation boundary that accepts, rejects, or degrades requested context edits before they become authoritative `SessionWindow` state.
+
+### `OrchestrationPlan`
+
+An explicit plan for routing, decomposition, sub-agent execution, synchronization, and aggregation during a turn.
+
+## Strategy Terms
+
+### `ReflectionStrategyDefinition`
+
+A declarative definition of how explicit reflection should be structured for a class of task.
+
+### `ExplorationStrategyDefinition`
+
+A declarative definition of how graph exploration should proceed during reflection, including seeds, operations, depth, width, scoring, and degradation.
+
+### `PackingStrategyDefinition`
+
+A declarative definition of how exploratory results and visible context should be transformed into a `SessionWindow` contribution or final `ContextPack`.
+
+### `OrchestrationStrategyDefinition`
+
+A declarative definition of how work may remain local, be routed, be decomposed, and be recombined across one or more agent runtimes.
+
+### `RoutingPolicy`
+
+A policy definition that chooses the initial execution owner for a task under topology, capability, policy, and budget constraints.
+
+### `SpawnPolicy`
+
+A policy definition that decides whether work is decomposed and how delegated assignments are formed.
+
+### `SubAgentRuntimePolicy`
+
+A policy definition that bounds delegated execution through restricted context, view, capability, and budget constraints.
+
+### `AggregationPolicy`
+
+A policy definition that defines how multiple delegated execution results are recombined into a turn-level outcome.
+
+### `HookBus`
+
+A bounded lifecycle-event seam for surfacing orchestration, packing, degradation, and related runtime events to observability or transport consumers without owning the corresponding business policy.
+
 ## Agent Packaging Terms
 
 ### `AgentPackage`
@@ -83,6 +149,7 @@ Local attachments to providers, tools, stores, or environment-specific capabilit
 The Graph Context Engine and the agent packaging model are adjacent but distinct layers:
 
 - the Graph Context Engine governs views, sets, windows, reflection, mutations, and final packing for a turn;
+- the Graph Context Engine also governs turn-time strategy resolution for reflection, exploration, packing, and orchestration;
 - the packaging model governs how portable agent behavior, dependencies, and bindings are declared, installed, and instantiated.
 
 Packaging may depend on graph-native concepts, but it should not be confused with the context engine itself.
@@ -91,7 +158,9 @@ Packaging may depend on graph-native concepts, but it should not be confused wit
 
 - memory is not the same thing as context
 - the graph backend is not the same thing as the Graph Context Engine
+- the Graph Context Engine is not only a retriever or memory wrapper
 - a `View` is not an arbitrary query alias
 - a `GraphSet` is not just a bag of prompt fragments
 - a `GraphSet` is not the same thing as a packable subgraph
 - a `ContextPack` is distinct from the `ThinkingContext` used to decide it
+- a strategy definition is not the same thing as a runtime execution trace

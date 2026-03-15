@@ -25,6 +25,24 @@ This subtree holds Vietnamese localized documentation within the `docs/i18n/` st
 - `security-roadmap.md`, `sandboxing.md`, `audit-logging.md` - localized security pages
 - `contributing/`, `reference/`, `security/`, `hardware/`, `operations/`, `project/`, `getting-started/` - localized sectional entrypoints
 
+## Routing Diagram
+
+```mermaid
+flowchart LR
+    VI[Vietnamese i18n docs]
+    Navigation[README and SUMMARY]
+    Reference[Localized reference pages]
+    Ops[Localized ops and setup]
+    Security[Localized security pages]
+    English[English source docs]
+
+    English --> VI
+    VI --> Navigation
+    VI --> Reference
+    VI --> Ops
+    VI --> Security
+```
+
 ## Routing
 
 - translation edits specific to Vietnamese in the `i18n` structure belong here

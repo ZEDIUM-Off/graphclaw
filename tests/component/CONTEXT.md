@@ -35,6 +35,21 @@ This subtree owns the fastest validation layer for precise runtime contracts. It
 - escalate to `tests/integration/` only when a real boundary between modules must be exercised
 - use docs validation instead of product tests for documentation-only work
 
+## Interaction Map
+
+```mermaid
+flowchart LR
+    Entry[test_component.rs] --> Router[mod.rs]
+    Router --> Config[config and schema cases]
+    Router --> Security[security cases]
+    Router --> Providers[provider cases]
+    Router --> Gateway[gateway regressions]
+    Config --> Runtime[src/ contracts]
+    Security --> Runtime
+    Providers --> Runtime
+    Gateway --> Runtime
+```
+
 ## Current State
 
 This directory is a regression net around inherited runtime details. Several files are intentionally named after past bugs or edge cases rather than broad features.

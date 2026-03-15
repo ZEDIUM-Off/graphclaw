@@ -34,6 +34,16 @@ This subtree owns the inherited Python package surface. It is maintained for com
 - Python tool behavior belongs in `tools/`
 - repo-wide GraphClaw concept framing belongs in `docs/architecture/`
 
+## Interaction Map
+
+```mermaid
+flowchart LR
+    Package[pyproject.toml] --> Entry[__main__.py]
+    Entry --> Agent[agent.py]
+    Agent --> Integrations[integrations/]
+    Agent --> Tools[tools/]
+```
+
 ## Current State
 
 This package is still the inherited Python surface and intentionally keeps the `zeroclaw_tools` name for compatibility.

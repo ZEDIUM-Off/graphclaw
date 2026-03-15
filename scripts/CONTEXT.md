@@ -9,6 +9,23 @@ Operational helper scripts for validation and release support.
 - `ci/` - validation and reporting gates
 - `release/` - release-tag support
 
+## Routing Diagram
+
+```mermaid
+flowchart LR
+    Scripts[Scripts context]
+    CI[CI scripts]
+    Release[Release scripts]
+    Docs[Docs validation]
+    Repo[Repo workflows]
+
+    Scripts --> CI
+    Scripts --> Release
+    CI --> Docs
+    CI --> Repo
+    Release --> Repo
+```
+
 ## Routing
 
 Top-level script organization is by workflow: CI-related entrypoints live in `ci/`, release flow lives in `release/`, and callers should treat those subtrees as the source of truth for automation behavior.

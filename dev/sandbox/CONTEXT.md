@@ -12,6 +12,15 @@ Container definition for the local sandboxed user environment.
 
 Local sandbox workflows depend on this Dockerfile to create a predictable user-like environment for agent/runtime testing.
 
+## Sandbox Route
+
+```mermaid
+flowchart LR
+    Tests[agent and runtime testing] --> Workflow[local sandbox workflow]
+    Workflow --> Image[dev/sandbox/Dockerfile]
+    Image --> Environment[predictable sandbox environment]
+```
+
 ## Current State
 
 This directory is infrastructure for testing behavior safely, not a product feature area.

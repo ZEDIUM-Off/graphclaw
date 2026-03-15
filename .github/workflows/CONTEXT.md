@@ -30,6 +30,20 @@ This directory contains the runnable GitHub Actions workflow entry files and a s
 - contributor-facing explanation of CI policy belongs primarily in `docs/contributing/`
 - shared script behavior should live outside this directory and be referenced from workflows
 
+## Interaction Map
+
+```mermaid
+flowchart TD
+    Events[PR push and manual triggers] --> Checks[checks-on-pr.yml]
+    Events --> Build[cross-platform-build-manual.yml]
+    Events --> Beta[release-beta-on-push.yml]
+    Events --> Stable[release-stable-manual.yml]
+    Checks --> Scripts[scripts/ci]
+    Build --> Scripts
+    Beta --> Scripts
+    Stable --> Scripts
+```
+
 ## References
 
 - `.github/CONTEXT.md` - GitHub subtree boundary

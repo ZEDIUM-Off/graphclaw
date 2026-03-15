@@ -1,0 +1,112 @@
+{
+  "nodes": [
+    {
+      "id": "n0",
+      "position": { "x": -620, "y": -70 },
+      "caption": "ExplorationPlan",
+      "labels": ["ExplorationPlan"],
+      "properties": {
+        "file_origin": "future exploration planner",
+        "role": "Bounded graph-navigation plan"
+      },
+      "style": {}
+    },
+    {
+      "id": "n1",
+      "position": { "x": -260, "y": -190 },
+      "caption": "ViewDefinition",
+      "labels": ["ViewDefinition"],
+      "properties": {
+        "file_origin": "agent package + context engine",
+        "role": "Governs allowed labels, relations, and budgets"
+      },
+      "style": {}
+    },
+    {
+      "id": "n2",
+      "position": { "x": -260, "y": 60 },
+      "caption": "Graph Concepts",
+      "labels": ["Concept"],
+      "properties": {
+        "file_origin": "graph database",
+        "role": "Semantic nodes explored during bounded reasoning"
+      },
+      "style": {}
+    },
+    {
+      "id": "n3",
+      "position": { "x": 80, "y": -70 },
+      "caption": "ContextEditPlan",
+      "labels": ["ContextEditPlan"],
+      "properties": {
+        "file_origin": "future context-mutation protocol",
+        "role": "Structured requests for add, remove, pin, and replace operations"
+      },
+      "style": {}
+    },
+    {
+      "id": "n4",
+      "position": { "x": 430, "y": -70 },
+      "caption": "MutationProposal",
+      "labels": ["MutationProposal"],
+      "properties": {
+        "file_origin": "future traceable runtime object",
+        "role": "Elementary mutation submitted to the engine"
+      },
+      "style": {}
+    },
+    {
+      "id": "n5",
+      "position": { "x": 760, "y": -70 },
+      "caption": "SessionWindow",
+      "labels": ["SessionWindow"],
+      "properties": {
+        "file_origin": "future runtime object",
+        "role": "Target of validated mutations"
+      },
+      "style": {}
+    }
+  ],
+  "relationships": [
+    {
+      "id": "r0",
+      "type": "PLAN_USES_STRATEGY",
+      "style": {},
+      "properties": {},
+      "fromId": "n0",
+      "toId": "n1"
+    },
+    {
+      "id": "r1",
+      "type": "RELATED_TO",
+      "style": {},
+      "properties": {},
+      "fromId": "n0",
+      "toId": "n2"
+    },
+    {
+      "id": "r2",
+      "type": "PLAN_REQUESTS_CONTEXT_EDIT",
+      "style": {},
+      "properties": {},
+      "fromId": "n3",
+      "toId": "n4"
+    },
+    {
+      "id": "r3",
+      "type": "MUTATION_TARGETS",
+      "style": {},
+      "properties": {},
+      "fromId": "n4",
+      "toId": "n5"
+    },
+    {
+      "id": "r4",
+      "type": "SESSION_WINDOW_CONTAINS",
+      "style": {},
+      "properties": {},
+      "fromId": "n5",
+      "toId": "n2"
+    }
+  ]
+}

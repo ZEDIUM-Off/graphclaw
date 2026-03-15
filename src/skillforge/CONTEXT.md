@@ -21,6 +21,19 @@
 
 This is an inherited experimentation and capability-support surface adjacent to the agent runtime, not the central execution loop itself.
 
+## Interaction Sketch
+
+Current responsibilities and main neighboring modules:
+
+```mermaid
+flowchart LR
+    Skills[installed skills] --> Skillforge[skillforge support]
+    Skillforge --> Evaluate[evaluate]
+    Skillforge --> Scout[scout]
+    Skillforge --> Integrate[integrate]
+    Skillforge --> Agent[agent runtime]
+```
+
 ## GraphClaw Evolution Note
 
 Do not present this folder as if it already implements a full GraphClaw skill graph. It remains a targeted runtime support area.

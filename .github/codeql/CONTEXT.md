@@ -24,6 +24,15 @@ This directory contains GitHub CodeQL scanning configuration. It exists to defin
 - broader security posture documentation belongs in `docs/security/`
 - workflow execution details belong in `.github/workflows/`
 
+## Scan Scope Flow
+
+```mermaid
+flowchart LR
+    Repo[Repository paths] --> Config[codeql-config.yml]
+    Config --> Scan[GitHub CodeQL scan]
+    Scan --> Findings[Security findings]
+```
+
 ## References
 
 - `.github/CONTEXT.md` - GitHub subtree boundary

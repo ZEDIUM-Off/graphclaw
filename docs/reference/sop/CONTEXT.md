@@ -24,6 +24,24 @@ This subtree documents the current SOP subsystem: its syntax, connectivity and o
 - `connectivity.md` - connectivity-related subsystem notes
 - `observability.md` - visibility and observability notes
 
+## Routing Diagram
+
+```mermaid
+flowchart LR
+    SOP[SOP reference docs]
+    Syntax[Syntax rules]
+    Cookbook[Examples]
+    Connectivity[Connectivity notes]
+    Observability[Observability notes]
+    Source[SOP source boundary]
+
+    SOP --> Syntax
+    SOP --> Cookbook
+    SOP --> Connectivity
+    SOP --> Observability
+    Source --> SOP
+```
+
 ## Routing
 
 - SOP syntax and behavior belong here

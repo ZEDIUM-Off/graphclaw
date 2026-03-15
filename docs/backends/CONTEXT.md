@@ -21,6 +21,22 @@ This subtree documents how concrete backends support, constrain, or degrade the 
 - `README.md` - entrypoint for backend references
 - `memgraph.md` - reference mapping for the Memgraph backend
 
+## Routing Diagram
+
+```mermaid
+flowchart LR
+    Backends[Backends docs]
+    Concepts[Architecture concepts]
+    Mapping[Capability mapping]
+    Memgraph[Memgraph reference]
+    Runtime[Runtime boundaries]
+
+    Concepts --> Backends
+    Backends --> Mapping
+    Mapping --> Memgraph
+    Backends --> Runtime
+```
+
 ## Routing
 
 - backend capability mapping belongs here
@@ -43,6 +59,21 @@ The current repository does not yet expose a complete GraphClaw graph backend la
 ## GraphClaw Migration Relationship
 
 This subtree supports the first concrete backend axis of migration. It should help maintainers reason about capabilities, limits, and fallbacks before backend-facing code becomes a hard dependency.
+
+## Graph Engine Alignment
+
+In this subtree, `Graph Engine` means the GraphClaw governed context-resolution layer and its turn-time strategy resolution. It does not mean the graph database by itself, and it does not imply that the current runtime already exposes a complete standalone engine module.
+
+## Backend Reference Flow
+
+Use backend-reference pages in this sequence so backend procedure catalogs do not define GraphClaw semantics backward:
+
+```mermaid
+flowchart LR
+    Concept["GraphClaw concept"] --> Capability["Capability family"]
+    Capability --> Mechanism["Backend mechanism"]
+    Mechanism --> Adapter["Adapter or runtime use"]
+```
 
 ## Cautions
 

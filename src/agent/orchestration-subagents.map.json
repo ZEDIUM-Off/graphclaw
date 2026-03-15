@@ -1,0 +1,131 @@
+{
+  "nodes": [
+    {
+      "id": "n0",
+      "position": { "x": -650, "y": -50 },
+      "caption": "OrchestrationPlan",
+      "labels": ["OrchestrationPlan"],
+      "properties": {
+        "file_origin": "future orchestration core",
+        "role": "Global work-distribution plan"
+      },
+      "style": {}
+    },
+    {
+      "id": "n1",
+      "position": { "x": -300, "y": -180 },
+      "caption": "RoutingPolicy",
+      "labels": ["PolicyDefinition"],
+      "properties": {
+        "file_origin": "future routing interface",
+        "role": "Chooses the entry agent"
+      },
+      "style": {}
+    },
+    {
+      "id": "n2",
+      "position": { "x": -300, "y": 80 },
+      "caption": "SpawnPolicy",
+      "labels": ["PolicyDefinition"],
+      "properties": {
+        "file_origin": "future spawn interface",
+        "role": "Decides whether and how the task is decomposed"
+      },
+      "style": {}
+    },
+    {
+      "id": "n3",
+      "position": { "x": 80, "y": -180 },
+      "caption": "Main AgentInstance",
+      "labels": ["AgentInstance"],
+      "properties": {
+        "file_origin": "current runtime + future instance model",
+        "role": "Default instance kept compatible with the inherited runtime"
+      },
+      "style": {}
+    },
+    {
+      "id": "n4",
+      "position": { "x": 80, "y": 80 },
+      "caption": "SubAgent Runtime",
+      "labels": ["AgentInstance"],
+      "properties": {
+        "file_origin": "src/runtime/ + future sub-agent runtime policy",
+        "role": "Specialized or bounded execution instance"
+      },
+      "style": {}
+    },
+    {
+      "id": "n5",
+      "position": { "x": 470, "y": -50 },
+      "caption": "AggregationResult",
+      "labels": ["AggregationResult"],
+      "properties": {
+        "file_origin": "future aggregation layer",
+        "role": "Recombined or arbitrated outputs"
+      },
+      "style": {}
+    },
+    {
+      "id": "n6",
+      "position": { "x": 810, "y": -50 },
+      "caption": "ResolutionTrace",
+      "labels": ["ResolutionTrace"],
+      "properties": {
+        "file_origin": "future trace layer",
+        "role": "Traces routing, spawn decisions, and aggregation"
+      },
+      "style": {}
+    }
+  ],
+  "relationships": [
+    {
+      "id": "r0",
+      "type": "ORCHESTRATION_USES_ROUTER",
+      "style": {},
+      "properties": {},
+      "fromId": "n0",
+      "toId": "n1"
+    },
+    {
+      "id": "r1",
+      "type": "RELATED_TO",
+      "style": {},
+      "properties": {},
+      "fromId": "n0",
+      "toId": "n2"
+    },
+    {
+      "id": "r2",
+      "type": "RELATED_TO",
+      "style": {},
+      "properties": {},
+      "fromId": "n1",
+      "toId": "n3"
+    },
+    {
+      "id": "r3",
+      "type": "ORCHESTRATION_SPAWNS",
+      "style": {},
+      "properties": {},
+      "fromId": "n0",
+      "toId": "n4"
+    },
+    {
+      "id": "r4",
+      "type": "AGGREGATES",
+      "style": {},
+      "properties": {},
+      "fromId": "n5",
+      "toId": "n4"
+    },
+    {
+      "id": "r5",
+      "type": "TRACE_IMPLEMENTED_STRATEGY",
+      "style": {},
+      "properties": {},
+      "fromId": "n6",
+      "toId": "n0"
+    }
+  ]
+}

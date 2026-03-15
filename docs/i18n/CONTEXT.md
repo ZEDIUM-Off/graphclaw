@@ -21,6 +21,22 @@ This subtree governs documentation localization: how translated docs are organiz
 - `README.md` - i18n framing and localization entrypoint
 - `vi/` - localized Vietnamese documentation retained in this subtree
 
+## Routing Diagram
+
+```mermaid
+flowchart LR
+    I18N[I18N governance]
+    English[English source docs]
+    LocalPolicy[Parity and routing policy]
+    VI[I18N VI subtree]
+    Legacy[Legacy docs VI subtree]
+
+    English --> I18N
+    I18N --> LocalPolicy
+    I18N --> VI
+    I18N --> Legacy
+```
+
 ## Routing
 
 - translation structure and parity policy belongs here

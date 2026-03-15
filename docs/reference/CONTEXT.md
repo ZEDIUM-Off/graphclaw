@@ -23,6 +23,22 @@ This subtree is the exact-lookup layer for current interfaces. It exists so oper
 - `cli/` - command reference
 - `sop/` - SOP syntax and subsystem reference
 
+## Routing Diagram
+
+```mermaid
+flowchart LR
+    Reference[Reference docs]
+    API[API and config]
+    CLI[CLI reference]
+    SOP[SOP reference]
+    Ops[Operations docs]
+
+    Reference --> API
+    Reference --> CLI
+    Reference --> SOP
+    Reference --> Ops
+```
+
 ## Routing
 
 - exact commands go to `docs/reference/cli/`

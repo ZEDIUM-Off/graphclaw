@@ -13,6 +13,14 @@ Cargo-based fuzzing harnesses for robustness and adversarial input coverage.
 
 This subtree routes through Cargo fuzz configuration at the root and then into focused targets under `fuzz_targets/`.
 
+## Fuzz Routing
+
+```mermaid
+flowchart LR
+    Workspace[Cargo fuzz workspace] --> Targets[fuzz_targets/]
+    Targets --> Inputs[focused untrusted inputs]
+```
+
 ## Current State
 
 Fuzz coverage is targeted at inherited parsing and input-handling risk surfaces rather than broad runtime behavior.

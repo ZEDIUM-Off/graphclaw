@@ -25,6 +25,23 @@ This subtree contains hardware-facing documentation: board setup instructions, p
 - `hardware-peripherals-design.md` - hardware design and peripheral framing
 - `datasheets/arduino-uno.md`, `datasheets/esp32.md`, `datasheets/nucleo-f401re.md` - board reference notes
 
+## Routing Diagram
+
+```mermaid
+flowchart LR
+    Hardware[Hardware docs]
+    Setup[Board setup guides]
+    Design[Peripheral design notes]
+    Datasheets[Board reference notes]
+    Firmware[Firmware subtree]
+
+    Hardware --> Setup
+    Hardware --> Design
+    Hardware --> Datasheets
+    Setup --> Firmware
+    Design --> Firmware
+```
+
 ## Routing
 
 - board-specific installation or cabling guidance goes here

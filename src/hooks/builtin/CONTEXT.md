@@ -19,6 +19,17 @@
 
 The built-in set is small and intentionally narrow. These hooks support inherited runtime behavior and observability rather than broader GraphClaw architecture.
 
+## Interaction Sketch
+
+Current responsibilities and main neighboring modules:
+
+```mermaid
+flowchart LR
+    Hooks[src/hooks runner] --> Builtin[builtin hooks]
+    Runtime[command events] --> Builtin
+    Builtin --> Observability[observability]
+```
+
 ## GraphClaw Evolution Note
 
 Do not treat built-in hooks as evidence that a larger context engine already exists here.

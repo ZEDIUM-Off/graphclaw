@@ -25,6 +25,22 @@ This subtree documents the repository's security posture: current hardening and 
 - `agnostic-security.md` and `frictionless-security.md` - conceptual framing pages
 - `matrix-e2ee-guide.md` - specific security-related integration guidance
 
+## Routing Diagram
+
+```mermaid
+flowchart LR
+    Security[Security docs]
+    Current[Current controls]
+    Limits[Limits and caveats]
+    Roadmap[Roadmap material]
+    Source[Security source boundary]
+
+    Security --> Current
+    Security --> Limits
+    Security --> Roadmap
+    Source --> Current
+```
+
 ## Routing
 
 - current security controls and limitations belong here

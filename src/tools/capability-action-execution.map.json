@@ -1,0 +1,112 @@
+{
+  "nodes": [
+    {
+      "id": "n0",
+      "position": { "x": -620, "y": -30 },
+      "caption": "Capability",
+      "labels": ["Capability"],
+      "properties": {
+        "file_origin": "src/agent/dispatcher.rs",
+        "role": "Abstract intent to satisfy"
+      },
+      "style": {}
+    },
+    {
+      "id": "n1",
+      "position": { "x": -240, "y": -170 },
+      "caption": "ActionResolver",
+      "labels": ["Action"],
+      "properties": {
+        "file_origin": "future capability/action seam",
+        "role": "Selects the relevant executable action"
+      },
+      "style": {}
+    },
+    {
+      "id": "n2",
+      "position": { "x": -240, "y": 90 },
+      "caption": "Tool Container",
+      "labels": ["Tool"],
+      "properties": {
+        "file_origin": "src/tools/",
+        "role": "Exposes zero or more actions without being the action itself"
+      },
+      "style": {}
+    },
+    {
+      "id": "n3",
+      "position": { "x": 100, "y": -30 },
+      "caption": "Executable Action",
+      "labels": ["Action"],
+      "properties": {
+        "file_origin": "src/tools/ + adapters",
+        "role": "Single executable unit"
+      },
+      "style": {}
+    },
+    {
+      "id": "n4",
+      "position": { "x": 450, "y": -30 },
+      "caption": "Provider Invocation",
+      "labels": ["Resource"],
+      "properties": {
+        "file_origin": "src/providers/",
+        "role": "Model or external-service invocation behind a uniform contract"
+      },
+      "style": {}
+    },
+    {
+      "id": "n5",
+      "position": { "x": 770, "y": -30 },
+      "caption": "AggregationResult",
+      "labels": ["AggregationResult"],
+      "properties": {
+        "file_origin": "future execution/aggregation layer",
+        "role": "Execution result consumable by the agent turn"
+      },
+      "style": {}
+    }
+  ],
+  "relationships": [
+    {
+      "id": "r0",
+      "type": "FULFILLED_BY",
+      "style": {},
+      "properties": {},
+      "fromId": "n0",
+      "toId": "n3"
+    },
+    {
+      "id": "r1",
+      "type": "OFFERS_ACTION",
+      "style": {},
+      "properties": {},
+      "fromId": "n2",
+      "toId": "n3"
+    },
+    {
+      "id": "r2",
+      "type": "RELATED_TO",
+      "style": {},
+      "properties": {},
+      "fromId": "n1",
+      "toId": "n0"
+    },
+    {
+      "id": "r3",
+      "type": "HAS_TOPIC",
+      "style": {},
+      "properties": {},
+      "fromId": "n3",
+      "toId": "n4"
+    },
+    {
+      "id": "r4",
+      "type": "AGGREGATES",
+      "style": {},
+      "properties": {},
+      "fromId": "n5",
+      "toId": "n3"
+    }
+  ]
+}

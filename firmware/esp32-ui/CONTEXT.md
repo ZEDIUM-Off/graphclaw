@@ -16,6 +16,14 @@ ESP32 firmware with an embedded UI layer built from Rust and Slint assets.
 
 Cargo and the local `.cargo` config drive the build, `build.rs` prepares assets, `src/main.rs` boots the firmware, and `ui/main.slint` defines the embedded interface.
 
+```mermaid
+flowchart LR
+    Config[Cargo and .cargo] --> Build[build.rs]
+    UI[ui/main.slint] --> Build
+    Build --> Main[src/main.rs]
+    Main --> Board[ESP32 UI target]
+```
+
 ## Current State
 
 This subtree combines firmware and UI assets in one board-local workspace.

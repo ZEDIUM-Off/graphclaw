@@ -12,6 +12,14 @@ Reference examples that explain current configuration or usage patterns.
 
 This subtree is reference-only: files here should point readers toward current configuration shapes without becoming a second source of truth for implementation details.
 
+## Example Usage Path
+
+```mermaid
+flowchart LR
+    Runtime[current runtime contracts] --> Example[config.example.toml]
+    Example --> Readers[reference readers]
+```
+
 ## Current State
 
 Examples still reflect inherited `zeroclaw` behavior and naming where the runtime does.

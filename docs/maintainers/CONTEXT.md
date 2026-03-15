@@ -26,6 +26,23 @@ This subtree contains maintainer-oriented repository maps, documentation invento
 - `project-triage-snapshot-2026-02-18.md` - point-in-time repository assessment
 - `structure-README.md` and `trademark.md` - structure and naming guidance
 
+## Routing Diagram
+
+```mermaid
+flowchart LR
+    Maintainers[Maintainer docs]
+    Maps[Repo maps and inventories]
+    Snapshots[Triage snapshots]
+    Governance[Structure and naming]
+    Public[Public docs subtrees]
+
+    Maintainers --> Maps
+    Maintainers --> Snapshots
+    Maintainers --> Governance
+    Maps --> Public
+    Governance --> Public
+```
+
 ## Routing
 
 - structural inventories and navigation aids belong here

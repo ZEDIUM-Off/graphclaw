@@ -27,6 +27,15 @@ This directory defines how repository issues are opened on GitHub. It shapes the
 - PR guidance belongs in `pull_request_template.md` or `docs/contributing/`
 - workflow automation reacting to issues belongs in `.github/workflows/` if present
 
+## Intake Flow
+
+```mermaid
+flowchart LR
+    Contributors[Contributors] --> Forms[bug_report.yml and feature_request.yml]
+    Config[config.yml] --> Forms
+    Forms --> Maintainers[Maintainer triage]
+```
+
 ## References
 
 - `.github/CONTEXT.md` - GitHub subtree boundary

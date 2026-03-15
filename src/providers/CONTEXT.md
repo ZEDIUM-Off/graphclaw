@@ -4,7 +4,7 @@
 
 `src/providers/` contains model-provider integrations, provider routing, retries, compatibility adapters, and provider traits.
 
-This subtree owns model access and provider compatibility. It may later consume richer `ContextPack` inputs and emit results that feed `ResolutionTrace` handling elsewhere, but it does not define those concepts.
+This subtree owns model access and provider compatibility. It sits adjacent to the future Graph Engine seam. It may later consume richer `ContextPack` inputs and emit results that feed `ResolutionTrace` handling elsewhere, but it does not define those concepts.
 
 ## What Belongs Here
 
@@ -39,12 +39,41 @@ This subtree owns model access and provider compatibility. It may later consume 
 
 This is a major inherited extension surface for model access. It remains provider-centric infrastructure rather than GraphClaw-specific reasoning machinery.
 
-The main documentary rule here is that providers consume a final `ContextPack`; they do not define the GraphClaw context model or the `ThinkingContext` that precedes it.
+The main documentary rule here is that providers consume upstream request payloads shaped by the agent loop today, and may later consume a final `ContextPack`; they do not define the GraphClaw context model or the `ThinkingContext` that precedes it.
+
+## Mermaid Map
+
+```mermaid
+graph TD
+    ProviderMod["mod.rs"] --> Traits["traits.rs"]
+    ProviderMod --> Router["router.rs"]
+    ProviderMod --> Reliable["reliable.rs"]
+    ProviderMod --> Compatible["compatible.rs"]
+    Router --> Models["openai anthropic gemini openrouter ollama and others"]
+    Agent["agent/dispatcher.rs"] --> Router
+    Router --> Reliable
+    Reliable --> Models
+    Compatible --> Models
+    Models --> Cost["cost"]
+```
+
+### Current Sequential Provider Invocation Flow
+
+```mermaid
+flowchart TD
+    Agent["agent loop builds ChatRequest"] --> Router["router.rs resolves model or hint"]
+    Router --> Reliable["reliable.rs applies retries and fallback order"]
+    Reliable --> Traits["traits.rs provider chat(...) contract"]
+    Traits --> Adapter["selected provider adapter formats API request"]
+    Adapter --> Remote["remote model API call"]
+    Remote --> Response["ChatResponse text, tool_calls, usage"]
+    Response --> AgentResult["agent loop parses response and continues turn"]
+```
 
 ## Current Dependency Direction
 
 - Called primarily from `src/agent/dispatcher.rs` and the surrounding agent loop.
-- Consumes prompt and response payloads shaped upstream by `src/agent/` and future context-resolution seams.
+- Consumes prompt and response payloads shaped upstream by `src/agent/`, and may later consume outputs from future Graph Engine seams.
 - Interacts with `src/cost/` for usage accounting and with `src/observability/` or related runtime paths for execution visibility.
 
 ## Routing

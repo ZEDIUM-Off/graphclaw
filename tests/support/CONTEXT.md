@@ -16,6 +16,16 @@ Shared Rust-side test plumbing used across multiple suites.
 
 Other test layers import this subtree for reusable support. Nothing here should require production code to know about test-only helpers.
 
+## Support Map
+
+```mermaid
+flowchart LR
+    Suites[component integration live system] --> Support[support/]
+    Support --> Helpers[helpers and assertions]
+    Support --> Doubles[mock providers tools channels]
+    Support --> Trace[trace support]
+```
+
 ## Current State
 
 This area centralizes inherited test scaffolding so individual suites can stay focused on behavior rather than setup boilerplate.

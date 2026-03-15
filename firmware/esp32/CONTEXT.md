@@ -16,6 +16,14 @@ Rust-based ESP32 firmware plus its board-specific setup and toolchain configurat
 
 Build and flash flow starts with Cargo and the ESP32 toolchain files, then enters `src/main.rs` as the firmware entrypoint.
 
+```mermaid
+flowchart LR
+    Docs[README and SETUP] --> Cargo[Cargo build]
+    Toolchain[toolchain files] --> Cargo
+    Cargo --> Main[src/main.rs]
+    Main --> Board[ESP32 board]
+```
+
 ## Current State
 
 This is a self-contained inherited hardware workspace with real setup friction and strong board assumptions.

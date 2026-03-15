@@ -19,6 +19,19 @@
 
 This folder still guides users through inherited `zeroclaw` setup flows and configuration assumptions.
 
+## Interaction Sketch
+
+Current responsibilities and main neighboring modules:
+
+```mermaid
+flowchart LR
+    CLI[setup commands] --> Onboard[onboarding flow]
+    Onboard --> Config[config]
+    Onboard --> Auth[auth]
+    Onboard --> Models[model refresh and selection]
+    Onboard --> Runtime[ready runtime paths]
+```
+
 ## GraphClaw Evolution Note
 
 Do not rewrite onboarding as if repository migration were already complete. GraphClaw still onboards users into inherited runtime surfaces from this area.

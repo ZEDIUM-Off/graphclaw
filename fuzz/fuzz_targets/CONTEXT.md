@@ -16,6 +16,14 @@ Focused fuzz entrypoints for individual high-risk input surfaces.
 
 Each file is one targeted fuzz entrypoint invoked through the parent fuzz workspace rather than through the normal test tree.
 
+## Target Invocation
+
+```mermaid
+flowchart LR
+    Workspace[parent fuzz workspace] --> Target[target entry file]
+    Target --> Surface[specific parser or validation surface]
+```
+
 ## Current State
 
 Targets cover a handful of inherited input surfaces and remain deliberately specific.

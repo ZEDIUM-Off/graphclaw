@@ -18,6 +18,17 @@
 
 This folder is still a thin inherited registry boundary, not a general home for every external connection.
 
+## Interaction Sketch
+
+Current responsibilities and main neighboring modules:
+
+```mermaid
+flowchart LR
+    CLI[cli and runtime callers] --> Integrations[integration entrypoints]
+    Integrations --> Registry[registry data]
+    Agent[agent and tools] --> Registry
+```
+
 ## GraphClaw Evolution Note
 
 If GraphClaw later gains richer integration metadata, add it deliberately. Do not treat this small registry as a completed graph-native catalog.

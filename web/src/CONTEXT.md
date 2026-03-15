@@ -39,6 +39,17 @@ This subtree owns frontend implementation detail for the current dashboard. It c
 - transport helpers belong in `lib/` and `hooks/`
 - runtime contract truth still comes from `src/gateway/`
 
+## Interaction Map
+
+```mermaid
+flowchart LR
+    Browser[Browser] --> Main[main.tsx]
+    Main --> App[App.tsx]
+    App --> Views[pages and components]
+    Views --> FrontendIO[hooks and lib]
+    FrontendIO --> Gateway[src/gateway contracts]
+```
+
 ## Current State
 
 The source tree is compact and still organized around inherited operational pages rather than a GraphClaw-specific information architecture.

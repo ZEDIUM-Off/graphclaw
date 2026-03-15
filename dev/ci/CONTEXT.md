@@ -12,6 +12,15 @@ Container definition for local CI-parity workflows.
 
 `dev/docker-compose.ci.yml` and related local workflow scripts depend on this image definition for reproducible validation.
 
+## CI Parity Route
+
+```mermaid
+flowchart LR
+    Scripts[dev scripts] --> Compose[dev/docker-compose.ci.yml]
+    Compose --> Image[dev/ci/Dockerfile]
+    Image --> Parity[local CI parity]
+```
+
 ## Current State
 
 This subtree is intentionally minimal because its job is parity, not feature growth.

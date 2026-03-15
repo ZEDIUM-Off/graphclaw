@@ -18,6 +18,19 @@
 
 This is inherited background-runtime infrastructure that keeps the system active and observable over time.
 
+## Interaction Sketch
+
+Current responsibilities and main neighboring modules:
+
+```mermaid
+flowchart LR
+    Daemon[daemon] --> Heartbeat[heartbeat loop]
+    Config[config] --> Heartbeat
+    Heartbeat --> Agent[agent work]
+    Heartbeat --> Observability[observability]
+    Heartbeat --> Runtime[runtime lifecycle]
+```
+
 ## GraphClaw Evolution Note
 
 Do not describe heartbeat as a graph-native orchestration engine. It is still a conventional background loop in the current runtime.

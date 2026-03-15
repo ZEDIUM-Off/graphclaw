@@ -33,6 +33,16 @@ This subtree owns page-level composition for the current operator dashboard. It 
 - shared transport or data helpers belong in `web/src/lib/` and `web/src/hooks/`
 - contract truth still comes from `src/gateway/` and `web/src/types/`
 
+## Route Map
+
+```mermaid
+flowchart LR
+    App[App.tsx] --> Dashboard[Dashboard]
+    App --> Agent[AgentChat]
+    App --> Ops[Tools Cron Integrations Memory Config]
+    App --> Diag[Cost Logs Doctor]
+```
+
 ## Current State
 
 Pages are organized around inherited gateway/runtime operations instead of a new GraphClaw-specific domain model.

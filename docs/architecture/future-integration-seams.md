@@ -19,6 +19,21 @@ The role of this document is to answer questions such as:
 
 ## Interface Families To Prepare
 
+### Strategy Resolution
+
+Problem isolated:
+
+- the engine should not treat reflection, exploration, packing, and orchestration as hidden prompt habits or fixed code paths.
+
+Boundary separated:
+
+- turn interpretation and constraints versus downstream execution of a chosen strategy set.
+
+Typical artifact flow:
+
+- inputs such as task intent, session scope, policy state, provider capability profile, budget, and available views;
+- outputs such as `StrategyResolution`, fallback decisions, and downstream planning requirements.
+
 ### Context Creation
 
 Problem isolated:
@@ -142,6 +157,65 @@ Typical artifact flow:
 
 - inputs such as user focus changes, internal prioritization, or policy outcomes;
 - outputs such as `ContextMutationProposal` records and accepted mutations.
+
+### Orchestration
+
+Problem isolated:
+
+- routing, spawn, bounded sub-agent runtime, and aggregation should not remain one implicit behavior inside the inherited loop.
+
+Boundary separated:
+
+- local turn execution versus governed multi-agent decomposition and recombination.
+
+Typical artifact flow:
+
+- inputs such as task intent, strategy resolution, current context state, and topology policy;
+- outputs such as `OrchestrationPlan`, sub-agent assignments, aggregation outputs, and orchestration-relevant trace data.
+
+## Sequential Path Comparison
+
+For a step-by-step comparison of how gateway, channels, agent, memory, tools, providers, runtime, and security participate in a turn today versus under a future governed path (TaskIntent, StrategyResolution, Graph Engine seam, ContextPack, ResolutionTrace), see the [Cross-Cutting Sequential Paths](turn-runtime-logic.md#cross-cutting-sequential-paths) section in `turn-runtime-logic.md`. That section documents the current inherited path and the target governed path without implying the future path is implemented.
+
+## Future Interface Seam Diagram
+
+This is a target seam map. Solid arrows show conceptual dependency between future interface families, while dotted arrows show likely supporting source areas rather than current ownership.
+
+```mermaid
+flowchart LR
+    SR[Strategy resolution]
+    MR[Memory loading and recall]
+    CC[Context creation]
+    VR[View resolution]
+    SM[Set construction and manipulation]
+    BE[Budget estimation]
+    FP[Final packing]
+    CM[Context mutation]
+    ORCH[Orchestration]
+    PM[Persistence and materialization]
+    AG[src/agent/]
+    MEM[src/memory/]
+    RUN[src/runtime/]
+    TOOLS[src/tools/]
+
+    SR --> CC
+    SR --> ORCH
+    MR --> CC
+    CC --> VR --> SM --> BE --> FP
+    CM -. may revise .-> VR
+    CM -. may revise .-> SM
+    ORCH -. may consume packed context from .-> FP
+    FP --> PM
+    AG -. likely consumer of .-> SR
+    AG -. likely consumer of .-> CC
+    AG -. likely consumer of .-> ORCH
+    AG -. likely consumer of .-> FP
+    MEM -. likely support for .-> MR
+    MEM -. likely support for .-> PM
+    RUN -. likely support for .-> PM
+    RUN -. likely support for .-> ORCH
+    TOOLS -. likely evidence source for .-> CC
+```
 
 ## Likely Source-Area Consumers
 

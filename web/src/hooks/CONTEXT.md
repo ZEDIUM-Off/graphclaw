@@ -15,6 +15,18 @@ React hooks for frontend session state and transport-driven behavior.
 
 Pages and `App.tsx` consume these hooks; transport primitives underneath live in `web/src/lib/`.
 
+## Hook Flow
+
+```mermaid
+flowchart LR
+    App[App.tsx and pages] --> Hooks[hooks/]
+    Hooks --> Auth[useAuth.ts]
+    Hooks --> Api[useApi.ts]
+    Hooks --> SSE[useSSE.ts]
+    Hooks --> WS[useWebSocket.ts]
+    Hooks --> Lib[web/src/lib/]
+```
+
 ## Current State
 
 The hook layer is thin and closely tied to the current gateway interaction model.

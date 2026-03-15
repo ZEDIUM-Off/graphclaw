@@ -18,6 +18,21 @@
 
 The daemon is an inherited operational entrypoint that stitches existing subsystems together. It is central to deployment behavior even though the code footprint is small.
 
+## Interaction Sketch
+
+Current responsibilities and main neighboring modules:
+
+```mermaid
+flowchart LR
+    Service[service] --> Daemon[daemon coordinator]
+    Config[config] --> Daemon
+    Daemon --> Gateway[gateway]
+    Daemon --> Channels[channels]
+    Daemon --> Heartbeat[heartbeat]
+    Daemon --> Cron[cron]
+    Daemon --> Observability[observability]
+```
+
 ## GraphClaw Evolution Note
 
 Do not imply that the daemon already hosts a new graph-native engine. It currently runs inherited runtime pieces in one process.

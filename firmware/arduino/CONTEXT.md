@@ -12,6 +12,12 @@ Minimal Arduino-side sketch support.
 
 This directory routes directly into one sketch file and has no broader framework layer.
 
+```mermaid
+flowchart LR
+    Firmware[firmware/] --> Sketch[arduino.ino]
+    Sketch --> Board[Arduino board]
+```
+
 ## Current State
 
 The subtree is intentionally tiny and example-like.

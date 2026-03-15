@@ -13,6 +13,14 @@
 - Shared health representations: `src/health/mod.rs`
 - Inputs consumed by doctor or daemon health views: `src/health/mod.rs`
 
+## Dependency Map
+
+```mermaid
+flowchart LR
+    Subs[Runtime subsystems] --> Health[src/health/mod.rs]
+    Health --> Views[doctor and daemon views]
+```
+
 ## Current State
 
 This is a small inherited support layer that other subsystems use when they need to expose status.

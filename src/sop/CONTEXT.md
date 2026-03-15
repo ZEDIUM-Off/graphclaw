@@ -27,6 +27,19 @@
 
 This is a real inherited runtime behavior subsystem, not just naming or documentation scaffolding.
 
+## Interaction Sketch
+
+Current responsibilities and main neighboring modules:
+
+```mermaid
+flowchart LR
+    Triggers[cron webhook peripheral events] --> SOP[sop engine]
+    Agent[agent and tool calls] --> SOP
+    SOP --> Conditions[conditions and gates]
+    SOP --> Dispatch[dispatch and execution]
+    SOP --> Audit[audit and metrics]
+```
+
 ## GraphClaw Evolution Note
 
 If SOP work later intersects with graph-oriented policy, document the seam clearly. Do not imply that this folder already is the GraphClaw context engine.

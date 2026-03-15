@@ -31,6 +31,23 @@ Backend reference pages must always move in this order:
 
 Never document Memgraph first and then infer the GraphClaw model backward from an algorithm catalog.
 
+## Graph Engine Alignment
+
+Here, `Graph Engine` is shorthand for the future GraphClaw context-resolution layer and its turn-time strategy resolution. Memgraph can support that layer through backend capabilities and adapter boundaries, but Memgraph is not the engine by itself and this document does not claim that the current runtime already runs through this path.
+
+## Target Adapter Flow
+
+This target adapter flow is a future-state backend reference. It describes one plausible graph-backed context-resolution sequence without implying that the current inherited runtime already executes it.
+
+```mermaid
+flowchart LR
+    Request["Graph Engine requests view or set work"] --> Query["Adapter queries Memgraph for candidate graph data"]
+    Query --> Rank["Graph Engine ranks and budgets candidate sets or subgraphs"]
+    Rank --> Materialize["Adapter materializes selected artifacts when needed"]
+    Materialize --> Use["Runtime consumes the resulting packable artifacts or context inputs"]
+    Use --> Persist["Adapter persists traces, mutation records, or helper subsets"]
+```
+
 ## Layered Mapping
 
 ### Layer A: GraphClaw business concepts

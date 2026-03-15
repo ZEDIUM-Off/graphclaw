@@ -1,0 +1,131 @@
+{
+  "nodes": [
+    {
+      "id": "n0",
+      "position": { "x": -620, "y": -60 },
+      "caption": "SessionWindow",
+      "labels": ["SessionWindow"],
+      "properties": {
+        "file_origin": "future explicit runtime state",
+        "role": "Active visible-context window"
+      },
+      "style": {}
+    },
+    {
+      "id": "n1",
+      "position": { "x": -280, "y": -180 },
+      "caption": "MutationProposal",
+      "labels": ["MutationProposal"],
+      "properties": {
+        "file_origin": "future mutation protocol",
+        "role": "Elementary proposal for changing visible context"
+      },
+      "style": {}
+    },
+    {
+      "id": "n2",
+      "position": { "x": -280, "y": 60 },
+      "caption": "ViewAccessGuard",
+      "labels": ["PolicyDefinition"],
+      "properties": {
+        "file_origin": "src/security/ + future policies",
+        "role": "Verifies access rights for view use and expansion"
+      },
+      "style": {}
+    },
+    {
+      "id": "n3",
+      "position": { "x": 100, "y": -180 },
+      "caption": "RuntimeBudget",
+      "labels": ["PolicyDefinition"],
+      "properties": {
+        "file_origin": "src/runtime/",
+        "role": "Constrains depth, cardinality, cost, and tokens"
+      },
+      "style": {}
+    },
+    {
+      "id": "n4",
+      "position": { "x": 100, "y": 60 },
+      "caption": "MutationGuard",
+      "labels": ["Action"],
+      "properties": {
+        "file_origin": "src/runtime/ + src/security/",
+        "role": "Validates, rejects, or degrades a mutation"
+      },
+      "style": {}
+    },
+    {
+      "id": "n5",
+      "position": { "x": 470, "y": -60 },
+      "caption": "ContextPack",
+      "labels": ["ContextPack"],
+      "properties": {
+        "file_origin": "future pack compiler",
+        "role": "Recompiled pack after validated application"
+      },
+      "style": {}
+    },
+    {
+      "id": "n6",
+      "position": { "x": 810, "y": -60 },
+      "caption": "ResolutionTrace",
+      "labels": ["ResolutionTrace"],
+      "properties": {
+        "file_origin": "future trace layer",
+        "role": "Records decision, rejection, fallback, or application"
+      },
+      "style": {}
+    }
+  ],
+  "relationships": [
+    {
+      "id": "r0",
+      "type": "MUTATION_TARGETS",
+      "style": {},
+      "properties": {},
+      "fromId": "n1",
+      "toId": "n0"
+    },
+    {
+      "id": "r1",
+      "type": "RELATED_TO",
+      "style": {},
+      "properties": {},
+      "fromId": "n4",
+      "toId": "n1"
+    },
+    {
+      "id": "r2",
+      "type": "RELATED_TO",
+      "style": {},
+      "properties": {},
+      "fromId": "n4",
+      "toId": "n2"
+    },
+    {
+      "id": "r3",
+      "type": "RELATED_TO",
+      "style": {},
+      "properties": {},
+      "fromId": "n4",
+      "toId": "n3"
+    },
+    {
+      "id": "r4",
+      "type": "CONTEXT_PACK_DERIVED_FROM",
+      "style": {},
+      "properties": {},
+      "fromId": "n5",
+      "toId": "n0"
+    },
+    {
+      "id": "r5",
+      "type": "TRACE_OBSERVED_MUTATION",
+      "style": {},
+      "properties": {},
+      "fromId": "n6",
+      "toId": "n1"
+    }
+  ]
+}

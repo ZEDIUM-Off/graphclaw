@@ -18,6 +18,15 @@ Standalone workspace crate for robot/peripheral abstractions and hardware-facing
 
 Cargo enters through `src/lib.rs`, which fans into capability modules and shared boundary files such as `traits.rs` and `safety.rs`.
 
+## Crate Structure
+
+```mermaid
+flowchart LR
+    Lib[src/lib.rs] --> Shared[traits safety config]
+    Lib --> Caps[drive look listen speak sense emote]
+    Shared --> Caps
+```
+
 ## Current State
 
 `robot-kit` is inherited, domain-specific, and intentionally separate from the main GraphClaw application path.

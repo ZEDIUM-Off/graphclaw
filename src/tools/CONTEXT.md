@@ -4,12 +4,13 @@
 
 `src/tools/` contains built-in tool implementations and tool contracts for filesystem, shell, web, memory, cron, browser, SOP, and hardware-adjacent runtime actions.
 
-This subtree owns capability exposure and execution contracts. It is adjacent to agent orchestration and future context ingestion, but it is not the Graph Context Engine itself.
+This subtree owns capability exposure and execution contracts. It is adjacent to agent orchestration and the future Graph Engine seam, but it is not the Graph Context Engine itself.
 
 ## What Belongs Here
 
 - tool registration and discovery;
 - shared tool contracts and schemas;
+- source-adjacent `*.map.json` slices for capability, action, and execution seams;
 - concrete tool execution behavior.
 
 ## What Does Not Belong Here
@@ -27,6 +28,7 @@ This subtree owns capability exposure and execution contracts. It is adjacent to
 - `src/tools/web_fetch.rs`, `http_request.rs`, `browser.rs`, `browser_open.rs` - network and browser-facing tools
 - `src/tools/memory_*.rs`, `cron_*.rs`, `sop_*.rs` - subsystem-specific tool families
 - `src/tools/delegate.rs`, `git_operations.rs`, `cli_discovery.rs` - specialized orchestration helpers
+- `src/tools/capability-action-execution.map.json` - graph slice for capability resolution, tools, actions, and execution output
 
 ## Go Here For
 
@@ -35,12 +37,13 @@ This subtree owns capability exposure and execution contracts. It is adjacent to
 - A specific tool bug: the matching tool file
 - Tool schema/metadata behavior: `src/tools/schema.rs`
 - Browser or web execution: `src/tools/browser.rs`, `browser_open.rs`, `web_fetch.rs`
+- Technical-map slice for capability/action separation: `src/tools/capability-action-execution.map.json`
 
 ## Current State
 
 This is one of the broadest and highest-risk inherited runtime surfaces because tools bridge user intent, execution, security controls, and external systems.
 
-It should be described as a capability layer, not as the owner of context policy.
+It should be described as a capability layer adjacent to the Graph Engine, not as the owner of context policy.
 
 Current process ownership in this subtree is roughly:
 
@@ -49,11 +52,58 @@ Current process ownership in this subtree is roughly:
 - executing concrete tool actions;
 - returning results that may later become structured evidence.
 
+## Mermaid Maps
+
+### Local Capacity Map
+
+```mermaid
+graph TD
+    ToolMod["mod.rs"] --> Contracts["traits.rs"]
+    ToolMod --> Schema["schema.rs"]
+    ToolMod --> LocalExec["shell and file tools"]
+    ToolMod --> NetExec["web and browser tools"]
+    ToolMod --> MemoryOps["memory tools"]
+    ToolMod --> CronOps["cron tools"]
+    ToolMod --> SopOps["sop tools"]
+    ToolMod --> HelperOps["delegate/git/cli"]
+```
+
 ## Current Dependency Direction
 
 - Tool registration starts in `src/tools/mod.rs` and is consumed primarily by the agent loop in `src/agent/`.
 - Concrete tools call outward into `src/runtime/`, `src/security/`, `src/memory/`, `src/cron/`, `src/sop/`, web/network clients, and optional hardware integrations.
 - Tool schemas and contracts are centralized in `src/tools/traits.rs` and `src/tools/schema.rs`, while individual files own execution details.
+
+### Current Interaction Map
+
+```mermaid
+graph TD
+    Agent["agent"] --> ToolMod["mod.rs"]
+    ToolMod --> Contracts["traits.rs"]
+    ToolMod --> Schema["schema.rs"]
+    ToolMod --> LocalExec["shell and file tools"]
+    ToolMod --> NetExec["web and browser tools"]
+    ToolMod --> MemoryOps["memory tools"]
+    ToolMod --> HelperOps["delegate/git/cli"]
+    LocalExec --> Runtime["runtime"]
+    LocalExec --> Security["security"]
+    NetExec --> Security
+    MemoryOps --> Memory["memory"]
+    HelperOps --> Runtime
+```
+
+### Current Sequential Tool Execution Flow
+
+```mermaid
+flowchart TD
+    Request["agent loop receives provider tool call"] --> Lookup["match tool name in mod.rs registry"]
+    Lookup --> Schema["tool contract and args schema already define expected inputs"]
+    Schema --> Execute["tool execute(args) runs in concrete tool file"]
+    Execute --> Guard["security, runtime, memory, or network boundary applies"]
+    Guard --> Result["ToolResult { success, output, error }"]
+    Result --> History["agent loop appends tool result to conversation history"]
+    History --> FollowUp["provider may be called again with the updated history"]
+```
 
 ## Routing
 
@@ -73,7 +123,7 @@ Do not describe the tool layer as a completed GraphClaw orchestration fabric. It
 3. Tool result handling is a likely seam for future context ingestion, where execution output can become structured runtime evidence rather than only text fed back to the model.
 4. `delegate.rs` is a likely seam for future graph-aware sub-agent orchestration, but it should stay compatible with current delegation behavior until that work is explicit.
 
-The key architectural caution here is that `ThinkingContext` and graph navigation before response are not ordinary tools. They are system phases that may use tool-like operations internally.
+The key architectural caution here is that `ThinkingContext` and graph navigation before response are not ordinary tools. They are Graph Engine system phases that may use tool-like operations internally.
 
 That means this subtree may later provide:
 
@@ -99,6 +149,7 @@ It should not become the canonical home for:
 - Security and runtime implications often sit outside the individual tool file.
 - Avoid adding tools or capabilities that quietly shift architecture without documentation.
 - Future context-aware tool ingestion should not retroactively redefine all tool output as a `ContextPack` or `ResolutionTrace`.
+- Do not treat a local graph-map slice as a claim that the capability/action boundary has already been implemented.
 
 ## References
 

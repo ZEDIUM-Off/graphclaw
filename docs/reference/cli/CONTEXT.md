@@ -20,6 +20,22 @@ This subtree is the command reference for the current CLI surface. It should let
 - `commands-reference.md` - canonical command reference
 - `commands-reference.vi.md` - localized command reference variant
 
+## Routing Diagram
+
+```mermaid
+flowchart LR
+    CLI[CLI reference docs]
+    Canonical[Canonical command reference]
+    Localized[Localized command reference]
+    Setup[Setup guides]
+    Ops[Operations docs]
+
+    CLI --> Canonical
+    Canonical --> Localized
+    Canonical --> Setup
+    Canonical --> Ops
+```
+
 ## Routing
 
 - exact CLI commands and subcommands belong here

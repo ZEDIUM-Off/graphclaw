@@ -18,6 +18,18 @@
 
 This is a small subsystem with large behavioral impact. It is inherited runtime control logic, not a GraphClaw-specific policy engine.
 
+## Interaction Sketch
+
+Current responsibilities and main neighboring modules:
+
+```mermaid
+flowchart LR
+    Agent[agent autonomy] --> Approval[approval gate]
+    Operator[operator decision] --> Approval
+    Approval --> Tools[tool execution]
+    Approval --> Agent
+```
+
 ## GraphClaw Evolution Note
 
 Future GraphClaw policy layers may consume or extend this seam, but they are not already implemented here.

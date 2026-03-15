@@ -47,6 +47,18 @@ The main documentation distinction here is between current runtime accounting an
 - provider usage accounting belongs here
 - changes to selection or packing logic belong in the future owning runtime seam, not automatically in this subtree
 
+## Interaction Sketch
+
+Current responsibilities and main neighboring modules:
+
+```mermaid
+flowchart LR
+    Providers[provider execution] --> Cost[cost tracking]
+    Agent[agent flows] --> Cost
+    Cost --> Gateway[gateway or cli reporting]
+    Cost --> Types[shared cost types]
+```
+
 ## GraphClaw Evolution Note
 
 Future graph-oriented planning may depend on better cost modeling, but that capability is not already implemented here.

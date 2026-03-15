@@ -36,6 +36,17 @@ This subtree documents how people change the repository: contribution rules, rev
 - GitHub Actions behavior belongs in `.github/workflows/` and `.github/CONTEXT.md`
 - repository-wide maintainer inventories belong in `docs/maintainers/`
 
+## Interaction Map
+
+```mermaid
+flowchart TD
+    Contributors[Contributors] --> Playbooks[change playbooks and docs contract]
+    Contributors --> PRFlow[PR workflow and discipline]
+    PRFlow --> Review[reviewer playbook]
+    PRFlow --> Validation[testing and CI map]
+    Maintainers[Maintainers] --> Release[release process]
+```
+
 ## References
 
 - `docs/CONTEXT.md` - docs-tree navigation and migration framing

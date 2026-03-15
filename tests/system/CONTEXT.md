@@ -30,6 +30,15 @@ This subtree owns the highest-cost automated validation layer for the current ru
 - if the behavior can fail first in `component/` or `integration/`, prefer that
 - if the risk is only documentary, validate docs instead of adding system tests
 
+## Interaction Map
+
+```mermaid
+flowchart LR
+    Entry[test_system.rs] --> Router[mod.rs]
+    Router --> FullStack[full_stack.rs]
+    FullStack --> Runtime[Full runtime path]
+```
+
 ## Current State
 
 System coverage is intentionally sparse and high-cost compared with component or integration tests.

@@ -30,6 +30,8 @@ That means:
 - views, sets, budgets, policies, mutations, and traces become first-class concepts;
 - reflection over context happens as a system phase before final response packing.
 
+In the newer GraphClaw reading, `Graph Engine` is best treated as shorthand for this governed context-engine layer plus the turn-time strategy resolution it requires. It is not meant to name a separate backend product, nor to imply that every adjacent runtime concern belongs inside the engine.
+
 That target should be read together with:
 
 - [`zero-to-graphclaw-transition.md`](zero-to-graphclaw-transition.md) for seam-first migration framing;
@@ -37,6 +39,54 @@ That target should be read together with:
 - [`context-artifacts.md`](context-artifacts.md) for artifact boundaries and budget layers;
 - [`turn-runtime-logic.md`](turn-runtime-logic.md) for logical turn phases;
 - [`future-integration-seams.md`](future-integration-seams.md) for future interface families.
+
+## Reference Boundary Diagram
+
+This diagram is conceptual only. Dotted arrows show adjacent layers or migration-facing support, not implemented ownership in the current runtime.
+
+```mermaid
+flowchart LR
+    subgraph GC[Target Graph Context Engine]
+        V[View]
+        S[GraphSet]
+        SR[StrategyResolution]
+        W[SessionWindow]
+        T[ThinkingContext]
+        P[ContextPack]
+        R[ResolutionTrace]
+
+        SR --> V
+        SR --> T
+        V --> S
+        W --> T
+        S --> T
+        T --> P
+        P --> R
+    end
+
+    PKG[AgentPackage and bindings layer]
+    BE[Backend capability mapping]
+    RT[Current inherited zeroclaw runtime]
+
+    PKG -. adjacent interoperability .-> GC
+    BE -. supports required capabilities .-> GC
+    RT -. future seam target, current operational truth stays outside .-> GC
+```
+
+## Engine Reading Rule
+
+When GraphClaw docs say `Graph Engine`, they should normally mean:
+
+- the governed runtime layer that resolves what the agent can see, explore, mutate, and pack for a turn;
+- the strategy-resolution layer that decides how reflection, exploration, packing, and orchestration should proceed;
+- the explicit artifact chain that makes those decisions reviewable and traceable.
+
+They should not mean:
+
+- the graph database by itself;
+- the entire agent runtime;
+- the packaging layer by itself;
+- a claim that the inherited runtime already exposes a complete standalone engine module in code.
 
 ## Documentation Levels
 
@@ -126,6 +176,30 @@ A `ContextMutationProposal` is a structured proposal to modify visible or packab
 
 A `ResolutionTrace` is the explicit record of context-resolution decisions, including refusals, degradations, summaries, selections, and final packing choices.
 
+### `TaskIntent`
+
+A `TaskIntent` is the minimum structured interpretation of the incoming task before deeper planning or execution.
+
+It should capture at least:
+
+- goal;
+- scope;
+- ambiguity;
+- risk level;
+- likely delegation need.
+
+### `StrategyResolution`
+
+A `StrategyResolution` is the explicit result of choosing a coherent set of strategies for a turn.
+
+At minimum, it should identify:
+
+- the selected reflection strategy;
+- the selected exploration strategy;
+- the selected packing strategy;
+- the selected orchestration strategy;
+- any relevant constraints, degradations, or fallbacks.
+
 ### `AgentPackage`
 
 An `AgentPackage` is a portable versioned unit of behavior and declared dependencies. It is not the same thing as a local instance, a live session, or a folder of files.
@@ -136,6 +210,7 @@ The Graph Context Engine is not the whole GraphClaw architecture.
 
 It owns:
 
+- task interpretation and turn-time strategy resolution for governed context work;
 - view resolution;
 - set construction and manipulation;
 - session-scoped visibility;
@@ -150,6 +225,25 @@ It does not by itself own:
 - portable package installation.
 
 Portable agent packaging is an adjacent architecture layer. It must interoperate with the context engine, but it should not be used to blur the engine's conceptual boundary.
+
+## Strategy Families
+
+The Graph Context Engine should not be framed as a fixed retrieval pipeline with one hidden reasoning style.
+
+The target model needs at least four declarative strategy families:
+
+- `ReflectionStrategyDefinition`: how explicit reasoning is structured for a task kind;
+- `ExplorationStrategyDefinition`: how graph exploration proceeds during reflection;
+- `PackingStrategyDefinition`: how working results are transformed into visible or final packed context;
+- `OrchestrationStrategyDefinition`: how work remains local, is routed, is decomposed, and is recombined.
+
+The engine therefore resolves not only what context material is available, but also:
+
+- how to think;
+- how to explore;
+- how to pack;
+- how to delegate;
+- how to make those choices auditable.
 
 ## Set Semantics
 
@@ -202,14 +296,16 @@ The docs should distinguish between:
 
 The target runtime should be described as a logical sequence, even before the implementation is finalized:
 
-1. identify the active session scope and current visibility constraints;
-2. resolve or refresh relevant views;
-3. build or refine candidate sets;
-4. enter `ThinkingContext` to compare costs, propose mutations, and evaluate trade-offs;
-5. apply policy and budget rules;
-6. compile the final `ContextPack`;
-7. record a `ResolutionTrace`;
-8. pass the pack into response generation and any post-turn persistence flow.
+1. derive `TaskIntent` from the incoming turn;
+2. identify the active session scope and current visibility constraints;
+3. resolve the coherent strategy set for reflection, exploration, packing, and orchestration;
+4. resolve or refresh relevant views;
+5. build or refine candidate sets;
+6. enter `ThinkingContext` to compare costs, propose mutations, and evaluate trade-offs;
+7. apply policy and budget rules;
+8. compile the final `ContextPack`;
+9. record a `ResolutionTrace`;
+10. pass the pack into response generation and any post-turn persistence flow.
 
 This is a runtime logic description, not a commitment to a specific class layout.
 
@@ -223,11 +319,12 @@ These invariants should remain consistent across repository docs:
 2. A `View` produces governed sets.
 3. `GraphSet` objects are first-class.
 4. Context cost is an explicit constraint.
-5. Context reflection precedes final response packing.
-6. The final `ContextPack` is distinct from the temporary `ThinkingContext`.
-7. An `AgentPackage` is a versioned portable unit, not just a folder.
-8. Memgraph is a reference backend, not the GraphClaw business model.
-9. Directory-level docs should explain boundaries, not just contents.
+5. Strategy resolution precedes bounded reflection, exploration, and packing.
+6. Context reflection precedes final response packing.
+7. The final `ContextPack` is distinct from the temporary `ThinkingContext`.
+8. An `AgentPackage` is a versioned portable unit, not just a folder.
+9. Memgraph is a reference backend, not the GraphClaw business model.
+10. Directory-level docs should explain boundaries, not just contents.
 
 ## Relationship To The Current Repository
 

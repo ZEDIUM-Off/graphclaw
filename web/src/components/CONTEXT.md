@@ -14,6 +14,16 @@ Shared frontend structure components, currently centered on the dashboard layout
 
 `web/src/App.tsx` mounts `Layout` around the page routes, and `Layout` composes `Header` and `Sidebar` to give all route-level pages a consistent frame.
 
+## Layout Map
+
+```mermaid
+flowchart LR
+    App[App.tsx] --> Layout[layout/Layout.tsx]
+    Layout --> Header[layout/Header.tsx]
+    Layout --> Sidebar[layout/Sidebar.tsx]
+    Layout --> Pages[route pages]
+```
+
 ## Current State
 
 This directory is intentionally small and mostly layout-oriented. Route-specific behavior still lives in `web/src/pages/`.

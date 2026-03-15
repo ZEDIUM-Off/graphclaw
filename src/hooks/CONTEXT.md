@@ -21,6 +21,18 @@
 
 This is inherited extension plumbing for the runtime. It is useful for controlled extensibility but not a replacement for missing architecture.
 
+## Interaction Sketch
+
+Current responsibilities and main neighboring modules:
+
+```mermaid
+flowchart LR
+    Events[agent and runtime events] --> Hooks[hook traits and runner]
+    Hooks --> Builtin[builtin hooks]
+    Hooks --> Runtime[calling subsystems]
+    Builtin --> Observability[observability]
+```
+
 ## GraphClaw Evolution Note
 
 If GraphClaw grows new context seams here later, document them as seams. Do not pretend hooks already implement the graph-native engine.

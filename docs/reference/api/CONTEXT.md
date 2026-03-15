@@ -23,6 +23,22 @@ This subtree documents the current configuration and integration surfaces expose
 - `providers-reference.md` - provider surface reference
 - `channels-reference.md` - channel surface reference
 
+## Routing Diagram
+
+```mermaid
+flowchart LR
+    API[API and config docs]
+    Config[Config reference]
+    Providers[Provider reference]
+    Channels[Channel reference]
+    Source[Source config and integrations]
+
+    API --> Config
+    API --> Providers
+    API --> Channels
+    Source --> API
+```
+
 ## Routing
 
 - exact config keys and meanings go here

@@ -14,6 +14,17 @@ Python implementations of tool behaviors exposed by the companion package.
 
 Shared interfaces start in `base.py`; concrete tool modules plug into that contract and are exercised from the package-level runtime and tests.
 
+## Tool Map
+
+```mermaid
+flowchart LR
+    Runtime[package runtime and tests] --> Base[base.py]
+    Base --> Shell[shell.py]
+    Base --> File[file.py]
+    Base --> Memory[memory.py]
+    Base --> Web[web.py]
+```
+
 ## Current State
 
 This subtree is an inherited tool surface with stable names and limited scope.

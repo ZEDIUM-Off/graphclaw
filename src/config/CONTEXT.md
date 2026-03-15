@@ -26,6 +26,21 @@ This folder still encodes inherited runtime names, defaults, and path assumption
 - `src/config/schema.rs` is the main compatibility surface for providers, channels, memory, security, gateway, runtime, scheduler, and agent behavior.
 - Renames or structural changes here propagate into CLI flows, daemon startup, docs, tests, and operator-owned config files.
 
+## Interaction Sketch
+
+Current responsibilities and main neighboring modules:
+
+```mermaid
+flowchart LR
+    Inputs[config files and env] --> Config[config loading and schema]
+    Onboard[onboard] --> Config
+    Config --> Agent[agent]
+    Config --> Gateway[gateway]
+    Config --> Runtime[runtime]
+    Config --> Cron[cron]
+    Config --> Daemon[daemon and service]
+```
+
 ## GraphClaw Evolution Note
 
 Do not present config as already migrated to GraphClaw-native naming. Any config rename needs an explicit compatibility and migration plan.

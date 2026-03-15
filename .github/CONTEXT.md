@@ -32,6 +32,17 @@ This subtree holds GitHub-hosted repository scaffolding: automation entrypoints,
 - code scanning scope belongs in `.github/codeql/`
 - contributor-facing narrative about these systems belongs in `docs/contributing/`
 
+## Interaction Map
+
+```mermaid
+flowchart TD
+    Contributors[Contributors and maintainers] --> Workflows[workflows/]
+    Contributors --> Intake[issue and PR templates]
+    Policies[policy and ownership files] --> Workflows
+    Workflows --> Scripts[scripts/ci]
+    Workflows --> Scanning[code scanning config]
+```
+
 ## References
 
 - `CONTEXT.md` - repo-wide migration framing

@@ -16,6 +16,16 @@ Hardware-facing programs, board experiments, and bridge helpers that live beside
 
 Each child directory is effectively its own hardware entrypoint with board-local build files, source, and setup instructions.
 
+```mermaid
+flowchart LR
+    Repo[repo framing] --> FW[firmware/]
+    FW --> Arduino[arduino/]
+    FW --> ESP32[esp32/]
+    FW --> ESP32UI[esp32-ui/]
+    FW --> Nucleo[nucleo/]
+    FW --> Bridge[uno-q-bridge/]
+```
+
 ## Current State
 
 This subtree remains inherited, specialized, and intentionally separate from the main GraphClaw code path. It is kept intact as hardware support rather than treated as a migration centerpiece.

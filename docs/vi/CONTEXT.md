@@ -25,6 +25,24 @@ This subtree is an inherited Vietnamese documentation tree retained from the bas
 - `one-click-bootstrap.md`, `mattermost-setup.md`, `zai-glm-setup.md` - translated setup pages
 - `sandboxing.md`, `audit-logging.md`, `security-roadmap.md` - translated security pages
 
+## Routing Diagram
+
+```mermaid
+flowchart LR
+    LegacyVI[Legacy VI docs]
+    Sections[Section entrypoints]
+    Reference[Translated references]
+    Ops[Translated ops and setup]
+    Security[Translated security]
+    I18N[I18N governance]
+
+    LegacyVI --> Sections
+    LegacyVI --> Reference
+    LegacyVI --> Ops
+    LegacyVI --> Security
+    I18N --> LegacyVI
+```
+
 ## Routing
 
 - legacy Vietnamese tree work belongs here

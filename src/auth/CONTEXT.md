@@ -23,6 +23,20 @@
 
 This folder supports inherited provider auth behavior used by the runtime and CLI. It is security-adjacent maintenance work, not a GraphClaw architecture layer.
 
+## Interaction Sketch
+
+Current responsibilities and main neighboring modules:
+
+```mermaid
+flowchart LR
+    CLI[cli and onboarding] --> Auth[auth flows]
+    Config[config and runtime] --> Auth
+    Auth --> Profiles[stored profiles]
+    Auth --> OpenAI[openai oauth]
+    Auth --> Gemini[gemini oauth]
+    Auth --> Anthropic[anthropic tokens]
+```
+
 ## GraphClaw Evolution Note
 
 Do not mix provider auth upkeep with graph-native migration claims. GraphClaw still relies on inherited provider credentials and flows here.

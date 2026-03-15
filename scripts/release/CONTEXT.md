@@ -8,6 +8,20 @@ Release-flow automation for the current repository lifecycle.
 
 - `cut_release_tag.sh` - current release-tag helper
 
+## Routing Diagram
+
+```mermaid
+flowchart LR
+    Release[Release scripts]
+    Tag[cut_release_tag.sh]
+    Lifecycle[Current release lifecycle]
+    Docs[Release docs]
+
+    Release --> Tag
+    Tag --> Lifecycle
+    Docs --> Release
+```
+
 ## Routing
 
 This subtree is intentionally narrow: release operations enter through `cut_release_tag.sh` and should stay easy to audit.

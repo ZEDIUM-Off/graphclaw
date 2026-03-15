@@ -35,6 +35,21 @@ This subtree owns validation of contracts between runtime subsystems. It is the 
 - provider- or credential-dependent behavior belongs in `tests/live/`
 - purely documentary migration checks belong in docs validation, not here
 
+## Interaction Map
+
+```mermaid
+flowchart LR
+    Entry[test_integration.rs] --> Router[mod.rs]
+    Router --> AgentFlow[agent scenarios]
+    Router --> Routing[channel routing]
+    Router --> Hooks[hook pipeline]
+    Router --> Memory[memory lifecycle]
+    AgentFlow --> Runtime[src/ subsystems]
+    Routing --> Runtime
+    Hooks --> Runtime
+    Memory --> Runtime
+```
+
 ## Current State
 
 This layer validates how inherited subsystems cooperate today, including behavior that would be awkward or misleading to express as a unit-style test.

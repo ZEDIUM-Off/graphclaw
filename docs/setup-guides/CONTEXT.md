@@ -26,6 +26,24 @@ This subtree holds installation and service-specific setup instructions. It is w
 - `macos-update-uninstall.md` - macOS update and uninstall guidance
 - `README.vi.md` - localized setup landing page
 
+## Routing Diagram
+
+```mermaid
+flowchart LR
+    Setup[Setup guides]
+    Bootstrap[Bootstrap flows]
+    Services[Service setup]
+    Platform[Platform uninstall and update]
+    CLI[CLI reference]
+    Ops[Operations docs]
+
+    Setup --> Bootstrap
+    Setup --> Services
+    Setup --> Platform
+    Services --> CLI
+    Platform --> Ops
+```
+
 ## Routing
 
 - service and platform setup steps go here

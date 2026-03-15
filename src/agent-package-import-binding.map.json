@@ -1,0 +1,131 @@
+{
+  "nodes": [
+    {
+      "id": "n0",
+      "position": { "x": -660, "y": -60 },
+      "caption": "AgentPackage",
+      "labels": ["AgentPackage"],
+      "properties": {
+        "file_origin": "future package manifest / AGENTS.md",
+        "role": "Versioned portable agent artifact"
+      },
+      "style": {}
+    },
+    {
+      "id": "n1",
+      "position": { "x": -320, "y": -190 },
+      "caption": "AgentVersion",
+      "labels": ["AgentVersion"],
+      "properties": {
+        "file_origin": "future package metadata",
+        "role": "Concrete version exposing views and skills"
+      },
+      "style": {}
+    },
+    {
+      "id": "n2",
+      "position": { "x": -320, "y": 80 },
+      "caption": "ImportStrategyDefinition",
+      "labels": ["ImportStrategyDefinition"],
+      "properties": {
+        "file_origin": "future package manifest + import engine",
+        "role": "Describes bind, clone, refuse, degrade, and seed behavior"
+      },
+      "style": {}
+    },
+    {
+      "id": "n3",
+      "position": { "x": 50, "y": -190 },
+      "caption": "ViewDefinition",
+      "labels": ["ViewDefinition"],
+      "properties": {
+        "file_origin": "future package surface",
+        "role": "Declarative view exposed by the version"
+      },
+      "style": {}
+    },
+    {
+      "id": "n4",
+      "position": { "x": 50, "y": 80 },
+      "caption": "AgentInstance",
+      "labels": ["AgentInstance"],
+      "properties": {
+        "file_origin": "future local runtime",
+        "role": "Local instantiation linked to the package"
+      },
+      "style": {}
+    },
+    {
+      "id": "n5",
+      "position": { "x": 410, "y": -60 },
+      "caption": "Binding",
+      "labels": ["Resource"],
+      "properties": {
+        "file_origin": "future binding/import layer",
+        "role": "Connects declared dependencies to local graph and runtime resources"
+      },
+      "style": {}
+    },
+    {
+      "id": "n6",
+      "position": { "x": 760, "y": -60 },
+      "caption": "SessionWindow",
+      "labels": ["SessionWindow"],
+      "properties": {
+        "file_origin": "future local runtime",
+        "role": "Active context window attached to the instance"
+      },
+      "style": {}
+    }
+  ],
+  "relationships": [
+    {
+      "id": "r0",
+      "type": "PACKAGE_HAS_VERSION",
+      "style": {},
+      "properties": {},
+      "fromId": "n0",
+      "toId": "n1"
+    },
+    {
+      "id": "r1",
+      "type": "VERSION_EXPOSES_VIEW",
+      "style": {},
+      "properties": {},
+      "fromId": "n1",
+      "toId": "n3"
+    },
+    {
+      "id": "r2",
+      "type": "INSTANCE_OF_PACKAGE",
+      "style": {},
+      "properties": {},
+      "fromId": "n4",
+      "toId": "n0"
+    },
+    {
+      "id": "r3",
+      "type": "RELATED_TO",
+      "style": {},
+      "properties": {},
+      "fromId": "n2",
+      "toId": "n5"
+    },
+    {
+      "id": "r4",
+      "type": "RELATED_TO",
+      "style": {},
+      "properties": {},
+      "fromId": "n4",
+      "toId": "n5"
+    },
+    {
+      "id": "r5",
+      "type": "INSTANCE_HAS_SESSION_WINDOW",
+      "style": {},
+      "properties": {},
+      "fromId": "n4",
+      "toId": "n6"
+    }
+  ]
+}

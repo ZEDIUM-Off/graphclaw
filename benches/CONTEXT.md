@@ -12,6 +12,14 @@ Benchmark harnesses for performance-sensitive runtime behavior.
 
 This directory routes performance measurement through a small number of explicit benchmark files instead of mixing benchmark code into normal tests.
 
+## Benchmark Path
+
+```mermaid
+flowchart LR
+    Entry[agent_benchmarks.rs] --> Harness[benchmark harness]
+    Harness --> Runtime[performance-sensitive runtime paths]
+```
+
 ## Current State
 
 Bench coverage describes the inherited implementation baseline and is intentionally narrow.

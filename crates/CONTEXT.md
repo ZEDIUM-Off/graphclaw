@@ -12,6 +12,15 @@ Workspace member crates that live outside the main `src/` tree.
 
 This directory is a crate registry boundary for the workspace: each child directory should be an intentional crate with its own docs, manifest, and local context.
 
+## Workspace Boundary
+
+```mermaid
+flowchart LR
+    Workspace[workspace root] --> Crates[crates/]
+    Crates --> RobotKit[robot-kit]
+    RobotKit --> Manifest[crate manifest and local context]
+```
+
 ## Current State
 
 The workspace is still small and currently contains one clearly separate crate rather than a large multi-crate architecture.

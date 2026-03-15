@@ -16,6 +16,18 @@ Shared frontend infrastructure for transport, auth helpers, and locale support.
 
 `web/src/hooks/` wraps these utilities for React usage, while `web/src/pages/` consumes the hook layer rather than reaching into transport helpers directly.
 
+## Dependency Map
+
+```mermaid
+flowchart LR
+    Hooks[web/src/hooks/] --> Lib[web/src/lib/]
+    Lib --> Api[api.ts]
+    Lib --> Auth[auth.ts]
+    Lib --> SSE[sse.ts]
+    Lib --> WS[ws.ts]
+    Lib --> I18n[i18n.ts]
+```
+
 ## Current State
 
 This directory is the frontend infrastructure layer for the inherited dashboard and gateway protocols.

@@ -4,12 +4,13 @@
 
 `src/memory/` contains the runtime memory subsystem: storage backends, embeddings, snapshots, chunking, recall support, and memory CLI helpers.
 
-This subtree owns persistence and retrieval for the inherited runtime. It is a major migration seam for GraphClaw, but it is not itself the Graph Context Engine.
+This subtree owns persistence and retrieval for the inherited runtime. It is a major migration seam adjacent to the future Graph Engine, but it is not itself the Graph Context Engine.
 
 ## What Belongs Here
 
 - memory storage backends and backend-selection logic;
 - embeddings, chunking, and retrieval support;
+- source-adjacent `*.map.json` slices for retrieval, compaction, and evidence-flow seams;
 - memory-facing CLI and maintenance utilities.
 
 ## What Does Not Belong Here
@@ -26,6 +27,7 @@ This subtree owns persistence and retrieval for the inherited runtime. It is a m
 - `src/memory/sqlite.rs`, `postgres.rs`, `qdrant.rs`, `markdown.rs`, `lucid.rs`, `none.rs` - backend implementations
 - `src/memory/vector.rs`, `embeddings.rs`, `chunker.rs` - vector and chunking support
 - `src/memory/snapshot.rs`, `response_cache.rs`, `hygiene.rs` - supporting memory maintenance paths
+- `src/memory/context-retrieval-compaction.map.json` - graph slice for multi-source recall, compaction, and `SessionWindow` handoff
 - `src/memory/cli.rs` - CLI-facing memory commands
 
 ## Go Here For
@@ -35,12 +37,13 @@ This subtree owns persistence and retrieval for the inherited runtime. It is a m
 - Embedding or vector retrieval flow: `src/memory/embeddings.rs` and `src/memory/vector.rs`
 - Chunking behavior: `src/memory/chunker.rs`
 - Memory CLI actions: `src/memory/cli.rs`
+- Technical-map slice for retrieval and compaction: `src/memory/context-retrieval-compaction.map.json`
 
 ## Current State
 
 This is one of the most important future seam areas for GraphClaw, but today it is still an inherited memory system with multiple backends and retrieval utilities, not a graph-native context engine.
 
-The key documentation discipline here is to keep `memory`, `retrieval`, and `context resolution` separate. They may interact closely, but they are not interchangeable concepts.
+The key documentation discipline here is to keep `memory`, `retrieval`, and `Graph Engine` context resolution separate. They may interact closely, but they are not interchangeable concepts.
 
 Current process ownership in this subtree is roughly:
 
@@ -50,11 +53,58 @@ Current process ownership in this subtree is roughly:
 - maintenance helpers such as snapshots and caches;
 - memory-facing CLI surfaces.
 
+## Mermaid Maps
+
+### Local Capacity Map
+
+```mermaid
+graph TD
+    MemoryMod["mod.rs"] --> Traits["traits.rs"]
+    MemoryMod --> Backend["backend.rs"]
+    MemoryMod --> Vector["vector.rs"]
+    MemoryMod --> Embeddings["embeddings.rs"]
+    MemoryMod --> Chunker["chunker.rs"]
+    MemoryMod --> Snapshot["snapshot.rs"]
+    MemoryMod --> Cache["response_cache.rs"]
+    MemoryMod --> Hygiene["hygiene.rs"]
+    MemoryMod --> Cli["cli.rs"]
+    Backend --> Stores["sqlite/postgres/qdrant/markdown/lucid/none"]
+```
+
 ## Current Dependency Direction
 
 - Read by the agent loop through `src/agent/memory_loader.rs`, by gateway/webhook flows that persist message state, and by CLI-facing commands through `src/memory/cli.rs`.
-- Routes through `src/memory/backend.rs` and `src/memory/traits.rs` before reaching concrete backends such as `sqlite.rs`, `postgres.rs`, `qdrant.rs`, `markdown.rs`, and `none.rs`.
+- Uses `src/memory/traits.rs` as the runtime contract, while `src/memory/backend.rs` mainly classifies or describes configured backend choices before concrete implementations such as `sqlite.rs`, `postgres.rs`, `qdrant.rs`, `markdown.rs`, and `none.rs` are selected.
 - Depends on embedding and chunking helpers in `embeddings.rs`, `vector.rs`, and `chunker.rs` to turn raw text into retrievable artifacts.
+
+### Current Interaction Map
+
+```mermaid
+graph TD
+    Agent["agent/memory_loader"] --> Backend["backend.rs"]
+    Gateway["gateway"] --> Backend
+    Cli["cli.rs"] --> Backend
+    Backend --> Traits["traits.rs"]
+    Backend --> Stores["sqlite/postgres/qdrant/markdown/lucid/none"]
+    Backend --> Chunker["chunker.rs"]
+    Backend --> Embeddings["embeddings.rs"]
+    Backend --> Vector["vector.rs"]
+    Snapshot["snapshot.rs"] --> Backend
+    Cache["response_cache.rs"] --> Backend
+```
+
+### Current Sequential Retrieval Flow
+
+```mermaid
+flowchart TD
+    Caller["agent loader or memory tool"] --> Query["build recall query and limit"]
+    Query --> Contract["traits.rs recall(...) on active backend"]
+    Contract --> BackendImpl["selected backend implementation"]
+    BackendImpl --> Helpers["chunking, embeddings, or backend-native search"]
+    Helpers --> Entries["Vec<MemoryEntry> with optional scores"]
+    Entries --> Filter["caller filters or formats returned entries"]
+    Filter --> Output["prompt context, tool output, or persisted follow-up"]
+```
 
 ## Routing
 
@@ -65,7 +115,7 @@ Current process ownership in this subtree is roughly:
 
 ## GraphClaw Evolution Note
 
-Be precise: storage, recall, and future context resolution are related but not identical. Do not describe current memory code as if graph-native context traversal already exists.
+Be precise: storage, recall, and future Graph Engine context resolution are related but not identical. Do not describe current memory code as if graph-native context traversal already exists.
 
 ## Likely Migration Seams
 
@@ -104,6 +154,7 @@ This subtree should usually implement storage and retrieval interfaces that cont
 - Retrieval quality changes can look like model regressions.
 - Keep CLI, backend, and ranking concerns separated.
 - Do not equate current recall output with a governed `View`, `GraphSet`, or `SessionWindow` unless the implementation explicitly supports those contracts.
+- Do not let a graph-map slice collapse storage, retrieval, and context resolution into one implemented subsystem.
 
 ## References
 

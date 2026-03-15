@@ -26,6 +26,19 @@
 
 This is inherited reporting infrastructure that helps explain runtime behavior without changing the runtime itself.
 
+## Interaction Sketch
+
+Current responsibilities and main neighboring modules:
+
+```mermaid
+flowchart LR
+    Runtime[agent and runtime events] --> Observability[observability]
+    Daemon[daemon and cron lifecycle] --> Observability
+    Observability --> Logs[logs and metrics backends]
+    Observability --> Traces[runtime trace storage]
+    Doctor[doctor] --> Traces
+```
+
 ## GraphClaw Evolution Note
 
 Do not present observability as if it already materializes a GraphClaw context graph. It currently records logs, traces, and metrics for the inherited runtime.

@@ -46,12 +46,31 @@ The intended order is:
 5. introduce graph-facing and backend-facing adapters without pretending the graph backend defines the whole architecture;
 6. rename inherited `zeroclaw` technical surfaces only after the architectural seams are real.
 
+## Seam-First Migration Diagram
+
+This diagram shows migration order and coexistence intent. It does not claim that later phases already exist.
+
+```mermaid
+flowchart LR
+    A["Inherited zeroclaw runtime - Current operational truth"]
+    B["Architecture docs and glossary - Stabilize meaning"]
+    C["Local CONTEXT.md files - Make boundaries explicit"]
+    D["Explicit context artifacts - Reduce implicit prompt assembly"]
+    E["Stable interface families - Prepare coexistence seams"]
+    F["Coexistence boundary - Inherited path and future engine path"]
+    G["Selective graph-native implementations - Behind explicit seams"]
+    H["Rename inherited surfaces later - Only after boundary changes are real"]
+
+    A --> B --> C --> D --> E --> F --> G --> H
+```
+
 ## Interfacable Process Families
 
 GraphClaw should not only document target concepts. It should document which runtime processes must eventually become interfacable.
 
 The highest-priority families are:
 
+- task interpretation and strategy resolution for a turn;
 - context creation for a turn;
 - view resolution;
 - `GraphSet` construction and refinement;
@@ -69,6 +88,7 @@ The documentation goal is to explain what each family isolates, which artifacts 
 
 This area owns the inherited turn loop and is the clearest seam for:
 
+- deriving structured task intent and resolving bounded strategies near turn entry;
 - consuming a future `ContextPack` instead of relying only on implicit assembled prompt context;
 - recording `ResolutionTrace` information adjacent to turn execution;
 - separating orchestration from context-resolution policy.
@@ -90,6 +110,18 @@ It may support artifact persistence, capability reporting, or storage locations 
 This area owns capability exposure and tool execution contracts.
 
 Tool outputs may later become structured evidence that context resolution can consume, but the reflective context phase should still be documented as a system phase, not as a normal tool.
+
+## Strategy And Orchestration Migration Rule
+
+GraphClaw should not migrate only from implicit prompt context to explicit context artifacts.
+
+It should also migrate from:
+
+- implicit reasoning style to explicit strategy resolution;
+- implicit exploration style to explicit exploration planning;
+- implicit main-agent orchestration to explicit orchestration plans and policies.
+
+The critical design rule is that the inherited behavior can remain the default preset for a time, but it should stop being treated as the only possible model of the system.
 
 ## Documentation Reorganization Direction
 

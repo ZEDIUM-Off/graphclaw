@@ -34,6 +34,25 @@ Top-level `test_*.rs` files dispatch into `mod.rs` files inside each layer, then
 - broad runtime confidence belongs in `system/`
 - documentation-only validation belongs in docs quality and links gates, not in product tests
 
+## Interaction Map
+
+```mermaid
+flowchart TD
+    Entry[test_*.rs entry files] --> Component[component/]
+    Entry --> Integration[integration/]
+    Entry --> System[system/]
+    Entry --> Live[live/]
+    Shared[support and fixtures] --> Component
+    Shared --> Integration
+    Shared --> System
+    Shared --> Live
+    Component --> Runtime[src/ runtime]
+    Integration --> Runtime
+    System --> Runtime
+    Live --> Runtime
+    Live --> Providers[External providers]
+```
+
 ## Current State
 
 This tree still validates inherited `zeroclaw` behavior and naming. It is the main place where GraphClaw's TDD discipline should be expressed when runtime behavior changes.

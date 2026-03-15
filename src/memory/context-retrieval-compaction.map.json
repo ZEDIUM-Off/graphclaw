@@ -1,0 +1,195 @@
+{
+  "style": {
+    "font-family": "Fira Code",
+    "background-color": "#2B2B2B",
+    "background-image": "",
+    "background-size": "100%",
+    "node-color": "#2B2B2B",
+    "border-width": 2,
+    "border-color": "#A6B7C8",
+    "radius": 90,
+    "node-padding": 5,
+    "node-margin": 2,
+    "outside-position": "auto",
+    "node-icon-image": "",
+    "node-background-image": "",
+    "icon-position": "inside",
+    "icon-size": 64,
+    "caption-position": "inside",
+    "caption-max-width": 200,
+    "caption-color": "#A6B7C8",
+    "caption-font-size": 18,
+    "caption-font-weight": "normal",
+    "label-position": "inside",
+    "label-display": "bare",
+    "label-color": "#A6B7C8",
+    "label-background-color": "#ffffff",
+    "label-border-color": "#000000",
+    "label-border-width": 4,
+    "label-font-size": 18,
+    "label-padding": 5,
+    "label-margin": 4,
+    "directionality": "directed",
+    "detail-position": "inline",
+    "detail-orientation": "parallel",
+    "arrow-width": 2,
+    "arrow-color": "#A6B7C8",
+    "margin-start": 0,
+    "margin-end": 0,
+    "margin-peer": 20,
+    "attachment-start": "normal",
+    "attachment-end": "normal",
+    "relationship-icon-image": "",
+    "type-color": "#A6B7C8",
+    "type-background-color": "#2B2B2B",
+    "type-border-color": "#000000",
+    "type-border-width": 0,
+    "type-font-size": 18,
+    "type-padding": 5,
+    "property-position": "inside",
+    "property-alignment": "colon",
+    "property-color": "#A6B7C8",
+    "property-font-size": 18,
+    "property-font-weight": "normal"
+  },
+  "nodes": [
+    {
+      "id": "n0",
+      "position": {
+        "x": -620,
+        "y": -60
+      },
+      "caption": "Session Facts",
+      "labels": [
+        "Fact"
+      ],
+      "properties": {
+        "file_origin": "src/memory/backend.rs",
+        "role": "Recallable facts from the memory store"
+      },
+      "style": {}
+    },
+    {
+      "id": "n1",
+      "position": {
+        "x": -280,
+        "y": -180
+      },
+      "caption": "Snapshots",
+      "labels": [
+        "Resource"
+      ],
+      "properties": {
+        "file_origin": "src/memory/snapshot.rs",
+        "role": "Structured state snapshots that can support recall"
+      },
+      "style": {}
+    },
+    {
+      "id": "n2",
+      "position": {
+        "x": -280,
+        "y": 70
+      },
+      "caption": "Response Cache",
+      "labels": [
+        "Resource"
+      ],
+      "properties": {
+        "file_origin": "src/memory/response_cache.rs",
+        "role": "Opportunistic reuse of prior computed outputs"
+      },
+      "style": {}
+    },
+    {
+      "id": "n3",
+      "position": {
+        "x": 80,
+        "y": -60
+      },
+      "caption": "ContextRetriever",
+      "labels": [
+        "Action"
+      ],
+      "properties": {
+        "file_origin": "src/agent/memory_loader.rs + future context layer",
+        "role": "Aggregates multi-source context candidates"
+      },
+      "style": {}
+    },
+    {
+      "id": "n4",
+      "position": {
+        "x": 430,
+        "y": -60
+      },
+      "caption": "ContextCompactor",
+      "labels": [
+        "Action"
+      ],
+      "properties": {
+        "file_origin": "future context-compaction seam",
+        "role": "Deduplicates, summarizes, and replaces heavy candidates"
+      },
+      "style": {}
+    },
+    {
+      "id": "n5",
+      "position": {
+        "x": 760,
+        "y": -60
+      },
+      "caption": "SessionWindow",
+      "labels": [
+        "SessionWindow"
+      ],
+      "properties": {
+        "file_origin": "future explicit runtime object",
+        "role": "Active projection of visible context"
+      },
+      "style": {}
+    }
+  ],
+  "relationships": [
+    {
+      "id": "r0",
+      "type": "HAS_TOPIC",
+      "style": {},
+      "properties": {},
+      "fromId": "n0",
+      "toId": "n3"
+    },
+    {
+      "id": "r1",
+      "type": "HAS_TOPIC",
+      "style": {},
+      "properties": {},
+      "fromId": "n1",
+      "toId": "n3"
+    },
+    {
+      "id": "r2",
+      "type": "HAS_TOPIC",
+      "style": {},
+      "properties": {},
+      "fromId": "n2",
+      "toId": "n3"
+    },
+    {
+      "id": "r3",
+      "type": "FULFILLED_BY",
+      "style": {},
+      "properties": {},
+      "fromId": "n4",
+      "toId": "n3"
+    },
+    {
+      "id": "r4",
+      "type": "SESSION_WINDOW_CONTAINS",
+      "style": {},
+      "properties": {},
+      "fromId": "n5",
+      "toId": "n0"
+    }
+  ]
+}

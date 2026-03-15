@@ -25,6 +25,22 @@ This subtree owns a compatibility-oriented Python surface for the repository. It
 - `zeroclaw_tools/` - importable package and CLI entrypoint
 - `tests/` - Python-side validation
 
+## Routing Diagram
+
+```mermaid
+flowchart LR
+    Python[Python context]
+    Packaging[Pyproject and package docs]
+    Package[zeroclaw_tools package]
+    Tests[Python tests]
+    Docs[Repo framing docs]
+
+    Python --> Packaging
+    Packaging --> Package
+    Package --> Tests
+    Docs --> Python
+```
+
 ## Routing
 
 Packaging flows through `pyproject.toml`, runtime entrypoints route into `zeroclaw_tools/__main__.py` and `zeroclaw_tools/agent.py`, and behavior checks live in `tests/test_tools.py`.

@@ -32,6 +32,15 @@ Browser entry is `src/main.tsx`, app routing lives in `src/App.tsx`, and route/p
 - HTTP, SSE, and WebSocket contracts belong in `src/gateway/`
 - stable context-model questions belong in `docs/architecture/`
 
+## Interaction Map
+
+```mermaid
+flowchart LR
+    Operators[Operator browser] --> WebUI[web/src]
+    WebUI --> Gateway[src/gateway]
+    Gateway --> Runtime[Inherited runtime]
+```
+
 ## Current State
 
 This UI still presents inherited `zeroclaw` gateway surfaces, including pairing/auth and operational pages. It is not yet a separate GraphClaw-native frontend architecture.

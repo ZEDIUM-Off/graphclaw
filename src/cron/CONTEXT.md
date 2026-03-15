@@ -23,6 +23,20 @@
 
 This is inherited automation infrastructure used by the CLI and long-running runtime. It may later support richer workflow graphs, but it is still a conventional scheduler today.
 
+## Interaction Sketch
+
+Current responsibilities and main neighboring modules:
+
+```mermaid
+flowchart LR
+    CLI[cli commands] --> Cron[cron module]
+    Daemon[daemon] --> Cron
+    Cron --> Schedule[schedule parsing]
+    Cron --> Store[job store]
+    Cron --> Scheduler[scheduler loop]
+    Scheduler --> Agent[task execution paths]
+```
+
 ## GraphClaw Evolution Note
 
 Do not describe cron as already being a graph-native workflow engine. Any future integration should be framed as an extension of the existing scheduler.

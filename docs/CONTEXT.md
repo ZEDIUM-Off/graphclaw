@@ -10,6 +10,7 @@ This subtree is the primary human-facing documentation surface for GraphClaw. It
 - reference material for current CLI, API, security, setup, and SOP surfaces;
 - explicit migration framing that distinguishes inherited behavior from target direction;
 - stable conceptual architecture and backend reference pages under dedicated docs branches;
+- documentation that frames variable reflection, exploration, packing, and orchestration strategies as target-architecture concepts rather than current runtime facts;
 - localized documentation and translation governance.
 
 ## What Does Not Belong Here
@@ -33,11 +34,29 @@ This subtree is the primary human-facing documentation surface for GraphClaw. It
 - `setup-guides/` - installation and service-specific setup guides
 - `vi/` - inherited Vietnamese documentation subtree retained from the baseline
 
+## Routing Diagram
+
+```mermaid
+flowchart LR
+    Docs[Docs context]
+    Architecture[Architecture docs]
+    Reference[Reference and setup]
+    Operations[Ops and security]
+    Localization[I18N and VI]
+    Maintainers[Maintainers and hardware]
+
+    Docs --> Architecture
+    Docs --> Reference
+    Docs --> Operations
+    Docs --> Localization
+    Docs --> Maintainers
+```
+
 ## Routing
 
 - contributor workflow or review policy changes belong in `docs/contributing/`
-- concept-model and glossary work belong in `docs/architecture/`
-- transition-thesis, views-and-sets, context-artifact, and future-seam references belong in `docs/architecture/`
+- concept-model, strategy-family, and glossary work belong in `docs/architecture/`
+- transition-thesis, views-and-sets, context-artifact, turn-logic, and future-seam references belong in `docs/architecture/`
 - backend capability mapping belongs in `docs/backends/`
 - operator runbooks and runtime troubleshooting belong in `docs/ops/`
 - exact command, config, or interface references belong in `docs/reference/`
@@ -64,13 +83,14 @@ Most content in this tree is still inherited from ZeroClaw-era documentation. Ma
 
 ## GraphClaw Migration Relationship
 
-This tree should make the migration legible without pretending it is finished. Documentation may introduce GraphClaw framing, explain the graph-native direction, and call out inherited terminology, but it must not silently rewrite current commands, config keys, APIs, or operating procedures into future-state names.
+This tree should make the migration legible without pretending it is finished. Documentation may introduce GraphClaw framing, explain the graph-native direction, describe strategy resolution or modular orchestration as target concepts, and call out inherited terminology, but it must not silently rewrite current commands, config keys, APIs, or operating procedures into future-state names.
 
 ## Cautions
 
 - keep current behavior and roadmap statements clearly separated
 - avoid taxonomy-wide rewrites unless the task is explicitly broad
 - do not remove localized or inherited docs just because the root framing changed
+- do not let target strategy concepts leak into current-state CLI or ops docs as if they were implemented features
 - if `docs/README.md` conflicts with local truth, resolve that deliberately rather than by distorting subtree context
 
 ## Agent Workflow

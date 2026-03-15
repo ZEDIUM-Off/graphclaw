@@ -14,6 +14,13 @@ Hybrid bridge workflow for Arduino Uno Q support, combining deployment metadata,
 
 This directory splits by role: deployment metadata at the root, helper execution in `python/`, and board behavior in `sketch/`.
 
+```mermaid
+flowchart LR
+    App[app.yaml] --> Python[python/main.py]
+    App --> Sketch[sketch/sketch.ino]
+    Python --> Sketch
+```
+
 ## Current State
 
 The subtree is retained from the inherited baseline and intentionally spans more than one language/runtime.

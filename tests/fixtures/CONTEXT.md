@@ -15,6 +15,15 @@ Static assets and canned traces consumed by automated tests.
 
 Test files reference these fixtures by path; this directory should stay data-only and should not grow helper logic.
 
+## Fixture Map
+
+```mermaid
+flowchart LR
+    Suites[Test suites] --> Fixtures[fixtures/]
+    Fixtures --> Pdf[test_document.pdf]
+    Fixtures --> Traces[traces/*.json]
+```
+
 ## Current State
 
 The fixture set is intentionally small and biased toward deterministic repository checks rather than broad media coverage.

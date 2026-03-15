@@ -17,6 +17,15 @@ Contributor-facing local workflow assets: compose files, helper scripts, templat
 
 Local development usually enters through the docs, helper scripts, or compose files at this level, then branches into `dev/ci/` or `dev/sandbox/` for container definitions.
 
+## Local Workflow Routing
+
+```mermaid
+flowchart LR
+    Docs[README.md] --> Helpers[ci.sh and cli.sh]
+    Helpers --> Compose[docker-compose files]
+    Compose --> Children[ci/ and sandbox/]
+```
+
 ## Current State
 
 This subtree supports working on the inherited runtime safely and predictably; it should not redefine product behavior.

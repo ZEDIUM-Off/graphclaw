@@ -18,6 +18,18 @@
 
 This is an inherited diagnostics surface used to explain the current runtime honestly. It is not a substitute for broader observability architecture.
 
+## Interaction Sketch
+
+Current responsibilities and main neighboring modules:
+
+```mermaid
+flowchart LR
+    Operator[operator] --> Doctor[doctor diagnostics]
+    Doctor --> Runtime[runtime health]
+    Doctor --> Observability[observability traces]
+    Doctor --> Providers[model availability]
+```
+
 ## GraphClaw Evolution Note
 
 Keep diagnostics truthful about today's inherited behavior; do not describe future GraphClaw capabilities as already available.

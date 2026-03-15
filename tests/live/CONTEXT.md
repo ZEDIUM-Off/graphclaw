@@ -15,6 +15,17 @@ Environment-backed tests for real provider behavior, OAuth refresh paths, and ot
 
 `tests/test_live.rs` enters this subtree. Each leaf test assumes environment setup and should state its external dependency clearly.
 
+## Interaction Map
+
+```mermaid
+flowchart LR
+    Entry[test_live.rs] --> Router[mod.rs]
+    Env[Environment and credentials] --> Cases[provider-backed cases]
+    Router --> Cases
+    Cases --> Runtime[src/ runtime]
+    Cases --> Providers[Live external providers]
+```
+
 ## Current State
 
 These tests cover inherited provider surfaces and are intentionally slower and less deterministic than the rest of the test tree.

@@ -50,11 +50,11 @@ GraphClaw documentation is intentionally layered:
 | Level | Primary question | Typical locations |
 | --- | --- | --- |
 | intent | why does GraphClaw exist | `README.md`, strategy docs |
-| conceptual architecture | what are the reference concepts being stabilized | `docs/architecture/graph-context-engine.md`, `docs/architecture/glossary.md` |
+| conceptual architecture | what are the reference concepts and strategy families being stabilized | `docs/architecture/graph-context-engine.md`, `docs/architecture/glossary.md` |
 | transition architecture | how does the inherited runtime gain seams without a rewrite-first migration | `docs/architecture/zero-to-graphclaw-transition.md`, `docs/architecture/future-integration-seams.md` |
 | context semantics | how should views, sets, artifacts, and budgets work | `docs/architecture/views-and-sets.md`, `docs/architecture/context-artifacts.md`, `docs/architecture/turn-runtime-logic.md` |
 | project architecture | how is the repo divided | `CONTEXT.md`, local `CONTEXT.md` files |
-| runtime logic | how should a turn resolve logically | `docs/architecture/turn-runtime-logic.md`, runtime-area docs |
+| runtime logic | how should a turn resolve logically, including strategy resolution and bounded orchestration | `docs/architecture/turn-runtime-logic.md`, runtime-area docs |
 | backend integration | how does a concrete graph backend support the model | `docs/backends/memgraph.md` |
 | implementation | what code exists today | source-adjacent docs and code |
 
@@ -67,9 +67,9 @@ Use these entry points to orient work quickly:
 | If you are working on... | Read first |
 | --- | --- |
 | repo identity, root framing, agent rules | [`README.md`](README.md), [`AGENTS.md`](AGENTS.md), [`CONTEXT.md`](CONTEXT.md) |
-| Graph Context Engine concepts or invariants | [`docs/architecture/README.md`](docs/architecture/README.md), [`docs/architecture/graph-context-engine.md`](docs/architecture/graph-context-engine.md) |
-| migration seams, transition thesis, or future interface families | [`docs/architecture/zero-to-graphclaw-transition.md`](docs/architecture/zero-to-graphclaw-transition.md), [`docs/architecture/future-integration-seams.md`](docs/architecture/future-integration-seams.md) |
-| view, set, artifact, or turn-logic semantics | [`docs/architecture/views-and-sets.md`](docs/architecture/views-and-sets.md), [`docs/architecture/context-artifacts.md`](docs/architecture/context-artifacts.md), [`docs/architecture/turn-runtime-logic.md`](docs/architecture/turn-runtime-logic.md) |
+| Graph Context Engine concepts, strategy families, or invariants | [`docs/architecture/README.md`](docs/architecture/README.md), [`docs/architecture/graph-context-engine.md`](docs/architecture/graph-context-engine.md) |
+| migration seams, transition thesis, orchestration framing, or future interface families | [`docs/architecture/zero-to-graphclaw-transition.md`](docs/architecture/zero-to-graphclaw-transition.md), [`docs/architecture/future-integration-seams.md`](docs/architecture/future-integration-seams.md) |
+| view, set, artifact, planning-artifact, or turn-logic semantics | [`docs/architecture/views-and-sets.md`](docs/architecture/views-and-sets.md), [`docs/architecture/context-artifacts.md`](docs/architecture/context-artifacts.md), [`docs/architecture/turn-runtime-logic.md`](docs/architecture/turn-runtime-logic.md) |
 | backend mapping or Memgraph constraints | [`docs/backends/README.md`](docs/backends/README.md), [`docs/backends/memgraph.md`](docs/backends/memgraph.md) |
 | Rust runtime behavior | [`src/CONTEXT.md`](src/CONTEXT.md) |
 | workspace crates | [`crates/CONTEXT.md`](crates/CONTEXT.md) |

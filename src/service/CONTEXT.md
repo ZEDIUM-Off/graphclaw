@@ -22,6 +22,18 @@ This is a thin inherited orchestration layer that translates runtime behavior in
 - Entered from CLI/service command wiring in `src/main.rs`.
 - Delegates operational startup semantics to the daemon/runtime stack rather than owning product behavior itself.
 
+## Interaction Sketch
+
+Current responsibilities and main neighboring modules:
+
+```mermaid
+flowchart LR
+    CLI[service commands] --> Service[service wrapper]
+    Config[config] --> Service
+    Service --> Daemon[daemon runtime]
+    Service --> OS[os service manager]
+```
+
 ## GraphClaw Evolution Note
 
 Do not imply that service management has been reworked around a new GraphClaw architecture. It currently manages the inherited daemon/runtime stack.

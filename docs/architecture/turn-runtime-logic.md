@@ -21,17 +21,45 @@ This document therefore describes the logical phases of a turn and then maps the
 
 The stable logical sequence should be documented as:
 
-1. determine the session-scoped constraints that bound what may be accessed;
-2. resolve or refresh the relevant `View` scope;
-3. build, expand, or refine candidate `GraphSet` objects;
-4. enter `ThinkingContext` to compare candidate structures and possible mutations;
-5. evaluate packability, policy, and budget;
-6. derive a packable subgraph candidate;
-7. build the final `ContextPack`;
-8. record a `ResolutionTrace`;
-9. hand the result into response generation and any post-turn persistence flow.
+1. derive `TaskIntent` from the incoming turn;
+2. determine the session-scoped constraints that bound what may be accessed;
+3. resolve the coherent strategy set for reflection, exploration, packing, and orchestration;
+4. resolve or refresh the relevant `View` scope;
+5. build, expand, or refine candidate `GraphSet` objects;
+6. enter `ThinkingContext` to compare candidate structures and possible mutations;
+7. evaluate packability, policy, and budget;
+8. derive a packable subgraph candidate;
+9. build the final `ContextPack`;
+10. record a `ResolutionTrace`;
+11. hand the result into response generation and any post-turn persistence flow.
 
 These are logical phases, not a fixed class diagram.
+
+## Logical Turn Diagram
+
+This diagram shows the target logical sequence only. It should not be read as proof that the inherited runtime already exposes each artifact explicitly.
+
+```mermaid
+flowchart LR
+    A[TaskIntent]
+    B[Session constraints]
+    C[StrategyResolution]
+    D[View resolution]
+    E[GraphSet refinement]
+    F[ThinkingContext]
+    G[Policy and budget evaluation]
+    H[Packable subgraph]
+    I[ContextPack]
+    J[ResolutionTrace]
+    K[Response generation]
+    L[Post-turn persistence]
+
+    A --> B --> C --> D --> E --> F --> G --> H --> I
+    F --> J
+    I --> J
+    I --> K
+    J --> L
+```
 
 ## Current Inherited Runtime Mapping
 
@@ -40,6 +68,141 @@ The current runtime is still organized primarily around `src/agent/`.
 The important transition rule is:
 
 > the inherited loop remains the operational path, but the docs should show where explicit context artifacts can later be inserted without rewriting the whole loop in one pass.
+
+## Current Inherited Runtime Diagram
+
+Solid arrows below show current module relationships at a high level. Dotted arrows mark likely future insertion points for explicit context artifacts.
+
+```mermaid
+flowchart TB
+    subgraph CR[Current inherited runtime under src/agent/]
+        L["loop_.rs - Turn orchestration"]
+        M["memory_loader.rs - Recall preload"]
+        P["prompt.rs - Prompt-visible assembly"]
+        D["dispatcher.rs - Provider and tool dispatch"]
+    end
+
+    C[Future candidate context inputs]
+    T[Future TaskIntent and StrategyResolution]
+    K[Future ContextPack]
+    R[Future ResolutionTrace]
+
+    L --> M
+    L --> P
+    L --> D
+    L -. may later derive .-> T
+    M -. may later feed .-> C
+    T -. may later guide .-> M
+    T -. may later guide .-> D
+    L -. may later hand off to .-> K
+    P -. may later consume .-> K
+    L -. may later record .-> R
+    D -. may later emit evidence into .-> R
+```
+
+## Cross-Cutting Sequential Paths
+
+The following diagrams compare how the main runtime modules participate in a turn today versus how they are projected to articulate once explicit context and strategy seams exist. They are architecture-level orientation only; they do not imply that the future path is implemented.
+
+### Current Inherited Path (sequential)
+
+Solid arrows show the dominant sequential flow across subsystems. Gateway and channels feed the agent loop; the loop drives memory, prompt assembly, and dispatch; providers, tools, runtime, and security are used as the turn executes, without an explicit TaskIntent, StrategyResolution, or ContextPack.
+
+```mermaid
+flowchart TD
+    subgraph Entry["Entry - current"]
+        GW[gateway]
+        CH[channels]
+    end
+    subgraph AgentArea["src/agent - current"]
+        L[loop]
+        ML[memory_loader]
+        PR[prompt]
+        DP[dispatcher]
+    end
+    subgraph Support["Supporting modules - current"]
+        MEM[memory]
+        PV[providers]
+        TL[tools]
+        RT[runtime]
+        SEC[security]
+    end
+
+    GW --> L
+    CH --> L
+    L --> ML
+    L --> PR
+    L --> DP
+    ML --> MEM
+    PR --> MEM
+    DP --> PV
+    DP --> TL
+    TL --> RT
+    TL --> MEM
+    TL --> SEC
+    DP --> GW
+```
+
+### Future Governed Path (sequential, target)
+
+Dotted boxes indicate future seams or artifacts not yet implemented. The same modules appear, but turn entry leads to TaskIntent and StrategyResolution; a Graph Engine seam (context creation, view resolution, set construction, budget, packing) produces ContextPack; the agent consumes ContextPack for prompt assembly and records ResolutionTrace; memory, tools, providers, runtime, and security remain but are orchestrated by strategy and context flow.
+
+```mermaid
+flowchart TD
+    subgraph Entry["Entry"]
+        GW[gateway]
+        CH[channels]
+    end
+    subgraph AgentArea["src/agent"]
+        L[loop]
+        ML[memory_loader]
+        PR[prompt]
+        DP[dispatcher]
+    end
+    subgraph FutureSeam["Future Graph Engine seam - not yet implemented"]
+        TI[TaskIntent]
+        SR[StrategyResolution]
+        GE[context creation - view - set - budget - pack]
+        CP[ContextPack]
+        TR[ResolutionTrace]
+    end
+    subgraph Support["Supporting modules"]
+        MEM[memory]
+        PV[providers]
+        TL[tools]
+        RT[runtime]
+        SEC[security]
+    end
+
+    GW --> L
+    CH --> L
+    L -.-> TI
+    TI -.-> SR
+    SR -.-> GE
+    GE -.-> CP
+    GE -.-> MEM
+    ML -.-> GE
+    CP -.-> PR
+    L -.-> TR
+    DP -.-> TR
+    L --> ML
+    L --> PR
+    L --> DP
+    PR --> MEM
+    DP --> PV
+    DP --> TL
+    TL --> RT
+    TL --> MEM
+    TL --> SEC
+    DP --> GW
+```
+
+### How To Read The Comparison
+
+- **Current path**: gateway/channels → agent loop → memory_loader, prompt, dispatcher → providers, tools, runtime, security. Context is implicit (prompt assembly and recall); there is no explicit strategy resolution or ContextPack.
+- **Future path**: the same modules are used, but TaskIntent and StrategyResolution precede context creation; a governed Graph Engine seam produces ContextPack and consumes memory as one input; prompt consumes ContextPack; ResolutionTrace is recorded along the way. Orchestration, memory, tools, providers, runtime, and security remain in their current ownership; the new behavior is the explicit strategy and context layer between turn entry and prompt assembly, not a replacement of those modules.
+
+For interface families and seam placement, see [future-integration-seams.md](future-integration-seams.md). For migration order and coexistence, see [zero-to-graphclaw-transition.md](zero-to-graphclaw-transition.md).
 
 ### `src/agent/prompt.rs`
 

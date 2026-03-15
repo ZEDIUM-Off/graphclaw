@@ -1,0 +1,112 @@
+{
+  "nodes": [
+    {
+      "id": "n0",
+      "position": { "x": -620, "y": -40 },
+      "caption": "TaskIntent",
+      "labels": ["TaskIntent"],
+      "properties": {
+        "file_origin": "src/agent/classifier.rs",
+        "role": "Initial structured task intent"
+      },
+      "style": {}
+    },
+    {
+      "id": "n1",
+      "position": { "x": -250, "y": -40 },
+      "caption": "Central Concepts",
+      "labels": ["Concept"],
+      "properties": {
+        "file_origin": "src/agent/classifier.rs + future graph-context query",
+        "role": "Central concepts derived from intent"
+      },
+      "style": {}
+    },
+    {
+      "id": "n2",
+      "position": { "x": 90, "y": -170 },
+      "caption": "Active Registry",
+      "labels": ["Registry"],
+      "properties": {
+        "file_origin": "future strategy/context resolver",
+        "role": "Constrains visible and manipulable types"
+      },
+      "style": {}
+    },
+    {
+      "id": "n3",
+      "position": { "x": 90, "y": 70 },
+      "caption": "Resolved Capability",
+      "labels": ["Capability"],
+      "properties": {
+        "file_origin": "src/agent/dispatcher.rs + src/tools/",
+        "role": "Selected abstract capability"
+      },
+      "style": {}
+    },
+    {
+      "id": "n4",
+      "position": { "x": 420, "y": -40 },
+      "caption": "StrategyResolution",
+      "labels": ["StrategyResolution"],
+      "properties": {
+        "file_origin": "future StrategyResolver seam",
+        "role": "Coherent choice of reflection, exploration, packing, and orchestration strategies"
+      },
+      "style": {}
+    },
+    {
+      "id": "n5",
+      "position": { "x": 760, "y": -40 },
+      "caption": "ReflectionPlan",
+      "labels": ["ReflectionPlan"],
+      "properties": {
+        "file_origin": "src/agent/agent.rs + future reflection planner",
+        "role": "Explicit reasoning plan"
+      },
+      "style": {}
+    }
+  ],
+  "relationships": [
+    {
+      "id": "r0",
+      "type": "RELATED_TO",
+      "style": {},
+      "properties": {},
+      "fromId": "n0",
+      "toId": "n1"
+    },
+    {
+      "id": "r1",
+      "type": "SCOPES_CONCEPT",
+      "style": {},
+      "properties": {},
+      "fromId": "n2",
+      "toId": "n1"
+    },
+    {
+      "id": "r2",
+      "type": "RELATED_TO",
+      "style": {},
+      "properties": {},
+      "fromId": "n3",
+      "toId": "n1"
+    },
+    {
+      "id": "r3",
+      "type": "PLAN_USES_STRATEGY",
+      "style": {},
+      "properties": {},
+      "fromId": "n5",
+      "toId": "n4"
+    },
+    {
+      "id": "r4",
+      "type": "FULFILLED_BY",
+      "style": {},
+      "properties": {},
+      "fromId": "n3",
+      "toId": "n5"
+    }
+  ]
+}

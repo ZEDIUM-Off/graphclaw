@@ -16,6 +16,17 @@ Validation gates and CI support utilities used locally and in automation.
 
 CI callers enter through shell gate scripts first; smaller Python helpers support reporting or data collection behind those checks.
 
+## Interaction Map
+
+```mermaid
+flowchart LR
+    Callers[Local runs and CI workflows] --> Gates[Shell gate scripts]
+    Gates --> Docs[docs quality and links gates]
+    Gates --> Rust[Rust quality gates]
+    Gates --> Scope[change-scope helper]
+    Gates --> Helpers[Python reporting helpers]
+```
+
 ## Current State
 
 This is the main validation surface for doc-only cleanup and the most policy-sensitive script subtree in the repo.
