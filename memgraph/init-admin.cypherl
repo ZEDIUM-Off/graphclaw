@@ -1,0 +1,5 @@
+// Script d'initialisation Memgraph : création de l'utilisateur admin
+// Les variables sont injectées via le docker-entrypoint (voir .memgraph.env)
+CREATE USER ${MEMGRAPH_USER} IDENTIFIED BY '${MEMGRAPH_PASSWORD}';
+// Pour changer le mot de passe d'un utilisateur existant :
+// ALTER USER ${MEMGRAPH_USER} SET PASSWORD '${MEMGRAPH_PASSWORD}'; 

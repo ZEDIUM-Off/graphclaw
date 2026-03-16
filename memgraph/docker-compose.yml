@@ -1,0 +1,46 @@
+services:
+  memgraph:
+    image: memgraph/memgraph-mage:latest
+    container_name: graphclaw-memgraph
+    restart: always
+    ports:
+      - "7687:7687"  # Bolt protocol
+      - "7444:7444"  # Logs streaming for Memgraph Lab
+    volumes:
+      - mg_lib:/var/lib/memgraph
+      - mg_log:/var/log/memgraph
+      - mg_etc:/etc/memgraph
+      # - ./memgraph.conf:/etc/memgraph/memgraph.conf:ro
+      - ./init-admin.cypherl:/usr/lib/memgraph/init-admin.cypherl:ro
+    env_file:
+      - .memgraph.env  # Toutes les variables Memgraph sont à gérer ici (voir .memgraph.env exhaustif)
+    command: [
+      "--storage-automatic-label-index-creation-enabled=true",
+      "--storage-property-store-compression-enabled=true",
+      "--schema-info-enabled=true",
+      "--also-log-to-stderr=true",
+      "--init-file=/usr/lib/memgraph/init-admin.cypherl"
+    ]
+    # healthcheck:
+    #   test: ["CMD-SHELL", "echo 'RETURN 0;' | mgconsole -username $MEMGRAPH_USER -password $MEMGRAPH_PASSWORD || exit 1"]
+    #   interval: 30s
+    #   timeout: 10s
+    #   retries: 3
+    #   start_period: 5s
+
+  memgraph-lab:
+    image: memgraph/lab:latest
+    container_name: graphclaw-memgraph-lab
+    restart: always
+    ports:
+      - "9001:3000"  # Memgraph Lab web UI
+    env_file:
+      - .memlab.env
+    # depends_on:
+      # memgraph:
+        # condition: service_healthy
+
+volumes:
+  mg_lib:
+  mg_log:
+  mg_etc:

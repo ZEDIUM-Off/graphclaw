@@ -37,6 +37,7 @@ At the root level, documentation is expected to fix meaning before it fixes impl
 - `docs/architecture/hook-bus-interface.md` - interface fiche for lifecycle-event publication and observability seams
 - `docs/architecture/glossary.md` - stable GraphClaw vocabulary
 - `docs/backends/memgraph.md` - Memgraph backend reference
+- `memgraph/` - Memgraph stack (Compose, config, init scripts); see `memgraph/CONTEXT.md`
 - `src/`, `docs/`, `tests/`, `web/`, `python/`, `firmware/` - main working areas
 
 ## Current State
@@ -57,6 +58,7 @@ Do not interpret target-architecture references as proof of implementation. The 
 | `docs/README.md` | documentation hub and docs-specific routing |
 | `docs/architecture/` | stable concept definitions, glossary, and target runtime framing |
 | `docs/backends/` | backend integration references and coupling guidance |
+| `memgraph/` | Memgraph graph DB and Lab stack; run via `make memgraph-up` etc. |
 | `src/`, `crates/`, `web/`, `python/`, `firmware/`, `tests/` | primary implementation surfaces |
 | `scripts/`, `dev/`, `.github/` | automation, CI, and repository maintenance surfaces |
 
@@ -95,6 +97,7 @@ Use these routes:
 | migration thesis, strategy/interface families, or future seams | `docs/architecture/zero-to-graphclaw-transition.md`, `docs/architecture/future-integration-seams.md` |
 | views, sets, artifacts, strategy resolution, budget, or turn-logic semantics | `docs/architecture/views-and-sets.md`, `docs/architecture/context-artifacts.md`, `docs/architecture/turn-runtime-logic.md` |
 | backend integration framing | `docs/backends/README.md`, `docs/backends/memgraph.md` |
+| Memgraph stack (start/stop, config, init) | `memgraph/CONTEXT.md`, `make memgraph-up` |
 | common local build/test/dev entrypoints | `Makefile`, `dev/CONTEXT.md`, `scripts/CONTEXT.md` |
 | documentation trees | `docs/README.md`, `docs/CONTEXT.md` |
 | Rust runtime behavior | `src/CONTEXT.md` |

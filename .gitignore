@@ -12,6 +12,8 @@ docker-compose.override.yml
 
 # Environment files (may contain secrets)
 .env
+memgraph/.memgraph.env
+memgraph/.memlab.env
 
 # Python virtual environments
 

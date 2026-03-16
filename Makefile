@@ -16,6 +16,7 @@ BACKUP_BRANCH ?= backup/pre-resync-$(SYNC_DATE)
 UPSTREAM_URL ?=
 RELEASE_TAG ?=
 RELEASE_BRANCH ?= resync/release-$(RELEASE_TAG)-$(SYNC_DATE)
+MEMGRAPH_DIR ?= memgraph
 
 .PHONY: help \
 	fmt fmt-check clippy clippy-strict lint lint-strict \
@@ -27,6 +28,7 @@ RELEASE_BRANCH ?= resync/release-$(RELEASE_TAG)-$(SYNC_DATE)
 	python-test \
 	ci ci-build-image ci-shell ci-lint ci-lint-strict ci-lint-delta ci-test ci-build ci-security ci-docker-smoke \
 	dev-up dev-down dev-shell dev-agent dev-logs dev-build dev-clean \
+	memgraph-up memgraph-down memgraph-logs memgraph-shell \
 	release-tag \
 	sync-help sync-check-clean sync-remotes sync-add-upstream sync-fetch sync-status sync-divergence \
 	sync-backup sync-branch sync-merge-upstream sync-validate \
@@ -77,6 +79,12 @@ help:
 		'  make dev-logs           Follow container logs' \
 		'  make dev-build          Rebuild dev containers' \
 		'  make dev-down           Stop dev containers' \
+		'' \
+		'Memgraph (graph backend)' \
+		'  make memgraph-up        Start Memgraph and Memgraph Lab' \
+		'  make memgraph-down      Stop Memgraph stack' \
+		'  make memgraph-logs      Follow Memgraph logs' \
+		'  make memgraph-shell     Exec into Memgraph container' \
 		'' \
 		'Upstream resync protocol' \
 		'  make sync-help          Show recommended resync sequence' \
@@ -235,6 +243,18 @@ dev-build:
 
 dev-clean:
 	./dev/cli.sh clean
+
+memgraph-up:
+	cd $(MEMGRAPH_DIR) && docker compose up -d
+
+memgraph-down:
+	cd $(MEMGRAPH_DIR) && docker compose down
+
+memgraph-logs:
+	cd $(MEMGRAPH_DIR) && docker compose logs -f
+
+memgraph-shell:
+	cd $(MEMGRAPH_DIR) && docker compose exec memgraph bash
 
 release-tag:
 	@test -n "$(TAG)" || (echo "Usage: make release-tag TAG=vX.Y.Z" && exit 1)
