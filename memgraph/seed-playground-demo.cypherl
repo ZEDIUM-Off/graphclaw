@@ -1,0 +1,21 @@
+// GraphClaw Playground — demo seed data
+// Run this in Memgraph Lab (Query) or via mgconsole after Memgraph is up.
+// Then use the returned node ids in the Playground UI as view anchors.
+
+// Concepts (business + one brand)
+CREATE (p:Concept {name: 'Pricing', workspace: 'shared'});
+CREATE (m:Concept {name: 'Margin', workspace: 'shared'});
+CREATE (f:Concept {name: 'Forecasting', workspace: 'shared'});
+CREATE (b:Concept {name: 'BrandIdentity', workspace: 'HIGHFINITY'});
+
+// Relations
+MATCH (p:Concept {name: 'Pricing'}), (m:Concept {name: 'Margin'})
+CREATE (p)-[:RELATES_TO]->(m);
+
+MATCH (f:Concept {name: 'Forecasting'}), (p:Concept {name: 'Pricing'})
+CREATE (f)-[:DEPENDS_ON]->(p);
+
+MATCH (p:Concept {name: 'Pricing'}), (b:Concept {name: 'BrandIdentity'})
+CREATE (p)-[:RELATES_TO]->(b);
+
+// To get node ids for the Playground: MATCH (n:Concept) RETURN id(n), n.name ORDER BY n.name;

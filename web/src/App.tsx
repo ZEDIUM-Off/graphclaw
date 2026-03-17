@@ -11,6 +11,7 @@ import Config from './pages/Config';
 import Cost from './pages/Cost';
 import Logs from './pages/Logs';
 import Doctor from './pages/Doctor';
+import Playground from './pages/Playground';
 import { AuthProvider, useAuth } from './hooks/useAuth';
 import { setLocale, type Locale } from './lib/i18n';
 
@@ -123,6 +124,7 @@ function AppContent() {
           <Route path="/cost" element={<Cost />} />
           <Route path="/logs" element={<Logs />} />
           <Route path="/doctor" element={<Doctor />} />
+          <Route path="/playground" element={<Playground />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Route>
       </Routes>

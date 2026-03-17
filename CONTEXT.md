@@ -25,6 +25,7 @@ At the root level, documentation is expected to fix meaning before it fixes impl
 - `docs/architecture/graph-context-engine.md` - conceptual architecture reference
 - `docs/architecture/zero-to-graphclaw-transition.md` - transition thesis and seam-first migration reference
 - `docs/architecture/views-and-sets.md` - operational semantics for views, sets, and packability
+- `docs/architecture/view-system-spec-v0.md` - View System v0 (lifecycle, algebra, LLM export) for playground
 - `docs/architecture/context-artifacts.md` - context artifact boundaries, explicit planning artifacts, and budget layers
 - `docs/architecture/turn-runtime-logic.md` - logical turn phases, strategy resolution, and runtime mapping
 - `docs/architecture/future-integration-seams.md` - future interface families, strategy seams, and orchestration hooks

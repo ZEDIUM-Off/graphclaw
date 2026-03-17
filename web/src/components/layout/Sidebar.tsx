@@ -10,6 +10,7 @@ import {
   DollarSign,
   Activity,
   Stethoscope,
+  GitBranch,
 } from 'lucide-react';
 import { t } from '@/lib/i18n';
 
@@ -24,6 +25,7 @@ const navItems = [
   { to: '/cost', icon: DollarSign, labelKey: 'nav.cost' },
   { to: '/logs', icon: Activity, labelKey: 'nav.logs' },
   { to: '/doctor', icon: Stethoscope, labelKey: 'nav.doctor' },
+  { to: '/playground', icon: GitBranch, labelKey: 'nav.playground' },
 ];
 
 export default function Sidebar() {

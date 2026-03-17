@@ -17,6 +17,11 @@ UPSTREAM_URL ?=
 RELEASE_TAG ?=
 RELEASE_BRANCH ?= resync/release-$(RELEASE_TAG)-$(SYNC_DATE)
 MEMGRAPH_DIR ?= memgraph
+PLAYGROUND_MEMGRAPH_ENV_FILE ?= $(MEMGRAPH_DIR)/.memgraph.env
+PYTHON_USER_SITE ?= $(shell $(PYTHON) -c 'import site; print(site.getusersitepackages())' 2>/dev/null)
+PLAYGROUND_LOCAL_BIN ?= $(HOME)/.local/bin
+PLAYGROUND_LIBCLANG_PATH ?= $(PYTHON_USER_SITE)/clang/native
+PLAYGROUND_BINDGEN_EXTRA_CLANG_ARGS ?= --sysroot=/ -I$(shell cc -print-file-name=include) -I/usr/include -I/usr/include/x86_64-linux-gnu
 
 .PHONY: help \
 	fmt fmt-check clippy clippy-strict lint lint-strict \
@@ -29,6 +34,7 @@ MEMGRAPH_DIR ?= memgraph
 	ci ci-build-image ci-shell ci-lint ci-lint-strict ci-lint-delta ci-test ci-build ci-security ci-docker-smoke \
 	dev-up dev-down dev-shell dev-agent dev-logs dev-build dev-clean \
 	memgraph-up memgraph-down memgraph-logs memgraph-shell \
+	playground playground-paircode \
 	release-tag \
 	sync-help sync-check-clean sync-remotes sync-add-upstream sync-fetch sync-status sync-divergence \
 	sync-backup sync-branch sync-merge-upstream sync-validate \
@@ -85,6 +91,10 @@ help:
 		'  make memgraph-down      Stop Memgraph stack' \
 		'  make memgraph-logs      Follow Memgraph logs' \
 		'  make memgraph-shell     Exec into Memgraph container' \
+		'' \
+		'Playground (Memgraph + gateway)' \
+		'  make playground         Start Memgraph then gateway (one command; dashboard + /playground)' \
+		'  make playground-paircode  Generate a new pairing code (gateway must be running)' \
 		'' \
 		'Upstream resync protocol' \
 		'  make sync-help          Show recommended resync sequence' \
@@ -255,6 +265,22 @@ memgraph-logs:
 
 memgraph-shell:
 	cd $(MEMGRAPH_DIR) && docker compose exec memgraph bash
+
+# Start Memgraph then the gateway (dashboard + playground API). Single command to run the full stack.
+playground: memgraph-up
+	@echo "Waiting for Memgraph to accept connections..."
+	@sleep 3
+	set -a; \
+	[ ! -f "$(PLAYGROUND_MEMGRAPH_ENV_FILE)" ] || . "$(PLAYGROUND_MEMGRAPH_ENV_FILE)"; \
+	set +a; \
+	PATH="$(PLAYGROUND_LOCAL_BIN):$$PATH" \
+	LIBCLANG_PATH="$(PLAYGROUND_LIBCLANG_PATH)" \
+	BINDGEN_EXTRA_CLANG_ARGS="$(PLAYGROUND_BINDGEN_EXTRA_CLANG_ARGS)" \
+	$(CARGO) run --locked -- gateway
+
+# Generate a new one-time pairing code for a new client. Gateway must be running (e.g. make playground in another terminal).
+playground-paircode:
+	$(CARGO) run --locked -- gateway get-paircode --new
 
 release-tag:
 	@test -n "$(TAG)" || (echo "Usage: make release-tag TAG=vX.Y.Z" && exit 1)

@@ -9,6 +9,7 @@ Use it when the question is not "what does the inherited runtime do today?" but 
 - Graph Context Engine reference: [`graph-context-engine.md`](graph-context-engine.md)
 - transition framing from the inherited runtime: [`zero-to-graphclaw-transition.md`](zero-to-graphclaw-transition.md)
 - views, set semantics, and packability: [`views-and-sets.md`](views-and-sets.md)
+- View System v0 (lifecycle, algebra, LLM export) for the playground: [`view-system-spec-v0.md`](view-system-spec-v0.md)
 - context artifacts, planning artifacts, and budgeting: [`context-artifacts.md`](context-artifacts.md)
 - logical turn phases, strategy resolution, current insertion points, and cross-cutting sequential paths (current vs future): [`turn-runtime-logic.md`](turn-runtime-logic.md)
 - future integration seams, strategy seams, and interface families: [`future-integration-seams.md`](future-integration-seams.md)
@@ -103,6 +104,7 @@ This subtree is not for:
 | `graph-context-engine.md` | what target model is GraphClaw trying to stabilize, including governed strategy choice |
 | `zero-to-graphclaw-transition.md` | how does the inherited runtime migrate without a rewrite-first strategy |
 | `views-and-sets.md` | how should views, `GraphSet` objects, and packability work conceptually |
+| `view-system-spec-v0.md` | View System v0: lifecycle, composition algebra, LLM export (playground slice) |
 | `context-artifacts.md` | which context and planning artifacts are distinct and how do budget concerns relate to them |
 | `turn-runtime-logic.md` | how should a turn resolve logically, including strategy resolution, where does the current runtime fit, and how do gateway/agent/memory/tools/providers/runtime/security articulate in current vs future paths |
 | `future-integration-seams.md` | which interface families, orchestration seams, and runtime seams should emerge next |

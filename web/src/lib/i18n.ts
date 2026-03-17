@@ -20,6 +20,7 @@ const translations: Record<Locale, Record<string, string>> = {
     'nav.cost': 'Cost Tracker',
     'nav.logs': 'Logs',
     'nav.doctor': 'Doctor',
+    'nav.playground': 'Playground',
 
     // Dashboard
     'dashboard.title': 'Dashboard',
@@ -203,6 +204,7 @@ const translations: Record<Locale, Record<string, string>> = {
     'nav.cost': 'Maliyet Takibi',
     'nav.logs': 'Kayitlar',
     'nav.doctor': 'Doktor',
+    'nav.playground': 'Playground',
 
     // Dashboard
     'dashboard.title': 'Kontrol Paneli',

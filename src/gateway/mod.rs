@@ -8,6 +8,7 @@
 //! - Header sanitization (handled by axum/hyper)
 
 pub mod api;
+pub mod playground;
 pub mod sse;
 pub mod static_files;
 pub mod ws;
@@ -312,6 +313,8 @@ pub struct AppState {
     pub event_tx: tokio::sync::broadcast::Sender<serde_json::Value>,
     /// Shutdown signal sender for graceful shutdown
     pub shutdown_tx: tokio::sync::watch::Sender<bool>,
+    /// GraphClaw playground (Memgraph + views). None if Memgraph unreachable.
+    pub playground: Option<std::sync::Arc<playground::PlaygroundState>>,
 }
 
 /// Run the HTTP gateway using axum with proper HTTP/1.1 compliance.
@@ -650,6 +653,9 @@ pub async fn run_gateway(host: &str, port: u16, config: Config) -> Result<()> {
         cost_tracker,
         event_tx,
         shutdown_tx,
+        playground: playground::create_playground_state()
+            .await
+            .map(std::sync::Arc::new),
     };
 
     // Config PUT needs larger body limit (1MB)
@@ -694,6 +700,8 @@ pub async fn run_gateway(host: &str, port: u16, config: Config) -> Result<()> {
         .route("/api/health", get(api::handle_api_health))
         // ── SSE event stream ──
         .route("/api/events", get(sse::handle_sse_events))
+        // ── GraphClaw playground (graph + views) ──
+        .merge(playground::playground_routes())
         // ── WebSocket agent chat ──
         .route("/ws/chat", get(ws::handle_ws_chat))
         // ── Static assets (web dashboard) ──
@@ -1717,6 +1725,7 @@ mod tests {
             cost_tracker: None,
             event_tx: tokio::sync::broadcast::channel(16).0,
             shutdown_tx: tokio::sync::watch::channel(false).0,
+            playground: None,
         };
 
         let response = handle_metrics(State(state)).await.into_response();
@@ -1767,6 +1776,7 @@ mod tests {
             cost_tracker: None,
             event_tx: tokio::sync::broadcast::channel(16).0,
             shutdown_tx: tokio::sync::watch::channel(false).0,
+            playground: None,
         };
 
         let response = handle_metrics(State(state)).await.into_response();
@@ -2142,6 +2152,7 @@ mod tests {
             cost_tracker: None,
             event_tx: tokio::sync::broadcast::channel(16).0,
             shutdown_tx: tokio::sync::watch::channel(false).0,
+            playground: None,
         };
 
         let mut headers = HeaderMap::new();
@@ -2207,6 +2218,7 @@ mod tests {
             cost_tracker: None,
             event_tx: tokio::sync::broadcast::channel(16).0,
             shutdown_tx: tokio::sync::watch::channel(false).0,
+            playground: None,
         };
 
         let headers = HeaderMap::new();
@@ -2284,6 +2296,7 @@ mod tests {
             cost_tracker: None,
             event_tx: tokio::sync::broadcast::channel(16).0,
             shutdown_tx: tokio::sync::watch::channel(false).0,
+            playground: None,
         };
 
         let response = handle_webhook(
@@ -2333,6 +2346,7 @@ mod tests {
             cost_tracker: None,
             event_tx: tokio::sync::broadcast::channel(16).0,
             shutdown_tx: tokio::sync::watch::channel(false).0,
+            playground: None,
         };
 
         let mut headers = HeaderMap::new();
@@ -2387,6 +2401,7 @@ mod tests {
             cost_tracker: None,
             event_tx: tokio::sync::broadcast::channel(16).0,
             shutdown_tx: tokio::sync::watch::channel(false).0,
+            playground: None,
         };
 
         let mut headers = HeaderMap::new();
@@ -2446,6 +2461,7 @@ mod tests {
             cost_tracker: None,
             event_tx: tokio::sync::broadcast::channel(16).0,
             shutdown_tx: tokio::sync::watch::channel(false).0,
+            playground: None,
         };
 
         let response = handle_nextcloud_talk_webhook(
@@ -2501,6 +2517,7 @@ mod tests {
             cost_tracker: None,
             event_tx: tokio::sync::broadcast::channel(16).0,
             shutdown_tx: tokio::sync::watch::channel(false).0,
+            playground: None,
         };
 
         let mut headers = HeaderMap::new();

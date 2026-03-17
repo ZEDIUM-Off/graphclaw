@@ -1,5 +1,5 @@
 [workspace]
-members = [".", "crates/robot-kit"]
+members = [".", "crates/robot-kit", "crates/memgraph", "crates/views"]
 resolver = "2"
 
 [package]
@@ -99,6 +99,10 @@ prost = { version = "0.14", default-features = false, features = ["derive"], opt
 
 # Memory / persistence
 rusqlite = { version = "0.37", features = ["bundled"] }
+
+# GraphClaw playground (Memgraph + views)
+memgraph = { path = "crates/memgraph" }
+views = { path = "crates/views" }
 postgres = { version = "0.19", features = ["with-chrono-0_4"], optional = true }
 chrono = { version = "0.4", default-features = false, features = ["clock", "std", "serde"] }
 chrono-tz = "0.10"

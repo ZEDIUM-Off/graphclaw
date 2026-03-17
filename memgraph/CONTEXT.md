@@ -26,6 +26,7 @@ This subtree runs the Memgraph graph database and Memgraph Lab as part of the Gr
 | `.memlab.env` | Memgraph Lab connection and UI config |
 | `memgraph.conf` | Optional Memgraph server config (currently not mounted) |
 | `init-admin.cypherl` | Bootstrap Cypher run at startup (e.g. create admin user) |
+| `seed-playground-demo.cypherl` | Optional demo seed for GraphClaw playground (run manually in Lab) |
 
 ## Backend Reference
 

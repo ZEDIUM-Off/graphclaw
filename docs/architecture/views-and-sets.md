@@ -6,6 +6,8 @@ This document refines the operational meaning of `View`, `GraphSet`, packability
 
 It is still target-architecture documentation. It does not claim that the inherited runtime already exposes these objects explicitly in code.
 
+For the **first implementation slice** (playground): lifecycle template → bound → resolved → export, v0 composition algebra, and LLM export formats are specified in [view-system-spec-v0.md](view-system-spec-v0.md). That spec is a deliberately bounded v0 subset of the concepts described here.
+
 ## Why This Document Exists
 
 `View` and `GraphSet` are too central to remain only brief glossary entries. They need operational detail so the repository can reason clearly about navigation, selection, packability, and future integration seams.

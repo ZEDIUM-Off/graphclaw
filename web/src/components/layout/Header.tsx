@@ -15,6 +15,7 @@ const routeTitles: Record<string, string> = {
   '/cost': 'nav.cost',
   '/logs': 'nav.logs',
   '/doctor': 'nav.doctor',
+  '/playground': 'nav.playground',
 };
 
 export default function Header() {

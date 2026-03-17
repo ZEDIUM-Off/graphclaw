@@ -24,6 +24,7 @@ This subtree owns page-level composition for the current operator dashboard. It 
 - `AgentChat.tsx` - agent interaction view
 - `Tools.tsx`, `Cron.tsx`, `Integrations.tsx`, `Memory.tsx`, `Config.tsx` - operational control pages
 - `Cost.tsx`, `Logs.tsx`, `Doctor.tsx` - diagnostics and observability views
+- `Playground.tsx` - GraphClaw view-system playground and graph visualizer
 
 ## Routing
 

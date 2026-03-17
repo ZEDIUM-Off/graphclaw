@@ -71,6 +71,7 @@ flowchart LR
 - `docs/architecture/graph-context-engine.md` - target concept model
 - `docs/architecture/zero-to-graphclaw-transition.md` - seam-first migration framing
 - `docs/architecture/views-and-sets.md` - `View`, `GraphSet`, and packability semantics
+- `docs/architecture/view-system-spec-v0.md` - View System v0 (playground lifecycle, algebra, LLM export)
 - `docs/architecture/context-artifacts.md` - context artifact distinctions
 - `docs/architecture/future-integration-seams.md` - future interface-family framing
 - `docs/backends/memgraph.md` - Memgraph backend reference

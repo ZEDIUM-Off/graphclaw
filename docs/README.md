@@ -33,6 +33,7 @@ Use this page to choose the right documentation branch before editing or relying
 | operational semantics for views, sets, artifacts, strategy resolution, budget, or turn logic | [`architecture/views-and-sets.md`](architecture/views-and-sets.md), [`architecture/context-artifacts.md`](architecture/context-artifacts.md), [`architecture/turn-runtime-logic.md`](architecture/turn-runtime-logic.md) |
 | concrete first-seam interface fiches | [`architecture/session-window-interface.md`](architecture/session-window-interface.md), [`architecture/context-pack-interface.md`](architecture/context-pack-interface.md), [`architecture/strategy-resolver-interface.md`](architecture/strategy-resolver-interface.md), [`architecture/graph-context-store-and-retriever-interface.md`](architecture/graph-context-store-and-retriever-interface.md), [`architecture/mutation-guard-interface.md`](architecture/mutation-guard-interface.md), [`architecture/orchestration-policies-interface.md`](architecture/orchestration-policies-interface.md), [`architecture/hook-bus-interface.md`](architecture/hook-bus-interface.md) |
 | backend reference mapping or Memgraph constraints | [`backends/README.md`](backends/README.md) |
+| Playground demo scenario (views, resolve, export) | [`playground-demo-scenario.md`](playground-demo-scenario.md) |
 | contributor and review process | [`contributing/README.md`](contributing/README.md) |
 | setup and onboarding instructions | [`setup-guides/README.md`](setup-guides/README.md) |
 | CLI, API, and SOP references | [`reference/README.md`](reference/README.md) |

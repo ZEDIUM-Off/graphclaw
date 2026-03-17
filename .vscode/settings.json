@@ -1,4 +1,5 @@
 {
+  "rust-client.engine": "rust-analyzer",
   "git.autofetch": true,
   "git.autofetchPeriod": 90,
   "search.exclude": {

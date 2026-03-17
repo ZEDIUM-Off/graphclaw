@@ -2,13 +2,14 @@
 
 ## Scope
 
-Shared frontend structure components, currently centered on the dashboard layout shell.
+Shared frontend structure components, currently centered on the dashboard layout shell plus feature-scoped reusable UI such as playground visualization widgets.
 
 ## File Map
 
 - `layout/Layout.tsx` - top-level route wrapper
 - `layout/Header.tsx` - shared header chrome
 - `layout/Sidebar.tsx` - primary navigation shell
+- `playground/` - reusable graph-playground visualization and inspection widgets
 
 ## Routing
 
