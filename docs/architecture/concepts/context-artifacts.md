@@ -26,8 +26,8 @@ The conceptual chain should be documented as:
 
 1. `TaskIntent` frames the minimum structured task;
 2. `StrategyResolution` selects the governing strategies for the turn;
-3. one or more `GraphSet` objects are built or refined inside a `View`;
-4. `ThinkingContext` uses those sets and plans to explore, compare, and arbitrate;
+3. one or more `View` objects are built or refined from resolved Sets;
+4. `ThinkingContext` uses those Views and plans to explore, compare, and arbitrate;
 5. a packable subgraph is derived from the candidate working sets;
 6. the final `ContextPack` is budgeted and assembled;
 7. `ResolutionTrace` records how the result was chosen;
@@ -44,7 +44,6 @@ flowchart LR
     I[TaskIntent]
     S[StrategyResolution]
     V[View]
-    G[GraphSet]
     T[ThinkingContext]
     P[Packable subgraph]
     C[ContextPack]
@@ -57,23 +56,22 @@ flowchart LR
     I --> S
     S --> V
     S --> T
-    V --> G --> T --> P --> C
+    V --> T --> P --> C
     T --> R
     C --> R
     M -. proposes changes for later selection .-> V
-    M -. proposes changes for later selection .-> G
     N -. constrains exploration .-> T
     B -. constrains candidate projection .-> P
     F -. constrains model-visible result .-> C
 ```
 
-## `GraphSet`
+## `View`
 
-A `GraphSet` is the reusable logical working set. It is useful for navigation, filtering, comparison, and derivation.
+A `View` is the reusable logical runtime working set. It is useful for navigation, filtering, comparison, and derivation.
 
 It can exist before anything is ready for model injection.
 
-For deeper set semantics, see [`views-and-sets.md`](views-and-sets.md).
+For deeper View semantics, see [`views-and-sets.md`](views-and-sets.md).
 
 ## Planning Artifacts
 

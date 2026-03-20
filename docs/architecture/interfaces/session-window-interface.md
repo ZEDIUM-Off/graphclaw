@@ -42,7 +42,7 @@ It is not:
 ### Typical Inputs
 
 - a governing `View` or view-derived visibility perimeter;
-- candidate `GraphSet` or packable-subgraph results from retrieval or exploration;
+- candidate `View` or packable-subgraph results from retrieval or exploration;
 - accepted `ContextMutationProposal` or `ContextEditPlan` operations;
 - policy and budget constraints from runtime guards;
 - turn-local evidence attachments or summaries.

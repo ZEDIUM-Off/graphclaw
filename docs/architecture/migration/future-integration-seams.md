@@ -72,7 +72,7 @@ Typical artifact flow:
 
 Problem isolated:
 
-- building and refining `GraphSet` objects should be distinct from final packing.
+- building and refining `View` objects should be distinct from final packing.
 
 Boundary separated:
 
@@ -81,7 +81,7 @@ Boundary separated:
 Typical artifact flow:
 
 - inputs such as seeds, views, filters, ranking hints, and backend capabilities;
-- outputs such as lazy or materialized `GraphSet` objects.
+- outputs such as lazy or materialized `View` objects.
 
 ### Budget Estimation
 
@@ -126,7 +126,7 @@ Boundary separated:
 Typical artifact flow:
 
 - inputs such as session history, embeddings, memory stores, and retrieval queries;
-- outputs such as recall candidates, evidence items, or seeds for `GraphSet` construction.
+- outputs such as recall candidates, evidence items, or seeds for `View` construction.
 
 ### Persistence And Materialization
 
@@ -175,7 +175,7 @@ Typical artifact flow:
 
 ## Sequential Path Comparison
 
-For a step-by-step comparison of how gateway, channels, agent, memory, tools, providers, runtime, and security participate in a turn today versus under a future governed path (TaskIntent, StrategyResolution, Graph Engine seam, ContextPack, ResolutionTrace), see the [Cross-Cutting Sequential Paths](turn-runtime-logic.md#cross-cutting-sequential-paths) section in `turn-runtime-logic.md`. That section documents the current inherited path and the target governed path without implying the future path is implemented.
+For a step-by-step comparison of how gateway, channels, agent, memory, tools, providers, runtime, and security participate in a turn today versus under a future governed path (TaskIntent, StrategyResolution, Graph Engine seam, ContextPack, ResolutionTrace), see the [Cross-Cutting Sequential Paths](../runtime/turn-runtime-logic.md#cross-cutting-sequential-paths) section in `turn-runtime-logic.md`. That section documents the current inherited path and the target governed path without implying the future path is implemented.
 
 ## Future Interface Seam Diagram
 

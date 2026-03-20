@@ -25,7 +25,7 @@ The stable logical sequence should be documented as:
 2. determine the session-scoped constraints that bound what may be accessed;
 3. resolve the coherent strategy set for reflection, exploration, packing, and orchestration;
 4. resolve or refresh the relevant `View` scope;
-5. build, expand, or refine candidate `GraphSet` objects;
+5. build, expand, or refine candidate `View` objects;
 6. enter `ThinkingContext` to compare candidate structures and possible mutations;
 7. evaluate packability, policy, and budget;
 8. derive a packable subgraph candidate;
@@ -45,7 +45,7 @@ flowchart LR
     B[Session constraints]
     C[StrategyResolution]
     D[View resolution]
-    E[GraphSet refinement]
+    E[View refinement]
     F[ThinkingContext]
     G[Policy and budget evaluation]
     H[Packable subgraph]
@@ -202,7 +202,7 @@ flowchart TD
 - **Current path**: gateway/channels → agent loop → memory_loader, prompt, dispatcher → providers, tools, runtime, security. Context is implicit (prompt assembly and recall); there is no explicit strategy resolution or ContextPack.
 - **Future path**: the same modules are used, but TaskIntent and StrategyResolution precede context creation; a governed Graph Engine seam produces ContextPack and consumes memory as one input; prompt consumes ContextPack; ResolutionTrace is recorded along the way. Orchestration, memory, tools, providers, runtime, and security remain in their current ownership; the new behavior is the explicit strategy and context layer between turn entry and prompt assembly, not a replacement of those modules.
 
-For interface families and seam placement, see [future-integration-seams.md](future-integration-seams.md). For migration order and coexistence, see [zero-to-graphclaw-transition.md](zero-to-graphclaw-transition.md).
+For interface families and seam placement, see [future-integration-seams.md](../migration/future-integration-seams.md). For migration order and coexistence, see [zero-to-graphclaw-transition.md](../migration/zero-to-graphclaw-transition.md).
 
 ### `src/agent/prompt.rs`
 

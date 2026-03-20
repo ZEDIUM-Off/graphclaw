@@ -50,7 +50,7 @@ As GraphClaw grows beyond the inherited baseline, this directory is where repo-w
 ## References
 
 - `tests/CONTEXT.md` - test-layer routing and validation rules
-- `docs/architecture/graph-context-engine.md` - target runtime artifacts that may later require full-stack proof
+- `docs/architecture/concepts/graph-context-engine.md` - target runtime artifacts that may later require full-stack proof
 
 ## Cautions
 

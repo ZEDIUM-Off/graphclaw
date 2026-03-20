@@ -133,7 +133,7 @@ That means this subtree may later provide:
 It should not become the canonical home for:
 
 - `View` governance;
-- `GraphSet` semantics;
+- `View` semantics;
 - final `ContextPack` ownership;
 - the whole reflective context phase.
 
@@ -156,7 +156,7 @@ It should not become the canonical home for:
 - `src/agent/CONTEXT.md` - main orchestrator boundary
 - `src/runtime/CONTEXT.md` - execution adapter boundary
 - `src/memory/CONTEXT.md` - persistence and retrieval boundary
-- `docs/architecture/graph-context-engine.md` - target model for `ContextPack`, `ResolutionTrace`, and related context-engine behavior
+- `docs/architecture/concepts/graph-context-engine.md` - target model for `ContextPack`, `ResolutionTrace`, and related context-engine behavior
 
 ## How Agents Should Work Here
 

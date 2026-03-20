@@ -6,7 +6,7 @@ Validation gates and CI support utilities used locally and in automation.
 
 ## File Map
 
-- `docs_quality_gate.sh`, `docs_links_gate.sh` - documentation validation entrypoints
+- `docs_quality_gate.sh`, `docs_links_gate.sh`, `docs_canonical_concepts_gate.sh` - documentation validation entrypoints
 - `rust_quality_gate.sh`, `rust_strict_delta_gate.sh` - Rust quality enforcement
 - `check_binary_size.sh` - binary-size guard
 - `detect_change_scope.sh` - change-scope routing helper

@@ -1,6 +1,6 @@
 ---
 name: graphclaw-graph-theory-memgraph
-description: Relie les concepts de theorie des graphes aux concepts d'architecture GraphClaw et aux mecanismes Memgraph. Use when writing or reviewing GraphClaw architecture docs, designing semantic graph models in Memgraph, composing View/GraphSet based context flows, or optimizing Cypher traversals, projections, and graph algorithms.
+description: Relie les concepts de theorie des graphes aux concepts d'architecture GraphClaw et aux mecanismes Memgraph. Use when writing or reviewing GraphClaw architecture docs, designing semantic graph models in Memgraph, composing Set/View based context flows, or optimizing Cypher traversals, projections, and graph algorithms.
 ---
 
 # GraphClaw, theorie des graphes et Memgraph
@@ -21,7 +21,7 @@ Utiliser ce skill quand la demande porte sur :
 
 - la documentation d'architecture GraphClaw ;
 - la modelisation semantique d'un graphe dans Memgraph ;
-- des `View`, `GraphSet`, `SessionWindow`, `ThinkingContext` ou `ContextPack` ;
+- des `Set`, `View`, `SessionWindow`, `ThinkingContext` ou `ContextPack` ;
 - des parcours, projections, classements, chemins, sous-graphes ou algorithmes ;
 - des requetes Cypher optimisees pour des operations graphe ;
 - la facon d'ancrer GraphClaw dans une lecture plus explicite de la theorie des graphes.
@@ -50,16 +50,16 @@ Ne jamais partir d'un catalogue Memgraph pour retro-definir le modele GraphClaw.
 
 Quand le sujet touche l'orchestration de contexte, garder ces distinctions nettes :
 
-- un `View` est une projection gouvernee sur le graphe ; ce n'est pas une simple requete ni un simple sous-graphe ;
-- un `GraphSet` est un ensemble logique de travail dans un `View` ;
-- un sous-graphe packable est derive d'un ou plusieurs `GraphSet` ;
+- un `Set` est l'objet persiste, gouverne, composable dans la base de graphes ;
+- un `View` est l'objet de travail runtime, transitoire, utilise pour l'exploration, la navigation et la composition temporaire (le terme `GraphSet` est retire, remplace par `View`) ;
+- un sous-graphe packable est derive d'un ou plusieurs `View` ;
 - un `ContextPack` est l'artefact final budgete visible par le modele ;
 - un `ResolutionTrace` enregistre les choix, degradations, refus et selections.
 
 Ne pas ecrire `View = subgraph`. Au mieux :
 
-- le `View` borne l'espace gouverne ;
-- le `GraphSet` manipule des ensembles dans cet espace ;
+- le `Set` definit le perimetre gouverne persiste ;
+- le `View` explore et manipule des ensembles au runtime ;
 - un sous-graphe packable peut etre derive ensuite ;
 - le `ContextPack` n'en garde qu'une forme finale budgetee.
 
@@ -72,7 +72,7 @@ Traiter la table ci-dessous comme une approximation guidee, pas comme une identi
 | graphe | espace relationnel gouverne ou backend graphe | graphe LPG stocke |
 | sommet / vertex | noeud de contexte ou entite | node |
 | arete / edge | relation utile a la navigation ou a la selection | relationship |
-| parcours | exploration dans un `View` via `GraphSet` | `MATCH`, expansions, path search |
+| parcours | exploration dans un `View` | `MATCH`, expansions, path search |
 | sous-graphe | projection travaillee ou packable | projection de graphe, sous-ensemble matche |
 | chemin | chaine de dependance, de provenance ou de contexte | path pattern, shortest path, deep traversal |
 | poids / cout | budget, score, priorite, degradation | proprietes, score de requete, ranking |
@@ -122,8 +122,8 @@ Pour la modelisation semantique dans Memgraph :
 
 Pour GraphClaw :
 
-- documenter les seeds, filtres, relations autorisees et couts attendus d'un `GraphSet` ;
-- distinguer `GraphSet` lazy et materialise ;
+- documenter les seeds, filtres, relations autorisees et couts attendus d'un `View` ;
+- distinguer `View` lazy et materialise ;
 - expliciter quand un sous-graphe devient packable ;
 - conserver la difference entre exploration de `ThinkingContext` et resultat final `ContextPack`.
 

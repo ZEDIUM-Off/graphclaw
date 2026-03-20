@@ -41,7 +41,7 @@ Use this order before making changes:
 2. [`CONTEXT.md`](CONTEXT.md) for the root map and task routing.
 3. The nearest local `CONTEXT.md` for the area you will edit.
 4. [`docs/README.md`](docs/README.md) or [`CONTRIBUTING.md`](CONTRIBUTING.md) if the task is documentation, review, or process related.
-5. [`docs/architecture/graph-context-engine.md`](docs/architecture/graph-context-engine.md) when the task touches GraphClaw concepts, invariants, or target runtime seams.
+5. [`docs/architecture/concepts/graph-context-engine.md`](docs/architecture/concepts/graph-context-engine.md) when the task touches GraphClaw concepts, invariants, or target runtime seams.
 
 ## Documentation Architecture
 
@@ -50,11 +50,11 @@ GraphClaw documentation is intentionally layered:
 | Level | Primary question | Typical locations |
 | --- | --- | --- |
 | intent | why does GraphClaw exist | `README.md`, strategy docs |
-| conceptual architecture | what are the reference concepts and strategy families being stabilized | `docs/architecture/graph-context-engine.md`, `docs/architecture/glossary.md` |
-| transition architecture | how does the inherited runtime gain seams without a rewrite-first migration | `docs/architecture/zero-to-graphclaw-transition.md`, `docs/architecture/future-integration-seams.md` |
-| context semantics | how should views, sets, artifacts, and budgets work | `docs/architecture/views-and-sets.md`, `docs/architecture/context-artifacts.md`, `docs/architecture/turn-runtime-logic.md` |
+| conceptual architecture | what are the reference concepts and strategy families being stabilized | `docs/architecture/concepts/definition-governance.md`, `docs/architecture/concepts/graph-context-engine.md`, concept-specific docs under `docs/architecture/` |
+| transition architecture | how does the inherited runtime gain seams without a rewrite-first migration | `docs/architecture/migration/zero-to-graphclaw-transition.md`, `docs/architecture/migration/future-integration-seams.md` |
+| context semantics | how should views, sets, artifacts, and budgets work | `docs/architecture/concepts/views-and-sets.md`, `docs/architecture/concepts/context-artifacts.md`, `docs/architecture/runtime/turn-runtime-logic.md` |
 | project architecture | how is the repo divided | `CONTEXT.md`, local `CONTEXT.md` files |
-| runtime logic | how should a turn resolve logically, including strategy resolution and bounded orchestration | `docs/architecture/turn-runtime-logic.md`, runtime-area docs |
+| runtime logic | how should a turn resolve logically, including strategy resolution and bounded orchestration | `docs/architecture/runtime/turn-runtime-logic.md`, runtime-area docs |
 | backend integration | how does a concrete graph backend support the model | `docs/backends/memgraph.md` |
 | implementation | what code exists today | source-adjacent docs and code |
 
@@ -67,9 +67,9 @@ Use these entry points to orient work quickly:
 | If you are working on... | Read first |
 | --- | --- |
 | repo identity, root framing, agent rules | [`README.md`](README.md), [`AGENTS.md`](AGENTS.md), [`CONTEXT.md`](CONTEXT.md) |
-| Graph Context Engine concepts, strategy families, or invariants | [`docs/architecture/README.md`](docs/architecture/README.md), [`docs/architecture/graph-context-engine.md`](docs/architecture/graph-context-engine.md) |
-| migration seams, transition thesis, orchestration framing, or future interface families | [`docs/architecture/zero-to-graphclaw-transition.md`](docs/architecture/zero-to-graphclaw-transition.md), [`docs/architecture/future-integration-seams.md`](docs/architecture/future-integration-seams.md) |
-| view, set, artifact, planning-artifact, or turn-logic semantics | [`docs/architecture/views-and-sets.md`](docs/architecture/views-and-sets.md), [`docs/architecture/context-artifacts.md`](docs/architecture/context-artifacts.md), [`docs/architecture/turn-runtime-logic.md`](docs/architecture/turn-runtime-logic.md) |
+| Graph Context Engine concepts, strategy families, or invariants | [`docs/architecture/README.md`](docs/architecture/README.md), [`docs/architecture/concepts/graph-context-engine.md`](docs/architecture/concepts/graph-context-engine.md) |
+| migration seams, transition thesis, orchestration framing, or future interface families | [`docs/architecture/migration/zero-to-graphclaw-transition.md`](docs/architecture/migration/zero-to-graphclaw-transition.md), [`docs/architecture/migration/future-integration-seams.md`](docs/architecture/migration/future-integration-seams.md) |
+| view, set, artifact, planning-artifact, or turn-logic semantics | [`docs/architecture/concepts/views-and-sets.md`](docs/architecture/concepts/views-and-sets.md), [`docs/architecture/concepts/context-artifacts.md`](docs/architecture/concepts/context-artifacts.md), [`docs/architecture/runtime/turn-runtime-logic.md`](docs/architecture/runtime/turn-runtime-logic.md) |
 | backend mapping or Memgraph constraints | [`docs/backends/README.md`](docs/backends/README.md), [`docs/backends/memgraph.md`](docs/backends/memgraph.md) |
 | Rust runtime behavior | [`src/CONTEXT.md`](src/CONTEXT.md) |
 | workspace crates | [`crates/CONTEXT.md`](crates/CONTEXT.md) |
@@ -114,7 +114,7 @@ GraphClaw is not migrating by renaming the whole repository first. The safer pat
 
 The intended order is:
 
-1. Documentation and glossary: stabilize the meaning of `View`, `GraphSet`, `SessionWindow`, `ThinkingContext`, `ContextPack`, `ContextMutationProposal`, `ResolutionTrace`, and portable agent packaging boundaries.
+1. Documentation and canonical concept sources: stabilize the meaning of `Set` (persisted), `View` (runtime), `ResolvedSet` (derived), `SessionWindow`, `ThinkingContext`, `ContextPack`, `ContextMutationProposal`, `ResolutionTrace`, and portable agent packaging boundaries.
 2. Boundary docs: make repository and subsystem responsibilities explicit through `CONTEXT.md` files and architecture references.
 3. Runtime artifacts: make context-resolution objects explicit instead of relying on implicit prompt concatenation.
 4. Graph adapter boundary: add a graph-facing storage interface behind traits so topology-aware context selection can arrive without replacing every inherited backend at once.
@@ -131,7 +131,7 @@ The main process families to document this way are:
 
 - context creation for a turn;
 - memory loading and recall as one input into context selection;
-- `View` resolution and `GraphSet` manipulation;
+- `Set` resolution and runtime `View` derivation and manipulation;
 - budget estimation for packable candidates and final context;
 - final `ContextPack` assembly;
 - trace and mutation persistence where those artifacts become explicit.

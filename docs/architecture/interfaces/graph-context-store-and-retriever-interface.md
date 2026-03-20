@@ -89,7 +89,7 @@ That rule prevents `src/memory/` from being redescribed as the whole context eng
 
 ### `ContextRetriever` Outputs
 
-- normalized candidate evidence items or candidate `GraphSet` inputs;
+- normalized candidate evidence items or candidate `View` inputs;
 - cross-source retrieval results suitable for compaction or planning;
 - explicit notes about missing sources, degraded retrieval, or fallback paths.
 
@@ -243,7 +243,7 @@ This slice is an orientation artifact, not an implementation claim.
       "id": "n4",
       "position": { "x": 420, "y": -50 },
       "caption": "Candidate Evidence Set",
-      "labels": ["GraphSet"],
+      "labels": ["View"],
       "properties": {
         "file_origin": "future normalized retrieval artifact",
         "role": "Candidate material before final visibility and packing"

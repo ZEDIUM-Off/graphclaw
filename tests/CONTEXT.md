@@ -72,7 +72,7 @@ Today, this subtree contributes confidence in the inherited seams that GraphClaw
 ## References
 
 - `AGENTS.md` - TDD and documentation-only rules
-- `docs/architecture/graph-context-engine.md` - target concepts that may later need explicit behavioral coverage
+- `docs/architecture/concepts/graph-context-engine.md` - target concepts that may later need explicit behavioral coverage
 - nearest child `CONTEXT.md` - layer-specific test ownership
 
 ## Cautions

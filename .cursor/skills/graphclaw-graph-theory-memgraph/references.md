@@ -11,11 +11,11 @@ Lire d'abord, selon le sujet :
 - `README.md`
 - `CONTEXT.md`
 - `docs/architecture/README.md`
-- `docs/architecture/graph-context-engine.md`
-- `docs/architecture/views-and-sets.md`
-- `docs/architecture/context-artifacts.md`
-- `docs/architecture/turn-runtime-logic.md`
-- `docs/architecture/strategy-resolver-interface.md`
+- `docs/architecture/concepts/graph-context-engine.md`
+- `docs/architecture/concepts/views-and-sets.md`
+- `docs/architecture/concepts/context-artifacts.md`
+- `docs/architecture/runtime/turn-runtime-logic.md`
+- `docs/architecture/interfaces/strategy-resolver-interface.md`
 - `docs/backends/memgraph.md`
 - `crates/memgraph/CONTEXT.md`
 

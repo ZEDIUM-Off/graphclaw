@@ -7,8 +7,9 @@ This subtree holds the stable conceptual architecture for GraphClaw. It defines 
 ## What Belongs Here
 
 - Graph Context Engine concepts and invariants;
+- canonical-definition governance and concept-source routing;
 - Graph Engine framing as governed context resolution plus strategy resolution;
-- stable definitions for shared vocabulary;
+- canonical concept sources and shared terminology routing;
 - variable strategy families for reflection, exploration, packing, and orchestration;
 - explicit runtime planning and trace artifacts such as task intent, strategy resolution, and bounded execution plans;
 - architecture-level references that explain the target model without claiming it is already implemented.
@@ -22,28 +23,21 @@ This subtree holds the stable conceptual architecture for GraphClaw. It defines 
 ## File Map
 
 - `README.md` - entrypoint for conceptual architecture docs
-- `graph-context-engine.md` - reference model for the Graph Context Engine, including governed strategy resolution as a target seam
-- `zero-to-graphclaw-transition.md` - migration framing from inherited runtime to interfacable context engine
-- `views-and-sets.md` - operational semantics for `View`, `GraphSet`, and packability
-- `context-artifacts.md` - distinctions between context artifacts, explicit planning artifacts, and budget layers
-- `turn-runtime-logic.md` - logical turn phases, strategy resolution points, current runtime mapping, and cross-cutting sequential paths (current inherited vs future governed)
-- `future-integration-seams.md` - future interface families, orchestration seams, and likely seam placement
-- `session-window-interface.md` - interface fiche for governed visible-context state
-- `context-pack-interface.md` - interface fiche for final packed model-visible context
-- `strategy-resolver-interface.md` - interface fiche for coherent turn-time strategy choice
-- `graph-context-store-and-retriever-interface.md` - interface fiche for context supply seams across graph and memory sources
-- `mutation-guard-interface.md` - interface fiche for validating, rejecting, or degrading requested context edits
-- `orchestration-policies-interface.md` - interface fiche for routing, spawn, sub-agent runtime, aggregation, and orchestration hooks
-- `hook-bus-interface.md` - interface fiche for lifecycle-event publication across orchestration, packing, and degradation
-- `glossary.md` - shared terminology and concise definitions
+- `concepts/` - canonical concept sources, governance, terminology routing, and maturity tracking
+- `migration/` - transition framing and future seam placement
+- `interfaces/` - migration-facing interface fiches
+- `runtime/` - logical runtime and turn-phase references
+- `playground/` - bounded playground specifications and redirects
+- `snapshots/` - dated architecture alignment material
 
 ## Routing
 
-- concept definitions and invariants belong here
-- strategy families, strategy-resolution framing, and orchestration-modularity concepts belong here
-- transition-thesis and seam-framing docs belong here when they stay above source-level ownership
-- artifact, plan, trace, and turn-logic references belong here when they must remain stable even if code moves
-- interface fiches for first migration seams belong here when they define role, invariants, fallbacks, and likely source areas without freezing code signatures
+- concept definitions, terminology routing, and maturity tracking belong in `concepts/`
+- transition-thesis and seam-framing docs belong in `migration/`
+- interface fiches for first migration seams belong in `interfaces/`
+- logical runtime and turn-flow references belong in `runtime/`
+- bounded playground specifications belong in `playground/`
+- dated alignment notes belong in `snapshots/`
 - backend capability mapping belongs in `docs/backends/`
 - repo and subtree ownership boundaries belong in the nearest `CONTEXT.md` files
 
@@ -65,13 +59,12 @@ Use this map to pick the next document from an architecture question.
 ```mermaid
 flowchart LR
     Q[Architecture question]
-    A["graph-context-engine.md - Target concepts and invariants"]
-    B["zero-to-graphclaw-transition.md - Seam-first migration"]
-    C["views-and-sets.md - View and GraphSet semantics"]
-    D["context-artifacts.md - Artifact and budget boundaries"]
-    E["turn-runtime-logic.md - Logical turn phases and inherited runtime mapping"]
-    F["future-integration-seams.md - Future interface families"]
-    G["glossary.md - Stable term lookup"]
+    A["concepts/ - Canonical concepts and routing"]
+    B["migration/ - Seam-first migration"]
+    C["runtime/ - Turn logic"]
+    D["interfaces/ - Interface fiches"]
+    E["playground/ - Bounded v0 specs"]
+    F["snapshots/ - Dated notes"]
 
     Q --> A
     Q --> B
@@ -79,12 +72,12 @@ flowchart LR
     Q --> D
     Q --> E
     Q --> F
-    Q --> G
     A --> B
     A --> C
     A --> D
-    B --> E
-    B --> F
+    A --> E
+    B --> C
+    B --> D
 ```
 
 ## References
@@ -111,6 +104,6 @@ This area should make the migration legible before the runtime is fully reworked
 ## Agent Workflow
 
 1. Read this file before editing conceptual architecture docs in this subtree.
-2. Check whether the task is about stable meaning, strategy families, transition framing, runtime logic, or backend support.
+2. Move to the nearest child `CONTEXT.md` before editing inside `concepts/`, `migration/`, `interfaces/`, `runtime/`, `playground/`, or `snapshots/`.
 3. Keep definitions backend-agnostic unless a backend reference is explicitly required.
 4. Update linked routing docs when a new architecture reference is added here or when new first-class concept families change the expected reading path.

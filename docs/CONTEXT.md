@@ -55,7 +55,7 @@ flowchart LR
 ## Routing
 
 - contributor workflow or review policy changes belong in `docs/contributing/`
-- concept-model, strategy-family, and glossary work belong in `docs/architecture/`
+- concept-model, strategy-family, canonical-definition governance, and glossary-routing work belong in `docs/architecture/`
 - transition-thesis, views-and-sets, context-artifact, turn-logic, and future-seam references belong in `docs/architecture/`
 - backend capability mapping belongs in `docs/backends/`
 - operator runbooks and runtime troubleshooting belong in `docs/ops/`
@@ -68,12 +68,13 @@ flowchart LR
 
 - `CONTEXT.md` - repo-wide migration and documentation truthfulness baseline
 - `README.md` - canonical docs landing page
-- `docs/architecture/graph-context-engine.md` - target concept model
-- `docs/architecture/zero-to-graphclaw-transition.md` - seam-first migration framing
-- `docs/architecture/views-and-sets.md` - `View`, `GraphSet`, and packability semantics
-- `docs/architecture/view-system-spec-v0.md` - View System v0 (playground lifecycle, algebra, LLM export)
-- `docs/architecture/context-artifacts.md` - context artifact distinctions
-- `docs/architecture/future-integration-seams.md` - future interface-family framing
+- `docs/architecture/concepts/graph-context-engine.md` - target concept model
+- `docs/architecture/migration/zero-to-graphclaw-transition.md` - seam-first migration framing
+- `docs/architecture/concepts/views-and-sets.md` - `Set` (persisted), `View` (runtime), and packability semantics
+- `docs/architecture/playground/set-system-spec-v0.md` - Set System v0 (playground lifecycle, algebra, LLM export)
+- `docs/architecture/playground/view-system-spec-v0.md` - superseded redirect to set-system-spec-v0.md
+- `docs/architecture/concepts/context-artifacts.md` - context artifact distinctions
+- `docs/architecture/migration/future-integration-seams.md` - future interface-family framing
 - `docs/backends/memgraph.md` - Memgraph backend reference
 - `docs/maintainers/repo-map.md` - repository navigation support for maintainers
 - `docs/maintainers/docs-inventory.md` - documentation inventory snapshot

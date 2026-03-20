@@ -15,7 +15,7 @@ This subtree runs the Memgraph graph database and Memgraph Lab as part of the Gr
 
 - GraphClaw concept definitions (those live in `docs/architecture/`);
 - adapter or runtime code that talks to Memgraph (that lives in `src/`, `crates/`, or `python/`);
-- redefinition of View, GraphSet, ContextPack, or other stable vocabulary.
+- redefinition of View, ContextPack, or other stable vocabulary.
 
 ## Key Files
 
@@ -30,7 +30,7 @@ This subtree runs the Memgraph graph database and Memgraph Lab as part of the Gr
 
 ## Backend Reference
 
-For how Memgraph maps to GraphClaw concepts (View, GraphSet, SessionWindow, ContextPack, etc.) and for capability tiers and adapter guidance, read:
+For how Memgraph maps to GraphClaw concepts (View, SessionWindow, ContextPack, etc.) and for capability tiers and adapter guidance, read:
 
 - [`docs/backends/README.md`](../docs/backends/README.md)
 - [`docs/backends/memgraph.md`](../docs/backends/memgraph.md)

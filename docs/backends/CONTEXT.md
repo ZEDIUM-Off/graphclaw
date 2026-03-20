@@ -45,10 +45,10 @@ flowchart LR
 
 ## References
 
-- `docs/architecture/graph-context-engine.md` - source of stable GraphClaw concepts
-- `docs/architecture/views-and-sets.md` - source of `View`, `GraphSet`, and packability semantics
-- `docs/architecture/context-artifacts.md` - source of artifact and budget distinctions
-- `docs/architecture/future-integration-seams.md` - source of interface-family framing
+- `docs/architecture/concepts/graph-context-engine.md` - source of stable GraphClaw concepts
+- `docs/architecture/concepts/views-and-sets.md` - source of `Set`, `View`, and packability semantics
+- `docs/architecture/concepts/context-artifacts.md` - source of artifact and budget distinctions
+- `docs/architecture/migration/future-integration-seams.md` - source of interface-family framing
 - `docs/README.md` - docs-tree routing
 - `README.md` - top-level migration framing
 

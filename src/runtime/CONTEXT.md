@@ -131,7 +131,7 @@ Likely future artifacts supported here include persisted traces, materialized he
 Responsibilities that should not drift here:
 
 - canonical `View` semantics;
-- `GraphSet` manipulation rules;
+- `View` manipulation rules;
 - final packing policy;
 - ownership of `ThinkingContext`.
 
@@ -152,7 +152,7 @@ Responsibilities that should not drift here:
 
 - `src/tools/CONTEXT.md` - main consumer boundary
 - `src/security/CONTEXT.md` - safety and policy boundary
-- `docs/architecture/graph-context-engine.md` - context-layer concepts that may sit above runtime adapters
+- `docs/architecture/concepts/graph-context-engine.md` - context-layer concepts that may sit above runtime adapters
 
 ## How Agents Should Work Here
 

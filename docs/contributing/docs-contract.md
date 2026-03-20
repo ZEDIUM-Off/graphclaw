@@ -32,3 +32,6 @@ Treat documentation as a first-class product surface, not a post-merge artifact.
   - For Vietnamese, treat `docs/vi/**` as canonical.
 - Keep proposal/roadmap docs explicitly labeled; avoid mixing proposal text into runtime-contract docs.
 - Keep project snapshots date-stamped and immutable once superseded by a newer date.
+- For GraphClaw concept-model docs, enforce one canonical definition per concept and route all duplicate mentions through links.
+- Treat `docs/architecture/concepts/definition-governance.md` as the governing policy for canonical concept placement.
+- Treat `AGENTS.md` and `CONTEXT.md` as contextualization surfaces, not concept-definition surfaces.

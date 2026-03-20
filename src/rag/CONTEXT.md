@@ -63,7 +63,7 @@ Do not claim a graph-native retrieval layer already exists here. If this area gr
 
 - `src/memory/CONTEXT.md` - main retrieval and storage boundary
 - `src/agent/CONTEXT.md` - agent-loop consumer boundary
-- `docs/architecture/graph-context-engine.md` - distinction between retrieval support and context-engine logic
+- `docs/architecture/concepts/graph-context-engine.md` - distinction between retrieval support and context-engine logic
 
 ## How Agents Should Work Here
 

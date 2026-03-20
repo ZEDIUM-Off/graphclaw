@@ -6,7 +6,18 @@ This repository is GraphClaw.
 
 It is currently built on an inherited ZeroClaw baseline. Many technical identifiers still use `zeroclaw` names across code, commands, tests, config, manifests, and firmware. Those names remain current implementation detail until an explicit migration task changes them.
 
-GraphClaw should be treated as a transitional scaffold toward a graph-native context engine. Use target-architecture documents, especially [`docs/architecture/graph-context-engine.md`](docs/architecture/graph-context-engine.md) and [`docs/architecture/glossary.md`](docs/architecture/glossary.md), as migration framing only. Do not present that target state as already implemented.
+GraphClaw should be treated as a transitional scaffold toward a graph-native context engine. Use target-architecture documents, especially [`docs/architecture/concepts/definition-governance.md`](docs/architecture/concepts/definition-governance.md) and [`docs/architecture/concepts/graph-context-engine.md`](docs/architecture/concepts/graph-context-engine.md), as migration framing only. Do not present that target state as already implemented.
+
+## Canonical Concept Rule
+
+GraphClaw concepts follow a single-definition rule.
+
+- each concept has exactly one canonical definition;
+- canonical definitions live under `docs/architecture/`;
+- every non-canonical mention must reference the canonical source with a Markdown link;
+- `AGENTS.md` and `CONTEXT.md` may contextualize local implementation or runtime behavior, but they must not redefine concepts.
+
+The governing policy lives in [`docs/architecture/concepts/definition-governance.md`](docs/architecture/concepts/definition-governance.md).
 
 ## Required Reading
 
@@ -20,7 +31,7 @@ Use this reading order unless the task is explicitly narrower:
 2. [`CONTEXT.md`](CONTEXT.md) for the root map and routing.
 3. The nearest local `CONTEXT.md` for the area being changed.
 4. Area-specific entry docs such as [`docs/README.md`](docs/README.md) or [`CONTRIBUTING.md`](CONTRIBUTING.md) when relevant.
-5. [`docs/architecture/graph-context-engine.md`](docs/architecture/graph-context-engine.md) when the task touches GraphClaw concepts, target runtime invariants, or context-engine terminology.
+5. [`docs/architecture/concepts/definition-governance.md`](docs/architecture/concepts/definition-governance.md) and [`docs/architecture/concepts/graph-context-engine.md`](docs/architecture/concepts/graph-context-engine.md) when the task touches GraphClaw concepts, target runtime invariants, or context-engine terminology.
 
 ## Task Routing
 
@@ -30,9 +41,9 @@ Use these anchors before editing:
 | --- | --- |
 | root framing and navigation | [`README.md`](README.md), [`CONTEXT.md`](CONTEXT.md) |
 | documentation | [`docs/README.md`](docs/README.md), [`docs/CONTEXT.md`](docs/CONTEXT.md) |
-| concept model and stable vocabulary | [`docs/architecture/README.md`](docs/architecture/README.md), [`docs/architecture/graph-context-engine.md`](docs/architecture/graph-context-engine.md), [`docs/architecture/glossary.md`](docs/architecture/glossary.md) |
-| migration thesis and future seams | [`docs/architecture/zero-to-graphclaw-transition.md`](docs/architecture/zero-to-graphclaw-transition.md), [`docs/architecture/future-integration-seams.md`](docs/architecture/future-integration-seams.md) |
-| views, sets, artifacts, and turn logic | [`docs/architecture/views-and-sets.md`](docs/architecture/views-and-sets.md), [`docs/architecture/context-artifacts.md`](docs/architecture/context-artifacts.md), [`docs/architecture/turn-runtime-logic.md`](docs/architecture/turn-runtime-logic.md) |
+| concept model and stable vocabulary | [`docs/architecture/README.md`](docs/architecture/README.md), [`docs/architecture/concepts/definition-governance.md`](docs/architecture/concepts/definition-governance.md), [`docs/architecture/concepts/graph-context-engine.md`](docs/architecture/concepts/graph-context-engine.md), [`docs/architecture/concepts/glossary.md`](docs/architecture/concepts/glossary.md) |
+| migration thesis and future seams | [`docs/architecture/migration/zero-to-graphclaw-transition.md`](docs/architecture/migration/zero-to-graphclaw-transition.md), [`docs/architecture/migration/future-integration-seams.md`](docs/architecture/migration/future-integration-seams.md) |
+| views, sets, artifacts, and turn logic | [`docs/architecture/concepts/views-and-sets.md`](docs/architecture/concepts/views-and-sets.md), [`docs/architecture/concepts/context-artifacts.md`](docs/architecture/concepts/context-artifacts.md), [`docs/architecture/runtime/turn-runtime-logic.md`](docs/architecture/runtime/turn-runtime-logic.md) |
 | backend capability mapping | [`docs/backends/README.md`](docs/backends/README.md), [`docs/backends/memgraph.md`](docs/backends/memgraph.md) |
 | contributor workflow | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
 | Rust runtime | [`src/CONTEXT.md`](src/CONTEXT.md) |
@@ -83,6 +94,7 @@ For documentation-only work:
 ```bash
 ./scripts/ci/docs_quality_gate.sh
 ./scripts/ci/docs_links_gate.sh
+./scripts/ci/docs_canonical_concepts_gate.sh
 ```
 
 For code changes, run the narrowest relevant inherited checks first, usually including:
@@ -104,32 +116,22 @@ Therefore:
 - do not rewrite unrelated areas opportunistically;
 - update local `CONTEXT.md` files when a change alters area boundaries or expectations.
 
-## Reference Vocabulary
+## Canonical Concept Routing
 
-Use the following terms consistently in documentation and migration-oriented design work.
+Use canonical concept sources instead of redefining terms locally:
 
-This section is a quick-reference summary for agents. The canonical definitions live in `docs/architecture/graph-context-engine.md` and `docs/architecture/glossary.md`.
+- `Set`, `ResolvedSet`, `View`: [`docs/architecture/concepts/views-and-sets.md`](docs/architecture/concepts/views-and-sets.md)
+- `SessionWindow`: [`docs/architecture/interfaces/session-window-interface.md`](docs/architecture/interfaces/session-window-interface.md)
+- `ContextPack`: [`docs/architecture/interfaces/context-pack-interface.md`](docs/architecture/interfaces/context-pack-interface.md)
+- `StrategyResolution`: [`docs/architecture/interfaces/strategy-resolver-interface.md`](docs/architecture/interfaces/strategy-resolver-interface.md)
+- `ThinkingContext`, `ContextMutationProposal`, `ResolutionTrace`, `TaskIntent`, `AgentPackage`: [`docs/architecture/concepts/graph-context-engine.md`](docs/architecture/concepts/graph-context-engine.md)
+- routing policy and canonical registry: [`docs/architecture/concepts/definition-governance.md`](docs/architecture/concepts/definition-governance.md)
 
-- `AgentPackage`: a versioned portable unit of agent behavior, declared dependencies, and packaging metadata.
-- `AgentInstance`: a concrete installation or activation of a package in a local environment, with local bindings and policy choices applied.
-- `AgentSession`: the live runtime state for a conversation or short execution horizon; sessions are not packages.
-- `Bindings`: local provider, tool, storage, or environment attachments required to run an instance; bindings are not inherently portable.
-- `View`: a governed projection over the graph that can produce one or more policy-constrained sets.
-- `GraphSet`: a first-class logical set of node and relation references, with provenance, combination rules, attached-content implications, and budget implications.
-- `Packable Subgraph`: a bounded projection derived from one or more `GraphSet` objects and prepared for possible inclusion in a `ContextPack`.
-- `SessionWindow`: the currently visible and mobilizable subgraph for a turn or short sequence of turns; it is not the whole graph or the full conversation history.
-- `ThinkingContext`: the temporary reflection context used to explore or evaluate before final response packing; it is a system phase, not merely a normal tool call.
-- `ContextPack`: the final budgeted context artifact retained for response generation.
-- `ContextMutationProposal`: a structured proposal to change visible or packable context.
-- `ResolutionTrace`: the explicit record of context-resolution decisions such as selection, degradation, rejection, summarization, and final packing.
+When an agent document needs to mention one of these concepts, prefer:
 
-Agents should consume `View`, `GraphSet`, `Packable Subgraph`, `SessionWindow`, `ThinkingContext`, `ContextPack`, and `ResolutionTrace` artifacts. They should not be documented as the owners of the core context-resolution model itself.
-
-Agent documentation should also preserve the distinction between:
-
-- `AgentPackage` as the portable unit of behavior and declared dependencies;
-- `AgentInstance` as a local activation with bindings and policy;
-- the Graph Context Engine as the layer that resolves turn context rather than packaging the agent.
+- a link to the canonical source;
+- a local explanation of current code representation or runtime use;
+- an explicit note when inherited implementation still diverges from the target concept.
 
 ## Documentation Truthfulness
 

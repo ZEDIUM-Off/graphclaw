@@ -63,13 +63,13 @@ As GraphClaw evolves toward a graph-native context engine, this directory is whe
 - `tests/CONTEXT.md` - top-level validation strategy
 - `src/agent/CONTEXT.md` - agent loop boundary
 - `src/memory/CONTEXT.md` - memory and retrieval boundary
-- `docs/architecture/graph-context-engine.md` - target artifacts that future integration tests may need to assert explicitly
+- `docs/architecture/concepts/graph-context-engine.md` - target artifacts that future integration tests may need to assert explicitly
 
 ## Cautions
 
 - Keep scenarios integration-sized, not end-to-end replicas of the whole stack.
 - If a case depends on real providers or credentials, it belongs in `tests/live/`, not here.
-- Do not describe current integration coverage as testing `ThinkingContext`, `GraphSet`, or `ResolutionTrace` unless those artifacts are explicit in runtime behavior and assertions.
+- Do not describe current integration coverage as testing `ThinkingContext`, `View`, or `ResolutionTrace` unless those artifacts are explicit in runtime behavior and assertions.
 
 ## Agent Guidance
 

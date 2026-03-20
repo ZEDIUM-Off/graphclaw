@@ -9,7 +9,7 @@ This subtree is where most future GraphClaw runtime seams will eventually land, 
 ## What Belongs Here
 
 - inherited runtime behavior and subsystem boundaries;
-- migration seams for future `SessionWindow`, `GraphSet`, packable-subgraph, `ContextPack`, `ResolutionTrace`, package/import artifacts, and graph-facing interfaces;
+- migration seams for future `SessionWindow`, `View`, packable-subgraph, `ContextPack`, `ResolutionTrace`, package/import artifacts, and graph-facing interfaces;
 - source-adjacent `*.map.json` graph slices that document likely runtime seams, artifact flows, and technical-map pictures for `src/`;
 - source-adjacent documentation that explains which subsystem owns which runtime concern.
 
@@ -41,7 +41,7 @@ This subtree is where most future GraphClaw runtime seams will eventually land, 
 - Source-adjacent technical-map slices for runtime seams: the nearest `*.map.json` in the owning subsystem
 - Portable package/import/binding mapping for runtime-local activation: `src/agent-package-import-binding.map.json`
 - GraphClaw concept definitions: `docs/architecture/`
-- transition seams and interface families: `docs/architecture/zero-to-graphclaw-transition.md`, `docs/architecture/future-integration-seams.md`
+- transition seams and interface families: `docs/architecture/migration/zero-to-graphclaw-transition.md`, `docs/architecture/migration/future-integration-seams.md`
 - backend integration framing: `docs/backends/`
 
 ## Current State
@@ -153,8 +153,8 @@ The key documentation discipline is that these areas should often consume future
 ## References
 
 - `README.md` - repo identity and migration framing
-- `docs/architecture/graph-context-engine.md` - stable GraphClaw concept model
-- `docs/architecture/glossary.md` - shared vocabulary for runtime docs
+- `docs/architecture/concepts/graph-context-engine.md` - stable GraphClaw concept model
+- `docs/architecture/concepts/glossary.md` - shared vocabulary for runtime docs
 - local subsystem `CONTEXT.md` files - owning boundaries for each runtime area
 
 ## Constraints / Cautions

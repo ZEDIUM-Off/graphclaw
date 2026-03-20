@@ -22,6 +22,6 @@ This subtree is for:
 
 This subtree is not for:
 
-- redefining `View`, `GraphSet`, `ThinkingContext`, or `ContextPack`;
+- redefining `View`, `ThinkingContext`, or `ContextPack`;
 - implementation walkthroughs of source adapters;
 - general operator runbooks.

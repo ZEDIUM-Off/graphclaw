@@ -39,7 +39,7 @@ A seam-first migration keeps the inherited runtime usable while making future re
 
 The intended order is:
 
-1. stabilize meaning in architecture docs and glossary;
+1. stabilize meaning in architecture docs and canonical concept sources;
 2. document current subsystem boundaries through `CONTEXT.md` files;
 3. make runtime artifacts explicit where the inherited loop currently uses implicit prompt concatenation or ad hoc recall;
 4. add interface families that let the inherited pipeline and future engine coexist behind cleaner boundaries;
@@ -53,7 +53,7 @@ This diagram shows migration order and coexistence intent. It does not claim tha
 ```mermaid
 flowchart LR
     A["Inherited zeroclaw runtime - Current operational truth"]
-    B["Architecture docs and glossary - Stabilize meaning"]
+    B["Architecture docs and canonical concept sources - Stabilize meaning"]
     C["Local CONTEXT.md files - Make boundaries explicit"]
     D["Explicit context artifacts - Reduce implicit prompt assembly"]
     E["Stable interface families - Prepare coexistence seams"]
@@ -73,7 +73,7 @@ The highest-priority families are:
 - task interpretation and strategy resolution for a turn;
 - context creation for a turn;
 - view resolution;
-- `GraphSet` construction and refinement;
+- `View` construction and refinement;
 - memory loading and recall as one input into context selection;
 - budget estimation for packable candidates and final context;
 - final packing of model-visible context;
@@ -162,8 +162,7 @@ This migration framing does not mean:
 The docs should keep these unresolved questions explicit:
 
 - which node and relation types are navigable but never directly packable;
-- which `GraphSet` forms should remain lazy and which should be materializable;
+- which `View` forms should remain lazy and which should be materializable;
 - how much trace granularity is required for `ResolutionTrace`;
-- how rights and policies compose across agent, `View`, `GraphSet`, packable subgraph, and final `ContextPack`;
+- how rights and policies compose across agent, `View`, packable subgraph, and final `ContextPack`;
 - which runtime seam should first host an alternative context-creation path beside the inherited one.
-

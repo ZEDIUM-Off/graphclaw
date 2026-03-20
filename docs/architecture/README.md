@@ -4,17 +4,30 @@ This subtree documents the stable concept model for GraphClaw.
 
 Use it when the question is not "what does the inherited runtime do today?" but rather "what meanings and invariants are we trying to stabilize before implementation hardens?"
 
+## Branches
+
+This subtree is now organized by documentation family:
+
+- `concepts/` - canonical concept sources, terminology routing, and maturity tracking
+- `migration/` - transition thesis and seam-first evolution
+- `interfaces/` - first-seam interface fiches
+- `runtime/` - logical runtime flow and turn sequencing
+- `playground/` - bounded v0 playground specs
+- `snapshots/` - dated alignment or archive material
+
 ## Start Here
 
-- Graph Context Engine reference: [`graph-context-engine.md`](graph-context-engine.md)
-- transition framing from the inherited runtime: [`zero-to-graphclaw-transition.md`](zero-to-graphclaw-transition.md)
-- views, set semantics, and packability: [`views-and-sets.md`](views-and-sets.md)
-- View System v0 (lifecycle, algebra, LLM export) for the playground: [`view-system-spec-v0.md`](view-system-spec-v0.md)
-- context artifacts, planning artifacts, and budgeting: [`context-artifacts.md`](context-artifacts.md)
-- logical turn phases, strategy resolution, current insertion points, and cross-cutting sequential paths (current vs future): [`turn-runtime-logic.md`](turn-runtime-logic.md)
-- future integration seams, strategy seams, and interface families: [`future-integration-seams.md`](future-integration-seams.md)
-- interface fiches for likely first seams: [`session-window-interface.md`](session-window-interface.md), [`context-pack-interface.md`](context-pack-interface.md), [`strategy-resolver-interface.md`](strategy-resolver-interface.md), [`graph-context-store-and-retriever-interface.md`](graph-context-store-and-retriever-interface.md), [`mutation-guard-interface.md`](mutation-guard-interface.md), [`orchestration-policies-interface.md`](orchestration-policies-interface.md), [`hook-bus-interface.md`](hook-bus-interface.md)
-- shared terminology: [`glossary.md`](glossary.md)
+- canonical-definition governance: [`definition-governance.md`](concepts/definition-governance.md)
+- Graph Context Engine reference: [`graph-context-engine.md`](concepts/graph-context-engine.md)
+- conceptual maturity tracker: [`conceptual-maturity-tracker.md`](concepts/conceptual-maturity-tracker.md)
+- transition framing from the inherited runtime: [`zero-to-graphclaw-transition.md`](migration/zero-to-graphclaw-transition.md)
+- sets (persisted), views (runtime), set semantics, and packability: [`views-and-sets.md`](concepts/views-and-sets.md)
+- Set System v0 (lifecycle, algebra, LLM export) for the playground: [`set-system-spec-v0.md`](playground/set-system-spec-v0.md)
+- context artifacts, planning artifacts, and budgeting: [`context-artifacts.md`](concepts/context-artifacts.md)
+- logical turn phases, strategy resolution, current insertion points, and cross-cutting sequential paths (current vs future): [`turn-runtime-logic.md`](runtime/turn-runtime-logic.md)
+- future integration seams, strategy seams, and interface families: [`future-integration-seams.md`](migration/future-integration-seams.md)
+- interface fiches for likely first seams: [`session-window-interface.md`](interfaces/session-window-interface.md), [`context-pack-interface.md`](interfaces/context-pack-interface.md), [`strategy-resolver-interface.md`](interfaces/strategy-resolver-interface.md), [`graph-context-store-and-retriever-interface.md`](interfaces/graph-context-store-and-retriever-interface.md), [`mutation-guard-interface.md`](interfaces/mutation-guard-interface.md), [`orchestration-policies-interface.md`](interfaces/orchestration-policies-interface.md), [`hook-bus-interface.md`](interfaces/hook-bus-interface.md)
+- terminology index: [`glossary.md`](concepts/glossary.md)
 
 ## Mermaid Convention
 
@@ -35,7 +48,7 @@ Use this map to choose the right architecture reference before reading in detail
 flowchart TD
     A["graph-context-engine.md - Target concept model"]
     B["zero-to-graphclaw-transition.md - Seam-first migration"]
-    C["views-and-sets.md - View and GraphSet semantics"]
+    C["views-and-sets.md - Set and View semantics"]
     D["context-artifacts.md - Artifact boundaries and budgets"]
     E["turn-runtime-logic.md - Logical turn phases and inherited runtime mapping"]
     F["future-integration-seams.md - Future interface families"]
@@ -46,7 +59,7 @@ flowchart TD
     K["mutation-guard-interface.md - Context edit validation seam"]
     L["orchestration-policies-interface.md - Routing and spawn seams"]
     M["hook-bus-interface.md - Lifecycle event seam"]
-    N["glossary.md - Stable terminology"]
+    N["glossary.md - Concept routing index"]
 
     A --> B
     A --> C
@@ -73,7 +86,7 @@ flowchart TD
 
 This subtree is for:
 
-- stable definitions such as `View`, `GraphSet`, `SessionWindow`, `ThinkingContext`, and `ContextPack`;
+- stable definitions such as `Set`, `View`, `ResolvedSet`, `SessionWindow`, `ThinkingContext`, and `ContextPack`;
 - strategy families for reflection, exploration, packing, and orchestration as target-architecture concepts;
 - explicit planning and trace artifacts such as `TaskIntent`, `StrategyResolution`, `ReflectionPlan`, `ExplorationPlan`, and `OrchestrationPlan`;
 - framing for the Graph Engine as governed context resolution plus strategy resolution, rather than only retrieval;
@@ -90,21 +103,24 @@ This subtree is not for:
 
 ## Recommended Reading Order
 
-1. [`graph-context-engine.md`](graph-context-engine.md) for the top-level reference frame.
-2. [`zero-to-graphclaw-transition.md`](zero-to-graphclaw-transition.md) for the migration thesis and coexistence model.
-3. [`views-and-sets.md`](views-and-sets.md) and [`context-artifacts.md`](context-artifacts.md) for operational concept detail.
-4. [`turn-runtime-logic.md`](turn-runtime-logic.md) and [`future-integration-seams.md`](future-integration-seams.md) when the task touches runtime boundaries or future interface placement.
-5. The interface fiches when the task needs a concrete first seam: [`session-window-interface.md`](session-window-interface.md), [`context-pack-interface.md`](context-pack-interface.md), [`strategy-resolver-interface.md`](strategy-resolver-interface.md), [`graph-context-store-and-retriever-interface.md`](graph-context-store-and-retriever-interface.md), [`mutation-guard-interface.md`](mutation-guard-interface.md), [`orchestration-policies-interface.md`](orchestration-policies-interface.md), and [`hook-bus-interface.md`](hook-bus-interface.md).
-6. [`glossary.md`](glossary.md) for compact term definitions shared across the repo.
+1. [`definition-governance.md`](concepts/definition-governance.md) for the single-definition rule and canonical registry.
+2. [`graph-context-engine.md`](concepts/graph-context-engine.md) for the top-level reference frame.
+3. [`zero-to-graphclaw-transition.md`](migration/zero-to-graphclaw-transition.md) for the migration thesis and coexistence model.
+4. [`views-and-sets.md`](concepts/views-and-sets.md) and [`context-artifacts.md`](concepts/context-artifacts.md) for operational concept detail.
+5. [`turn-runtime-logic.md`](runtime/turn-runtime-logic.md) and [`future-integration-seams.md`](migration/future-integration-seams.md) when the task touches runtime boundaries or future interface placement.
+6. The interface fiches when the task needs a concrete first seam: [`session-window-interface.md`](interfaces/session-window-interface.md), [`context-pack-interface.md`](interfaces/context-pack-interface.md), [`strategy-resolver-interface.md`](interfaces/strategy-resolver-interface.md), [`graph-context-store-and-retriever-interface.md`](interfaces/graph-context-store-and-retriever-interface.md), [`mutation-guard-interface.md`](interfaces/mutation-guard-interface.md), [`orchestration-policies-interface.md`](interfaces/orchestration-policies-interface.md), and [`hook-bus-interface.md`](interfaces/hook-bus-interface.md).
+7. [`glossary.md`](concepts/glossary.md) for concept routing.
 
 ## Architecture Map
 
 | Document | Primary question |
 | --- | --- |
+| `definition-governance.md` | where does the single-definition rule live and which document is canonical for each concept |
 | `graph-context-engine.md` | what target model is GraphClaw trying to stabilize, including governed strategy choice |
+| `conceptual-maturity-tracker.md` | what is already conceptually stable, what needs precision, and what remains open |
 | `zero-to-graphclaw-transition.md` | how does the inherited runtime migrate without a rewrite-first strategy |
-| `views-and-sets.md` | how should views, `GraphSet` objects, and packability work conceptually |
-| `view-system-spec-v0.md` | View System v0: lifecycle, composition algebra, LLM export (playground slice) |
+| `views-and-sets.md` | how should Sets (persisted), Views (runtime), and packability work conceptually |
+| `set-system-spec-v0.md` | Set System v0: lifecycle, composition algebra, LLM export (playground slice) |
 | `context-artifacts.md` | which context and planning artifacts are distinct and how do budget concerns relate to them |
 | `turn-runtime-logic.md` | how should a turn resolve logically, including strategy resolution, where does the current runtime fit, and how do gateway/agent/memory/tools/providers/runtime/security articulate in current vs future paths |
 | `future-integration-seams.md` | which interface families, orchestration seams, and runtime seams should emerge next |
@@ -115,4 +131,15 @@ This subtree is not for:
 | `mutation-guard-interface.md` | how should visible-context edits be validated, rejected, or degraded before state changes |
 | `orchestration-policies-interface.md` | how should routing, spawn, bounded sub-agent runtime, aggregation, and hooks become explicit seams |
 | `hook-bus-interface.md` | how should lifecycle events become observable without owning orchestration or packing policy |
-| `glossary.md` | what concise definitions must stay stable across docs |
+| `glossary.md` | where should a reader jump to find the canonical definition of a term |
+
+## Directory Map
+
+| Path | Purpose |
+| --- | --- |
+| `concepts/` | canonical concept sources and concept-governance docs |
+| `migration/` | transition framing and future seam placement |
+| `interfaces/` | migration-facing interface fiches |
+| `runtime/` | logical runtime and turn-phase references |
+| `playground/` | bounded playground specifications and redirects |
+| `snapshots/` | dated architecture alignment notes |

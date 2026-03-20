@@ -69,7 +69,7 @@ Today, this subtree contributes early proof that local seams still behave correc
 
 - `tests/CONTEXT.md` - top-level validation strategy
 - `tests/integration/CONTEXT.md` - next layer up for cross-module behavior
-- `docs/architecture/graph-context-engine.md` - target concepts that should only be named in tests when explicitly implemented and asserted
+- `docs/architecture/concepts/graph-context-engine.md` - target concepts that should only be named in tests when explicitly implemented and asserted
 
 ## Cautions
 

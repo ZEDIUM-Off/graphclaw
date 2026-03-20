@@ -30,8 +30,9 @@ Current implementation note: many runtime-facing docs still describe inherited `
 | Doc | Type | Audience |
 | --- | --- | --- |
 | `docs/architecture/README.md` | Architecture Reference | maintainers, contributors |
-| `docs/architecture/graph-context-engine.md` | Architecture Reference | maintainers, contributors |
-| `docs/architecture/glossary.md` | Architecture Reference | maintainers, contributors |
+| `docs/architecture/concepts/definition-governance.md` | Policy/Process | maintainers, contributors |
+| `docs/architecture/concepts/graph-context-engine.md` | Architecture Reference | maintainers, contributors |
+| `docs/architecture/concepts/glossary.md` | Architecture Reference | maintainers, contributors |
 | `docs/backends/README.md` | Architecture Reference | maintainers, contributors |
 | `docs/backends/memgraph.md` | Architecture Reference | maintainers, contributors |
 

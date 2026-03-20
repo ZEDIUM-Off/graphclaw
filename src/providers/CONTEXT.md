@@ -98,8 +98,8 @@ Today, this area contributes to the model by consuming selected context faithful
 
 - `src/agent/CONTEXT.md` - main caller boundary
 - `src/cost/CONTEXT.md` - usage accounting boundary
-- `docs/architecture/graph-context-engine.md` - target model for `ContextPack` and `ResolutionTrace` handling around providers
-- `docs/architecture/glossary.md` - stable terminology for packs, windows, and thinking context
+- `docs/architecture/concepts/graph-context-engine.md` - target model for `ContextPack` and `ResolutionTrace` handling around providers
+- `docs/architecture/concepts/glossary.md` - stable terminology for packs, windows, and thinking context
 
 ## How Agents Should Work Here
 

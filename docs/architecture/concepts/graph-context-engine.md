@@ -34,11 +34,11 @@ In the newer GraphClaw reading, `Graph Engine` is best treated as shorthand for 
 
 That target should be read together with:
 
-- [`zero-to-graphclaw-transition.md`](zero-to-graphclaw-transition.md) for seam-first migration framing;
-- [`views-and-sets.md`](views-and-sets.md) for operational `View` and `GraphSet` semantics;
+- [`zero-to-graphclaw-transition.md`](../migration/zero-to-graphclaw-transition.md) for seam-first migration framing;
+- [`views-and-sets.md`](views-and-sets.md) for operational `Set` and `View` semantics;
 - [`context-artifacts.md`](context-artifacts.md) for artifact boundaries and budget layers;
-- [`turn-runtime-logic.md`](turn-runtime-logic.md) for logical turn phases;
-- [`future-integration-seams.md`](future-integration-seams.md) for future interface families.
+- [`turn-runtime-logic.md`](../runtime/turn-runtime-logic.md) for logical turn phases;
+- [`future-integration-seams.md`](../migration/future-integration-seams.md) for future interface families.
 
 ## Reference Boundary Diagram
 
@@ -47,19 +47,21 @@ This diagram is conceptual only. Dotted arrows show adjacent layers or migration
 ```mermaid
 flowchart LR
     subgraph GC[Target Graph Context Engine]
-        V[View]
-        S[GraphSet]
+        ST["Set (persisted)"]
+        RS["ResolvedSet (derived)"]
+        V["View (runtime)"]
         SR[StrategyResolution]
         W[SessionWindow]
         T[ThinkingContext]
         P[ContextPack]
         R[ResolutionTrace]
 
+        ST --> RS
+        RS --> V
         SR --> V
         SR --> T
-        V --> S
         W --> T
-        S --> T
+        V --> T
         T --> P
         P --> R
     end
@@ -95,7 +97,7 @@ GraphClaw documentation should keep these layers distinct:
 | Level | Question | Typical location |
 | --- | --- | --- |
 | intent | why GraphClaw exists | `README.md` |
-| conceptual architecture | what concepts must stay stable | this file, `glossary.md` |
+| conceptual architecture | what concepts must stay stable | this file and concept-specific canonical docs under `docs/architecture/` |
 | project architecture | how the repo is divided | `CONTEXT.md`, local `CONTEXT.md` files |
 | runtime logic | how a turn resolves logically | this file and runtime-area docs |
 | backend integration | how a backend supports or constrains the model | `docs/backends/memgraph.md` |
@@ -103,56 +105,17 @@ GraphClaw documentation should keep these layers distinct:
 
 The required order is semantics first, boundaries second, mechanisms third, implementation last.
 
-## Reference Concepts
+## Canonical Concept Routing
 
-### `View`
+Use the concept-specific canonical sources below instead of redefining those concepts in multiple architecture documents.
 
-A `View` is a governed projection over the graph that can produce one or more accessible sets of nodes under explicit constraints such as type, relation, policy, ranking, and budget.
+- `Set`, `ResolvedSet`, `View`: [`views-and-sets.md`](views-and-sets.md)
+- `SessionWindow`: [`session-window-interface.md`](../interfaces/session-window-interface.md)
+- `ContextPack`: [`context-pack-interface.md`](../interfaces/context-pack-interface.md)
+- `StrategyResolution`: [`strategy-resolver-interface.md`](../interfaces/strategy-resolver-interface.md)
+- routing policy and concept registry: [`definition-governance.md`](definition-governance.md)
 
-A `View` must be documented in terms of:
-
-- what it exposes;
-- what it does not expose;
-- which policies and prerequisites apply;
-- how it can degrade;
-- which sets it produces or depends on.
-
-A `View` is not a screen, not a label, and not a synonym for an arbitrary query.
-
-The docs should distinguish between a maximum agent `View` and narrower composed or intermediate views derived inside that governed perimeter.
-
-### `GraphSet`
-
-A `GraphSet` is a first-class logical set of node references, with explicit provenance, combination rules, and budget implications.
-
-Each documented set should state:
-
-- origin;
-- scope;
-- construction rule;
-- allowed relations and filters;
-- policy constraints;
-- estimated cost shape;
-- role in final packing.
-
-`GraphSet` should be documented as a working object for navigation and selection, not merely as a pre-export list of nodes.
-
-GraphClaw should also distinguish:
-
-- lazy sets defined by rules or seeds;
-- materialized sets evaluated or persisted as explicit results;
-- the `GraphSet` itself from a later packable subgraph derived from it.
-
-### `SessionWindow`
-
-The `SessionWindow` is the currently visible and mobilizable subgraph for a turn or short run of turns.
-
-It is not:
-
-- the entire conversation;
-- the entire graph;
-- the full memory store;
-- the final prompt shown to the model.
+This document keeps the top-level engine boundary, invariants, and cross-concept framing. It is not the canonical definition surface for every concept named in the engine model.
 
 ### `ThinkingContext`
 
@@ -164,9 +127,9 @@ It is better described as a system phase than as a standard tool.
 
 ### `ContextPack`
 
-The `ContextPack` is the final budgeted context artifact retained for response generation after policy checks, ranking, degradation, summarization, and packing decisions.
+The canonical definition lives in [`context-pack-interface.md`](../interfaces/context-pack-interface.md).
 
-It is the model-visible result, not the whole exploration space.
+At the engine-boundary level, `ContextPack` is the final model-visible result rather than the whole exploration space.
 
 ### `ContextMutationProposal`
 
@@ -190,15 +153,9 @@ It should capture at least:
 
 ### `StrategyResolution`
 
-A `StrategyResolution` is the explicit result of choosing a coherent set of strategies for a turn.
+The canonical definition lives in [`strategy-resolver-interface.md`](../interfaces/strategy-resolver-interface.md).
 
-At minimum, it should identify:
-
-- the selected reflection strategy;
-- the selected exploration strategy;
-- the selected packing strategy;
-- the selected orchestration strategy;
-- any relevant constraints, degradations, or fallbacks.
+At the engine-boundary level, `StrategyResolution` is the explicit result of selecting a coherent turn-time strategy set under current constraints.
 
 ### `AgentPackage`
 
@@ -247,7 +204,9 @@ The engine therefore resolves not only what context material is available, but a
 
 ## Set Semantics
 
-Set semantics are central to the model because views, navigation, packing, clustering, and package relationships all rely on them.
+Set semantics are central to the model because persisted `Set` objects, runtime `View` projections, navigation, packing, clustering, and package relationships all rely on them.
+
+Persisted `Set` composition uses relation-based operations (`UNION_OF`, `INTERSECTION_OF`, `DIFF_OF`, `SYMMETRIC_DIFF_OF`) between `Set` nodes, with arity following set algebra. Runtime `View` manipulation uses the broader algebra below. Both layers share the same operational semantics but differ in persistence and lifecycle.
 
 The documentation model should treat these as business operations before backend operations:
 
@@ -309,22 +268,25 @@ The target runtime should be described as a logical sequence, even before the im
 
 This is a runtime logic description, not a commitment to a specific class layout.
 
-For a more explicit mapping onto current runtime seams such as `src/agent/prompt.rs`, `memory_loader.rs`, `loop_.rs`, and `dispatcher.rs`, see [`turn-runtime-logic.md`](turn-runtime-logic.md).
+For a more explicit mapping onto current runtime seams such as `src/agent/prompt.rs`, `memory_loader.rs`, `loop_.rs`, and `dispatcher.rs`, see [`turn-runtime-logic.md`](../runtime/turn-runtime-logic.md).
 
 ## Project Invariants
 
 These invariants should remain consistent across repository docs:
 
 1. The context engine is not the memory system.
-2. A `View` produces governed sets.
-3. `GraphSet` objects are first-class.
-4. Context cost is an explicit constraint.
-5. Strategy resolution precedes bounded reflection, exploration, and packing.
-6. Context reflection precedes final response packing.
-7. The final `ContextPack` is distinct from the temporary `ThinkingContext`.
-8. An `AgentPackage` is a versioned portable unit, not just a folder.
-9. Memgraph is a reference backend, not the GraphClaw business model.
-10. Directory-level docs should explain boundaries, not just contents.
+2. `Set` is the persisted governed object; `View` is runtime-only.
+3. A `Set` has 0 or N (N ≥ 2) homogeneous composition relations, never 1, never mixed types. Arity depends on the operation: n-ary for union/intersection, binary for difference/symmetric difference.
+4. `BOUNDED_BY` is reserved for `(:Agent:Runtime)-[:BOUNDED_BY]->(:Set)`.
+5. Definition relations and navigation/exposition relations between Sets are distinct.
+6. `View` objects are first-class runtime working sets.
+7. Context cost is an explicit constraint.
+8. Strategy resolution precedes bounded reflection, exploration, and packing.
+9. Context reflection precedes final response packing.
+10. The final `ContextPack` is distinct from the temporary `ThinkingContext`.
+11. An `AgentPackage` is a versioned portable unit, not just a folder.
+12. Memgraph is a reference backend, not the GraphClaw business model.
+13. Directory-level docs should explain boundaries, not just contents.
 
 ## Relationship To The Current Repository
 
@@ -354,9 +316,9 @@ Never reverse that order and let a backend procedure catalog define the GraphCla
 
 ## Companion References
 
-- [`zero-to-graphclaw-transition.md`](zero-to-graphclaw-transition.md)
+- [`zero-to-graphclaw-transition.md`](../migration/zero-to-graphclaw-transition.md)
 - [`views-and-sets.md`](views-and-sets.md)
 - [`context-artifacts.md`](context-artifacts.md)
-- [`turn-runtime-logic.md`](turn-runtime-logic.md)
-- [`future-integration-seams.md`](future-integration-seams.md)
+- [`turn-runtime-logic.md`](../runtime/turn-runtime-logic.md)
+- [`future-integration-seams.md`](../migration/future-integration-seams.md)
 - [`glossary.md`](glossary.md)

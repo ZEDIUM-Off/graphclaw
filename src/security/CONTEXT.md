@@ -113,7 +113,7 @@ Today, this area contributes to the model by enforcing the policy boundary aroun
 
 - `src/runtime/CONTEXT.md` - execution boundary
 - `src/gateway/CONTEXT.md` - transport and external-session boundary
-- `docs/architecture/graph-context-engine.md` - target model whose future policies must still pass through explicit safety controls
+- `docs/architecture/concepts/graph-context-engine.md` - target model whose future policies must still pass through explicit safety controls
 
 ## How Agents Should Work Here
 

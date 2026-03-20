@@ -110,7 +110,7 @@ flowchart TD
 
 - if the change affects persistence semantics, stay in this subtree
 - if the change affects turn assembly, go to `src/agent/`
-- if the change affects stable GraphClaw concepts like `GraphSet` or `ContextPack`, document that first in `docs/architecture/`
+- if the change affects stable GraphClaw concepts like `View` or `ContextPack`, document that first in `docs/architecture/`
 - if the change affects backend reference framing for graph storage, update `docs/backends/`
 
 ## GraphClaw Evolution Note
@@ -153,14 +153,14 @@ This subtree should usually implement storage and retrieval interfaces that cont
 - Backend compatibility and stored data formats matter.
 - Retrieval quality changes can look like model regressions.
 - Keep CLI, backend, and ranking concerns separated.
-- Do not equate current recall output with a governed `View`, `GraphSet`, or `SessionWindow` unless the implementation explicitly supports those contracts.
+- Do not equate current recall output with a governed `View` or `SessionWindow` unless the implementation explicitly supports those contracts.
 - Do not let a graph-map slice collapse storage, retrieval, and context resolution into one implemented subsystem.
 
 ## References
 
 - `src/CONTEXT.md` - parent runtime routing
 - `src/agent/CONTEXT.md` - current consumer of retrieval and hydration
-- `docs/architecture/graph-context-engine.md` - target distinction between memory and context
+- `docs/architecture/concepts/graph-context-engine.md` - target distinction between memory and context
 - `docs/backends/memgraph.md` - backend reference framing for future graph integration
 
 ## How Agents Should Work Here

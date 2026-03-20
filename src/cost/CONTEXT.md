@@ -39,11 +39,11 @@ The main documentation distinction here is between current runtime accounting an
 
 - Used by provider execution paths to record usage and cost-related measurements.
 - Reached indirectly from agent and gateway flows that surface or persist accounting outcomes.
-- Adjacent to future GraphClaw budget semantics, but not currently the owner of `GraphSet` selection or `ContextPack` arbitration.
+- Adjacent to future GraphClaw budget semantics, but not currently the owner of `View` selection or `ContextPack` arbitration.
 
 ## Routing
 
-- context-budget concepts belong in `docs/architecture/graph-context-engine.md`
+- context-budget concepts belong in `docs/architecture/concepts/graph-context-engine.md`
 - provider usage accounting belongs here
 - changes to selection or packing logic belong in the future owning runtime seam, not automatically in this subtree
 
@@ -76,8 +76,8 @@ Today, this area contributes operational measurements that can later inform budg
 
 - `src/providers/CONTEXT.md` - main producer of usage measurements
 - `src/gateway/CONTEXT.md` - external surface that may expose accounting results
-- `docs/architecture/graph-context-engine.md` - target model for context cost and budget
-- `docs/architecture/glossary.md` - stable terminology for `GraphSet`, `ContextPack`, and related budget concepts
+- `docs/architecture/concepts/graph-context-engine.md` - target model for context cost and budget
+- `docs/architecture/concepts/glossary.md` - stable terminology for `View`, `ContextPack`, and related budget concepts
 
 ## How Agents Should Work Here
 

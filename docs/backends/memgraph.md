@@ -54,8 +54,8 @@ flowchart LR
 
 Examples:
 
+- `Set`
 - `View`
-- `GraphSet`
 - `SessionWindow`
 - `ThinkingContext`
 - `ContextPack`
@@ -111,7 +111,7 @@ This distinction matters because GraphClaw must keep its concept contract stable
 
 GraphClaw use:
 
-- build or expand a `GraphSet`;
+- build or expand a `View`;
 - walk outward from anchors inside a `View`;
 - explore limited neighborhoods during `ThinkingContext`.
 
@@ -148,7 +148,7 @@ Memgraph role:
 
 GraphClaw use:
 
-- evaluate lazy `GraphSet` definitions into repeatable working results;
+- evaluate lazy `View` definitions into repeatable working results;
 - derive a packable subgraph from broader working sets;
 - persist selected helper structures or traces when needed for audit or reuse.
 
@@ -196,8 +196,7 @@ Memgraph role:
 
 | GraphClaw concept | Capability need | Memgraph role |
 | --- | --- | --- |
-| `View` | governed projection and constrained expansion | query and traversal substrate |
-| `GraphSet` | reusable set construction, filtering, ranking, and composition | query results, set-like operations, graph algorithms |
+| `View` | governed runtime projection, constrained expansion, reusable set construction, filtering, ranking, and composition | query and traversal substrate, query results, set-like operations, graph algorithms |
 | `SessionWindow` | bounded visible subgraph | bounded traversal, filtering, and materialization helpers |
 | `ThinkingContext` | temporary exploration and comparison | query execution and algorithm support for candidate evaluation |
 | packable subgraph | bounded projection close to final context | filtering, traversal, ranking inputs, optional materialization |

@@ -124,7 +124,7 @@ Do not document the gateway as exposing a finished graph-native control plane. I
 
 - `src/CONTEXT.md` - parent runtime routing
 - `web/CONTEXT.md` - UI boundary
-- `docs/architecture/graph-context-engine.md` - target model for sessions, packs, and traces
+- `docs/architecture/concepts/graph-context-engine.md` - target model for sessions, packs, and traces
 
 ## How Agents Should Work Here
 

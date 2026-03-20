@@ -43,7 +43,7 @@ agent/
 | `crates/robot-kit/` | separate Rust crate for robot/peripheral abstractions |
 | `docs/` | public docs, references, ops, contributor material, and migration framing |
 | `dev/`, `scripts/`, `.github/` | local dev, CI, release, and automation surfaces |
-| `docs/architecture/graph-context-engine.md` | target GraphClaw context-engine framing, not proof of implementation |
+| `docs/architecture/concepts/graph-context-engine.md` | target GraphClaw context-engine framing, not proof of implementation |
 
 ## Runtime Areas That Matter First
 
@@ -111,7 +111,7 @@ For implementation planning, the shortest useful path is:
 
 1. `README.md`
 2. `CONTEXT.md`
-3. `docs/architecture/graph-context-engine.md`
+3. `docs/architecture/concepts/graph-context-engine.md`
 4. `src/CONTEXT.md`
 5. `src/agent/CONTEXT.md`
 6. `src/memory/CONTEXT.md`
@@ -132,6 +132,28 @@ The repository still exposes inherited technical surfaces such as:
 - user/workspace/config paths and environment variables under inherited names
 
 These are intentionally left in place until migration is grounded in stable boundaries rather than branding-only changes.
+
+## Set/View Vocabulary Pivot (Revision v0.1)
+
+The architecture documentation now distinguishes:
+
+- **`Set`**: persisted, governed, composable object stored in the graph database;
+- **`View`**: runtime-only, transient exploration surface;
+- **`ResolvedSet`**: derived resolution artifact, not the canonical definition.
+
+This vocabulary pivot is documented in [`docs/architecture/concepts/views-and-sets.md`](../architecture/views-and-sets.md), [`docs/architecture/playground/set-system-spec-v0.md`](../architecture/set-system-spec-v0.md), and routed through [`docs/architecture/concepts/glossary.md`](../architecture/glossary.md).
+
+The current code (`crates/views/`, `src/gateway/playground.rs`, `web/src/`) still uses the pre-revision `ViewTemplate` / `ResolvedView` / `ViewsService` naming. A future code migration plan will align those types. Until then, treat the code-level `View*` names as implementation aliases for the `Set` concepts defined in the architecture docs.
+
+Key implementation seams this revision will eventually touch:
+
+- `crates/views/` -- type renames and composition invariant enforcement;
+- `src/gateway/playground.rs` -- route and DTO renames;
+- `web/src/` -- TypeScript type and component renames;
+- `memgraph/` -- schema additions for `(:Set)` nodes and composition relations;
+- `src/agent/` and `src/memory/` -- future graph adapter seams that will consume `Set` definitions.
+
+None of these code changes are part of the documentation revision itself.
 
 ## Maintainer Rule
 

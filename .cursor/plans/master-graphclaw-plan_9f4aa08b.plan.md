@@ -45,9 +45,9 @@ Primary source anchors:
 
 - [README.md](/home/zedium/graphclaw/README.md)
 - [CONTEXT.md](/home/zedium/graphclaw/CONTEXT.md)
-- [docs/architecture/graph-context-engine.md](/home/zedium/graphclaw/docs/architecture/graph-context-engine.md)
-- [docs/architecture/future-integration-seams.md](/home/zedium/graphclaw/docs/architecture/future-integration-seams.md)
-- [docs/architecture/turn-runtime-logic.md](/home/zedium/graphclaw/docs/architecture/turn-runtime-logic.md)
+- [docs/architecture/concepts/graph-context-engine.md](/home/zedium/graphclaw/docs/architecture/concepts/graph-context-engine.md)
+- [docs/architecture/migration/future-integration-seams.md](/home/zedium/graphclaw/docs/architecture/migration/future-integration-seams.md)
+- [docs/architecture/runtime/turn-runtime-logic.md](/home/zedium/graphclaw/docs/architecture/runtime/turn-runtime-logic.md)
 - [src/CONTEXT.md](/home/zedium/graphclaw/src/CONTEXT.md)
 
 ## Planning Principles
@@ -84,10 +84,12 @@ Purpose: freeze a trustworthy picture of the inherited turn pipeline before chan
 
 The codebase has two separate turn pipelines that share no code paths:
 
-| Pipeline | Entry | System prompt | Memory | Tool loop |
-| --- | --- | --- | --- | --- |
-| **Agent** | `agent.rs:360` `Agent::turn` | `SystemPromptBuilder` with `PromptSection` trait | `MemoryLoader` trait / `DefaultMemoryLoader` | `ToolDispatcher` trait |
-| **Loop** | `loop_.rs:3252` `process_message` / `run` | `channels::build_system_prompt_with_mode` | `build_context()` / `build_memory_context()` | `run_tool_call_loop` |
+
+| Pipeline  | Entry                                     | System prompt                                    | Memory                                       | Tool loop              |
+| --------- | ----------------------------------------- | ------------------------------------------------ | -------------------------------------------- | ---------------------- |
+| **Agent** | `agent.rs:360` `Agent::turn`              | `SystemPromptBuilder` with `PromptSection` trait | `MemoryLoader` trait / `DefaultMemoryLoader` | `ToolDispatcher` trait |
+| **Loop**  | `loop_.rs:3252` `process_message` / `run` | `channels::build_system_prompt_with_mode`        | `build_context()` / `build_memory_context()` | `run_tool_call_loop`   |
+
 
 Both pipelines must be addressed by the ContextCreation seam.
 
@@ -134,16 +136,18 @@ The inherited implementation wraps current `memory_loader.load_context` / `build
 
 ### Finding 6: Test Coverage Assessment
 
-| Area | Coverage | Gap Risk |
-| --- | --- | --- |
-| Agent loop orchestration | Good | 60+ unit tests + integration |
-| Prompt section building | Good (unit) | No integration-level prompt content assertion |
-| Memory loading | Good | No integration test for DefaultMemoryLoader output shape in prompt |
-| Tool dispatch | Good | Covered by integration + robustness tests |
-| History compaction | Partial | Unit only, no integration/system test |
-| Provider routing | Partial | No RouterProvider test |
-| Trace fixtures | Dead | TraceLlmProvider + verify_expects unused |
-| Channel-agent integration | Missing | No combined flow test |
+
+| Area                      | Coverage    | Gap Risk                                                           |
+| ------------------------- | ----------- | ------------------------------------------------------------------ |
+| Agent loop orchestration  | Good        | 60+ unit tests + integration                                       |
+| Prompt section building   | Good (unit) | No integration-level prompt content assertion                      |
+| Memory loading            | Good        | No integration test for DefaultMemoryLoader output shape in prompt |
+| Tool dispatch             | Good        | Covered by integration + robustness tests                          |
+| History compaction        | Partial     | Unit only, no integration/system test                              |
+| Provider routing          | Partial     | No RouterProvider test                                             |
+| Trace fixtures            | Dead        | TraceLlmProvider + verify_expects unused                           |
+| Channel-agent integration | Missing     | No combined flow test                                              |
+
 
 ### Finding 7: Pre-Migration Regression Tests Needed
 
@@ -156,37 +160,41 @@ Before any Phase 1 work, these regression tests should be written:
 
 ### Seam Map Summary
 
-| Current Owner | Key Function | Future Seam | Priority |
-| --- | --- | --- | --- |
-| `agent.rs` | `Agent::turn` (lines 360+) | Consume ContextPack instead of raw memory+prompt | Phase 2 |
-| `agent.rs` | `Agent::build_system_prompt` (lines 375-387) | Accept graph-native context overlay | Phase 2 |
-| `memory_loader.rs` | `DefaultMemoryLoader::load_context` (line 36) | Replace with evidence provider | Phase 7 |
-| `prompt.rs` | `SystemPromptBuilder::build` (lines 54-61) | Pluggable graph-view sections | Phase 2 |
-| `loop_.rs` | `build_context` (line 241) | Unified ContextCreation strategy | Phase 2 |
-| `loop_.rs` | `build_hardware_context` (line 290) | Unified ContextCreation strategy | Phase 2 |
-| `loop_.rs` | `process_message` (line 3252) | Route through ContextCreation seam | Phase 2 |
-| `channels/mod.rs` | `build_system_prompt_with_mode` (line 2440) | Consume ContextPack sections | Phase 8 |
-| `channels/mod.rs` | `build_memory_context` (line 1211) | Unified ContextCreation strategy | Phase 2 |
-| `memory/traits.rs` | `Memory` trait (line 56) | Add graph/evidence methods | Phase 7 |
-| `tools/traits.rs` | `Tool` trait / `ToolResult` (line 5) | Add structured evidence payload | Phase 7 |
+
+| Current Owner      | Key Function                                  | Future Seam                                      | Priority |
+| ------------------ | --------------------------------------------- | ------------------------------------------------ | -------- |
+| `agent.rs`         | `Agent::turn` (lines 360+)                    | Consume ContextPack instead of raw memory+prompt | Phase 2  |
+| `agent.rs`         | `Agent::build_system_prompt` (lines 375-387)  | Accept graph-native context overlay              | Phase 2  |
+| `memory_loader.rs` | `DefaultMemoryLoader::load_context` (line 36) | Replace with evidence provider                   | Phase 7  |
+| `prompt.rs`        | `SystemPromptBuilder::build` (lines 54-61)    | Pluggable graph-view sections                    | Phase 2  |
+| `loop_.rs`         | `build_context` (line 241)                    | Unified ContextCreation strategy                 | Phase 2  |
+| `loop_.rs`         | `build_hardware_context` (line 290)           | Unified ContextCreation strategy                 | Phase 2  |
+| `loop_.rs`         | `process_message` (line 3252)                 | Route through ContextCreation seam               | Phase 2  |
+| `channels/mod.rs`  | `build_system_prompt_with_mode` (line 2440)   | Consume ContextPack sections                     | Phase 8  |
+| `channels/mod.rs`  | `build_memory_context` (line 1211)            | Unified ContextCreation strategy                 | Phase 2  |
+| `memory/traits.rs` | `Memory` trait (line 56)                      | Add graph/evidence methods                       | Phase 7  |
+| `tools/traits.rs`  | `Tool` trait / `ToolResult` (line 5)          | Add structured evidence payload                  | Phase 7  |
+
 
 ### Key Types Reference
 
-| Type | File | Role |
-| --- | --- | --- |
-| `Agent` | `agent/agent.rs:19` | Top-level agent; holds provider, tools, memory, prompt_builder, dispatcher, memory_loader |
-| `PromptContext` | `agent/prompt.rs:13` | Input for PromptSection::build |
-| `PromptSection` | `agent/prompt.rs:23` | Trait for prompt sections |
-| `SystemPromptBuilder` | `agent/prompt.rs:28` | Aggregates sections into system prompt |
-| `MemoryLoader` | `agent/memory_loader.rs:6` | Trait for memory to context string |
-| `DefaultMemoryLoader` | `agent/memory_loader.rs:12` | Uses memory.recall, formats as list |
-| `ToolDispatcher` | `agent/dispatcher.rs:22` | Parse response, format results, prompt instructions |
-| `MemoryEntry` | `memory/traits.rs:5` | id, key, content, category, timestamp, session_id, score |
-| `MemoryCategory` | `memory/traits.rs:29` | Core, Daily, Conversation, Custom |
-| `Memory` | `memory/traits.rs:56` | Core memory trait: store, recall, get, list, forget |
-| `ToolResult` | `tools/traits.rs:5` | success, output, error |
-| `ToolSpec` | `tools/traits.rs:13` | name, description, parameters |
-| `Tool` | `tools/traits.rs:21` | Core tool trait: name, description, parameters_schema, execute |
+
+| Type                  | File                        | Role                                                                                      |
+| --------------------- | --------------------------- | ----------------------------------------------------------------------------------------- |
+| `Agent`               | `agent/agent.rs:19`         | Top-level agent; holds provider, tools, memory, prompt_builder, dispatcher, memory_loader |
+| `PromptContext`       | `agent/prompt.rs:13`        | Input for PromptSection::build                                                            |
+| `PromptSection`       | `agent/prompt.rs:23`        | Trait for prompt sections                                                                 |
+| `SystemPromptBuilder` | `agent/prompt.rs:28`        | Aggregates sections into system prompt                                                    |
+| `MemoryLoader`        | `agent/memory_loader.rs:6`  | Trait for memory to context string                                                        |
+| `DefaultMemoryLoader` | `agent/memory_loader.rs:12` | Uses memory.recall, formats as list                                                       |
+| `ToolDispatcher`      | `agent/dispatcher.rs:22`    | Parse response, format results, prompt instructions                                       |
+| `MemoryEntry`         | `memory/traits.rs:5`        | id, key, content, category, timestamp, session_id, score                                  |
+| `MemoryCategory`      | `memory/traits.rs:29`       | Core, Daily, Conversation, Custom                                                         |
+| `Memory`              | `memory/traits.rs:56`       | Core memory trait: store, recall, get, list, forget                                       |
+| `ToolResult`          | `tools/traits.rs:5`         | success, output, error                                                                    |
+| `ToolSpec`            | `tools/traits.rs:13`        | name, description, parameters                                                             |
+| `Tool`                | `tools/traits.rs:21`        | Core tool trait: name, description, parameters_schema, execute                            |
+
 
 ## Phase 1: Executable Artifact Model
 
@@ -264,7 +272,7 @@ Purpose: implement governed navigation and selection as first-class runtime beha
 
 Scope:
 
-- Add `View` resolution contracts and `GraphSet` operations matching [docs/architecture/views-and-sets.md](/home/zedium/graphclaw/docs/architecture/views-and-sets.md).
+- Add `View` resolution contracts and `GraphSet` operations matching [docs/architecture/concepts/views-and-sets.md](/home/zedium/graphclaw/docs/architecture/concepts/views-and-sets.md).
 - Start with backend-agnostic operations: union, intersection, difference, bounded complement, expansion, filtering, ranking, condensation.
 - Distinguish lazy from materialized sets.
 
@@ -279,7 +287,7 @@ Purpose: make packability and model-visible context explicit.
 
 Scope:
 
-- Implement cost estimation layers described in [docs/architecture/context-artifacts.md](/home/zedium/graphclaw/docs/architecture/context-artifacts.md): exploration cost, packable-subgraph cost, final context cost.
+- Implement cost estimation layers described in [docs/architecture/concepts/context-artifacts.md](/home/zedium/graphclaw/docs/architecture/concepts/context-artifacts.md): exploration cost, packable-subgraph cost, final context cost.
 - Build projection from `GraphSet` to packable subgraph to `ContextPack`.
 - Replace prompt-string-only assembly with `ContextPack` consumption in [src/agent/prompt.rs](/home/zedium/graphclaw/src/agent/prompt.rs).
 

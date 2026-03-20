@@ -241,7 +241,7 @@ Il faut éviter de transformer toute la connaissance métier en ontologie native
 * `BundleVersion`
 * `SkillDefinition`
 * `CapabilityDefinition`
-* `ViewDefinition`
+* `Set`
 * `BehaviorDefinition`
 * `PolicyDefinition`
 * `ImportStrategyDefinition`
@@ -293,7 +293,7 @@ Exemples :
 
 * `DEPENDS_ON`
 * `EXPOSES`
-* `USES_VIEW`
+* `USES_SET`
 * `USES_POLICY`
 * `USES_SKILL`
 * `USES_CAPABILITY`
@@ -358,7 +358,7 @@ Un `ContextPack` peut être composé de sections ordonnées :
 
 1. `HardPolicies`
 2. `AgentContract`
-3. `ActiveViewContract`
+3. `ActiveSetContract`
 4. `PinnedFacts`
 5. `TaskFrame`
 6. `EvidenceSet`
@@ -533,7 +533,7 @@ version: 0.1.0
 native_schema_version: 1
 exports:
   - ref: agent/context-architect
-  - ref: view/architecture-review
+  - ref: set/architecture-review
   - ref: policy/context-budget-default
 dependencies:
   - package_id: core.native.protocol
@@ -837,7 +837,7 @@ pub trait ContextEngine: Send + Sync {
 
 ```rust
 pub trait GraphStore: Send + Sync {
-    async fn read_view(&self, query: GraphReadQuery) -> anyhow::Result<GraphReadResult>;
+    async fn read_set(&self, query: GraphReadQuery) -> anyhow::Result<GraphReadResult>;
     async fn text_search(&self, req: TextSearchRequest) -> anyhow::Result<Vec<NodeHit>>;
     async fn vector_search(&self, req: VectorSearchRequest) -> anyhow::Result<Vec<NodeHit>>;
     async fn write_control(&self, cmd: GraphControlWrite) -> anyhow::Result<()>;
