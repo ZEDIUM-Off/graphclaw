@@ -1,6 +1,6 @@
-//! Static file serving for the embedded web dashboard.
+//! Static file serving for the embedded web dashboard and future UI surface.
 //!
-//! Uses `rust-embed` to bundle the `web/dist/` directory into the binary at compile time.
+//! Uses `rust-embed` to bundle the frontend build directories into the binary at compile time.
 
 use axum::{
     http::{header, StatusCode, Uri},
@@ -12,20 +12,40 @@ use rust_embed::Embed;
 #[folder = "web/dist/"]
 struct WebAssets;
 
+#[derive(Embed)]
+#[folder = "ui/dist/"]
+struct UiAssets;
+
 /// Serve static files from `/_app/*` path
 pub async fn handle_static(uri: Uri) -> impl IntoResponse {
     let path = uri.path().strip_prefix("/_app/").unwrap_or(uri.path());
 
-    serve_embedded_file(path)
+    serve_embedded_file::<WebAssets>(path)
 }
 
 /// SPA fallback: serve index.html for any non-API, non-static GET request
 pub async fn handle_spa_fallback() -> impl IntoResponse {
-    serve_embedded_file("index.html")
+    serve_embedded_file::<WebAssets>("index.html")
 }
 
-fn serve_embedded_file(path: &str) -> impl IntoResponse {
-    match WebAssets::get(path) {
+/// Serve static files from `/_ui/*`.
+pub async fn handle_ui_static(uri: Uri) -> impl IntoResponse {
+    let path = uri.path().strip_prefix("/_ui/").unwrap_or(uri.path());
+    let normalized = if path.is_empty() { "index.html" } else { path };
+
+    match UiAssets::get(normalized) {
+        Some(_) => serve_embedded_file::<UiAssets>(normalized),
+        None => serve_embedded_file::<UiAssets>("index.html"),
+    }
+}
+
+/// SPA fallback for the embedded Vue UI.
+pub async fn handle_ui_index() -> impl IntoResponse {
+    serve_embedded_file::<UiAssets>("index.html")
+}
+
+fn serve_embedded_file<E: Embed>(path: &str) -> impl IntoResponse {
+    match E::get(path) {
         Some(content) => {
             let mime = mime_guess::from_path(path)
                 .first_or_octet_stream()

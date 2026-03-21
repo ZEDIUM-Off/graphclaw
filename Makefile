@@ -3,8 +3,12 @@ SHELL := /usr/bin/env bash
 
 CARGO ?= cargo
 NPM ?= npm
+PNPM ?= pnpm
 PYTHON ?= python3
 WEB_DIR ?= web
+UI_DIR ?= ui
+UI_PORT ?= 5173
+PLAYGROUND_GATEWAY_PORT ?= 42617
 TAG ?=
 ORIGIN_REMOTE ?= origin
 UPSTREAM_REMOTE ?= upstream
@@ -20,7 +24,7 @@ MEMGRAPH_DIR ?= memgraph
 PLAYGROUND_MEMGRAPH_ENV_FILE ?= $(MEMGRAPH_DIR)/.memgraph.env
 PYTHON_USER_SITE ?= $(shell $(PYTHON) -c 'import site; print(site.getusersitepackages())' 2>/dev/null)
 PLAYGROUND_LOCAL_BIN ?= $(HOME)/.local/bin
-PLAYGROUND_LIBCLANG_PATH ?= $(PYTHON_USER_SITE)/clang/native
+PLAYGROUND_LIBCLANG_PATH ?= $(shell for d in "$(PYTHON_USER_SITE)/clang/native" /usr/lib/llvm-18/lib /usr/lib/llvm-17/lib /usr/lib/llvm-16/lib /usr/lib/llvm-15/lib /usr/lib/llvm-14/lib /usr/lib/x86_64-linux-gnu /usr/lib64 /usr/lib /usr/local/lib; do if [ -d "$$d" ] && { [ -e "$$d/libclang.so" ] || ls "$$d"/libclang.so.* >/dev/null 2>&1; }; then echo "$$d"; break; fi; done)
 PLAYGROUND_BINDGEN_EXTRA_CLANG_ARGS ?= --sysroot=/ -I$(shell cc -print-file-name=include) -I/usr/include -I/usr/include/x86_64-linux-gnu
 
 .PHONY: help \
@@ -30,6 +34,8 @@ PLAYGROUND_BINDGEN_EXTRA_CLANG_ARGS ?= --sysroot=/ -I$(shell cc -print-file-name
 	run run-agent run-daemon run-gateway run-doctor run-onboard \
 	docs docs-links \
 	web-dev web-build web-preview \
+	ui-install ui-dev ui-build ui-preview ui-check \
+	playground-check \
 	python-test \
 	ci ci-build-image ci-shell ci-lint ci-lint-strict ci-lint-delta ci-test ci-build ci-security ci-docker-smoke \
 	dev-up dev-down dev-shell dev-agent dev-logs dev-build dev-clean \
@@ -63,12 +69,17 @@ help:
 		'  make run-doctor         cargo run -- doctor' \
 		'  make run-onboard        cargo run -- onboard' \
 		'' \
-		'Docs and web' \
+		'Docs and frontends' \
 		'  make docs               Run docs quality gate' \
 		'  make docs-links         Run docs links gate' \
 		'  make web-dev            Run Vite dev server' \
 		'  make web-build          Build web app' \
 		'  make web-preview        Preview web app build' \
+		'  make ui-install         Install ui/ dependencies with pnpm' \
+		'  make ui-dev             Run the new Vue playground UI' \
+		'  make ui-build           Build the new Vue playground UI' \
+		'  make ui-preview         Preview the new Vue playground UI build' \
+		'  make ui-check           Run type checks for the new Vue playground UI' \
 		'' \
 		'Docker/local CI' \
 		'  make ci                 Run full local CI in Docker' \
@@ -92,8 +103,8 @@ help:
 		'  make memgraph-logs      Follow Memgraph logs' \
 		'  make memgraph-shell     Exec into Memgraph container' \
 		'' \
-		'Playground (Memgraph + gateway)' \
-		'  make playground         Start Memgraph then gateway (one command; dashboard + /playground)' \
+		'Playground (Memgraph + gateway + future UI)' \
+		'  make playground         Build ui/, start Memgraph, then run the gateway serving /_ui/' \
 		'  make playground-paircode  Generate a new pairing code (gateway must be running)' \
 		'' \
 		'Upstream resync protocol' \
@@ -200,6 +211,21 @@ web-build:
 web-preview:
 	$(NPM) --prefix $(WEB_DIR) run preview
 
+ui-install:
+	cd $(UI_DIR) && $(PNPM) install
+
+ui-dev:
+	cd $(UI_DIR) && GATEWAY_ORIGIN=http://127.0.0.1:$(PLAYGROUND_GATEWAY_PORT) $(PNPM) run dev -- --port $(UI_PORT)
+
+ui-build:
+	cd $(UI_DIR) && $(PNPM) run build
+
+ui-preview:
+	cd $(UI_DIR) && $(PNPM) run preview
+
+ui-check:
+	cd $(UI_DIR) && $(PNPM) run check
+
 python-test:
 	$(PYTHON) -m pytest python/tests
 
@@ -266,17 +292,84 @@ memgraph-logs:
 memgraph-shell:
 	cd $(MEMGRAPH_DIR) && docker compose exec memgraph bash
 
-# Start Memgraph then the gateway (dashboard + playground API). Single command to run the full stack.
-playground: memgraph-up
+playground-check:
+	@command -v cmake >/dev/null 2>&1 || { \
+		echo "Missing system dependency: cmake"; \
+		echo "Install it once, then rerun: sudo apt-get install -y cmake"; \
+		exit 1; \
+	}
+	@command -v pkg-config >/dev/null 2>&1 || { \
+		echo "Missing system dependency: pkg-config"; \
+		echo "Install it once, then rerun: sudo apt-get install -y pkg-config"; \
+		exit 1; \
+	}
+	@pkg-config --exists openssl || { \
+		echo "Missing system dependency: OpenSSL development headers"; \
+		echo "Install them once, then rerun: sudo apt-get install -y libssl-dev"; \
+		exit 1; \
+	}
+	@[ -n "$(PLAYGROUND_LIBCLANG_PATH)" ] && { [ -e "$(PLAYGROUND_LIBCLANG_PATH)/libclang.so" ] || ls "$(PLAYGROUND_LIBCLANG_PATH)"/libclang.so.* >/dev/null 2>&1; } || { \
+		echo "Missing system dependency: libclang shared library"; \
+		echo "Install it once, then rerun: sudo apt-get install -y libclang-dev"; \
+		exit 1; \
+	}
+	@if lsof -tiTCP:$(UI_PORT) -sTCP:LISTEN >/dev/null 2>&1; then \
+		UI_LISTEN_PID=$$(lsof -tiTCP:$(UI_PORT) -sTCP:LISTEN | head -n1); \
+		UI_LISTEN_CMD=$$(ps -p $$UI_LISTEN_PID -o args= 2>/dev/null || true); \
+		case "$$UI_LISTEN_CMD" in \
+			*"/home/zedium/graphclaw/ui"*|*"vp dev"*|*"graphclaw-ui"*) \
+				echo "Stopping stale ui/ dev server on port $(UI_PORT) (pid $$UI_LISTEN_PID)..."; \
+				kill $$UI_LISTEN_PID; \
+				sleep 1; \
+				;; \
+			*) \
+				echo "Port $(UI_PORT) is already in use by another process:"; \
+				echo "$$UI_LISTEN_CMD"; \
+				echo "Free the port or rerun with a different UI port, for example: make playground UI_PORT=5174"; \
+				exit 1; \
+				;; \
+		esac; \
+	fi
+
+# Start Memgraph, the new ui/, and the gateway together. The UI runs in the background; the gateway stays in the foreground.
+playground: playground-check memgraph-up
 	@echo "Waiting for Memgraph to accept connections..."
 	@sleep 3
+	@echo "Installing ui/ dependencies with pnpm..."
+	@cd $(UI_DIR) && $(PNPM) install
+	@echo "Building ui/ for gateway-embedded delivery..."
+	@cd $(UI_DIR) && $(PNPM) run build
+	@trap 'jobs -p | xargs -r kill' EXIT INT TERM; \
 	set -a; \
 	[ ! -f "$(PLAYGROUND_MEMGRAPH_ENV_FILE)" ] || . "$(PLAYGROUND_MEMGRAPH_ENV_FILE)"; \
 	set +a; \
+	echo "Starting gateway on http://127.0.0.1:$(PLAYGROUND_GATEWAY_PORT) ..."; \
 	PATH="$(PLAYGROUND_LOCAL_BIN):$$PATH" \
 	LIBCLANG_PATH="$(PLAYGROUND_LIBCLANG_PATH)" \
 	BINDGEN_EXTRA_CLANG_ARGS="$(PLAYGROUND_BINDGEN_EXTRA_CLANG_ARGS)" \
-	$(CARGO) run --locked -- gateway
+	$(CARGO) run --locked -- gateway start --host 127.0.0.1 --port $(PLAYGROUND_GATEWAY_PORT) & \
+	GATEWAY_PID=$$!; \
+	echo "gateway pid: $$GATEWAY_PID"; \
+	GATEWAY_READY=0; \
+	for _ in $$(seq 1 90); do \
+		if lsof -tiTCP:$(PLAYGROUND_GATEWAY_PORT) -sTCP:LISTEN >/dev/null 2>&1; then \
+			GATEWAY_READY=1; \
+			break; \
+		fi; \
+		if ! kill -0 $$GATEWAY_PID 2>/dev/null; then \
+			wait $$GATEWAY_PID; \
+			exit $$?; \
+		fi; \
+		sleep 1; \
+	done; \
+	if [ "$$GATEWAY_READY" -ne 1 ]; then \
+		echo "Gateway did not bind port $(PLAYGROUND_GATEWAY_PORT) in time."; \
+		kill $$GATEWAY_PID 2>/dev/null || true; \
+		wait $$GATEWAY_PID 2>/dev/null || true; \
+		exit 1; \
+	fi; \
+	echo "Embedded Vue UI available at http://127.0.0.1:$(PLAYGROUND_GATEWAY_PORT)/_ui/"; \
+	wait $$GATEWAY_PID
 
 # Generate a new one-time pairing code for a new client. Gateway must be running (e.g. make playground in another terminal).
 playground-paircode:

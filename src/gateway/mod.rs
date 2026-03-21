@@ -706,6 +706,10 @@ pub async fn run_gateway(host: &str, port: u16, config: Config) -> Result<()> {
         .route("/ws/chat", get(ws::handle_ws_chat))
         // ── Static assets (web dashboard) ──
         .route("/_app/{*path}", get(static_files::handle_static))
+        // ── Embedded future UI (Vue playground surface) ──
+        .route("/_ui", get(static_files::handle_ui_index))
+        .route("/_ui/", get(static_files::handle_ui_index))
+        .route("/_ui/{*path}", get(static_files::handle_ui_static))
         // ── Config PUT with larger body limit ──
         .merge(config_put_router)
         .with_state(state)
