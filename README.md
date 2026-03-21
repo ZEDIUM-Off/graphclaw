@@ -74,6 +74,7 @@ Use these entry points to orient work quickly:
 | Rust runtime behavior | [`src/CONTEXT.md`](src/CONTEXT.md) |
 | workspace crates | [`crates/CONTEXT.md`](crates/CONTEXT.md) |
 | web UI | [`web/CONTEXT.md`](web/CONTEXT.md) |
+| future Vue UI | [`ui/CONTEXT.md`](ui/CONTEXT.md) |
 | Python tooling | [`python/CONTEXT.md`](python/CONTEXT.md) |
 | firmware or board-side code | [`firmware/CONTEXT.md`](firmware/CONTEXT.md) |
 | tests | [`tests/CONTEXT.md`](tests/CONTEXT.md) |
@@ -89,6 +90,7 @@ Always move from the root framing to the closest local `CONTEXT.md` before editi
 | `src/` | inherited Rust runtime, services, integrations, and subsystem modules |
 | `crates/` | workspace member crates and supporting libraries |
 | `web/` | frontend and dashboard surfaces |
+| `ui/` | future Vue-based GraphClaw interface, currently scoped to the playground |
 | `python/` | inherited Python tooling and integrations |
 | `firmware/` | hardware-side experiments and board support |
 | `tests/` | component, integration, live, manual, and system test areas |
@@ -114,7 +116,7 @@ GraphClaw is not migrating by renaming the whole repository first. The safer pat
 
 The intended order is:
 
-1. Documentation and canonical concept sources: stabilize the meaning of `Set`, `View`, `ResolvedSet`, `SessionWindow`, `ThinkingContext`, `ContextPack`, `ContextMutationProposal`, `ResolutionTrace`, and portable agent packaging boundaries.
+1. Documentation and canonical concept sources: stabilize the meaning of `Set`, `View`, `ResolvedSet`, `ContextFrame`, `SessionFrame`, `ContextPack`, `ContextMutationProposal`, `ResolutionTrace`, and portable agent packaging boundaries.
 2. Boundary docs: make repository and subsystem responsibilities explicit through `CONTEXT.md` files and architecture references.
 3. Runtime artifacts: make context-resolution objects explicit instead of relying on implicit prompt concatenation.
 4. Graph adapter boundary: add a graph-facing storage interface behind traits so topology-aware context selection can arrive without replacing every inherited backend at once.

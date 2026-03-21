@@ -2,7 +2,7 @@
 
 ## Status
 
-This document is the **first documentary pass** on the Set concept for GraphClaw. It defines the minimal Set lifecycle, composition algebra, and LLM export formats for the initial playground implementation. It is a deliberately bounded v0: it does not specify the full Context Engine, SessionWindow, ContextPack, or governance.
+This document is the **first documentary pass** on the Set concept for GraphClaw. It defines the minimal Set lifecycle, composition algebra, and LLM export formats for the initial playground implementation. It is a deliberately bounded v0: it does not specify the full Context Engine, `ContextFrame`, `SessionFrame`, `ContextPack`, or governance.
 
 This spec supersedes the earlier `view-system-spec-v0.md` following the vocabulary pivot in Revision v0.1. The current playground code still uses `ViewTemplate` / `ResolvedView` naming; a future code migration will align those types with this specification.
 
@@ -290,7 +290,7 @@ LLM export must **not** be a raw DB dump. It must be:
 This lot does **not** fix or implement:
 
 - full **ContextPack**;
-- **SessionWindow**;
+- **SessionFrame**;
 - **ContextMutationProposal**;
 - full **PromptProjection**;
 - the complete Context Engine.

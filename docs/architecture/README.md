@@ -22,12 +22,13 @@ This subtree is now organized by documentation family:
 - conceptual maturity tracker: [`conceptual-maturity-tracker.md`](concepts/conceptual-maturity-tracker.md)
 - transition framing from the inherited runtime: [`zero-to-graphclaw-transition.md`](migration/zero-to-graphclaw-transition.md)
 - sets (persisted), views (runtime), and packability family: [`views-and-sets.md`](concepts/views-and-sets.md), [`set.md`](concepts/set.md), [`resolved-set.md`](concepts/resolved-set.md), [`view.md`](concepts/view.md), [`packability.md`](concepts/packability.md)
+- frame-oriented context composition: [`context-frame.md`](concepts/context-frame.md), [`session-frame.md`](concepts/session-frame.md), [`context-pack-interface.md`](interfaces/context-pack-interface.md)
 - graph theory, projection governance, `Graph of Thoughts`, and mono-agent loop framing: [`graph-governed-agentics.md`](concepts/graph-governed-agentics.md), [`projection-governance.md`](concepts/projection-governance.md), [`got.md`](concepts/got.md), [`agent-loop.md`](concepts/agent-loop.md)
 - Set System v0 (lifecycle, algebra, LLM export) for the playground: [`set-system-spec-v0.md`](playground/set-system-spec-v0.md)
 - context artifacts, planning artifacts, and budgeting: [`context-artifacts.md`](concepts/context-artifacts.md)
 - logical turn phases, strategy resolution, current insertion points, and cross-cutting sequential paths (current vs future): [`turn-runtime-logic.md`](runtime/turn-runtime-logic.md)
 - future integration seams, strategy seams, and interface families: [`future-integration-seams.md`](migration/future-integration-seams.md)
-- interface fiches for likely first seams: [`session-window-interface.md`](interfaces/session-window-interface.md), [`context-pack-interface.md`](interfaces/context-pack-interface.md), [`strategy-resolver-interface.md`](interfaces/strategy-resolver-interface.md), [`graph-context-store-and-retriever-interface.md`](interfaces/graph-context-store-and-retriever-interface.md), [`mutation-guard-interface.md`](interfaces/mutation-guard-interface.md), [`orchestration-policies-interface.md`](interfaces/orchestration-policies-interface.md), [`hook-bus-interface.md`](interfaces/hook-bus-interface.md)
+- interface fiches for likely first seams: [`context-pack-interface.md`](interfaces/context-pack-interface.md), [`strategy-resolver-interface.md`](interfaces/strategy-resolver-interface.md), [`graph-context-store-and-retriever-interface.md`](interfaces/graph-context-store-and-retriever-interface.md), [`mutation-guard-interface.md`](interfaces/mutation-guard-interface.md), [`orchestration-policies-interface.md`](interfaces/orchestration-policies-interface.md), [`hook-bus-interface.md`](interfaces/hook-bus-interface.md). [`session-window-interface.md`](interfaces/session-window-interface.md) remains only as a retired migration note.
 - terminology index: [`glossary.md`](concepts/glossary.md)
 
 ## Mermaid Convention
@@ -53,7 +54,7 @@ flowchart TD
     D["context-artifacts.md - Artifact boundaries and budgets"]
     E["turn-runtime-logic.md - Logical turn phases and inherited runtime mapping"]
     F["future-integration-seams.md - Future interface families"]
-    G["session-window-interface.md - Window source-of-truth seam"]
+    G["session-frame.md - Session projection concept"]
     H["context-pack-interface.md - Final packed context seam"]
     I["strategy-resolver-interface.md - Strategy selection seam"]
     J["graph-context-store-and-retriever-interface.md - Context supply seam"]
@@ -87,7 +88,7 @@ flowchart TD
 
 This subtree is for:
 
-- stable definitions such as `Set`, `View`, `ResolvedSet`, `SessionWindow`, `ThinkingContext`, and `ContextPack`;
+- stable definitions such as `Set`, `View`, `ResolvedSet`, `ContextFrame`, `SessionFrame`, and `ContextPack`;
 - strategy families for reflection, exploration, packing, and orchestration as target-architecture concepts;
 - explicit planning and trace artifacts such as `TaskIntent`, `StrategyResolution`, `ReflectionPlan`, `ExplorationPlan`, and `OrchestrationPlan`;
 - framing for the Graph Engine as governed context resolution plus strategy resolution, rather than only retrieval;
@@ -109,7 +110,7 @@ This subtree is not for:
 3. [`zero-to-graphclaw-transition.md`](migration/zero-to-graphclaw-transition.md) for the migration thesis and coexistence model.
 4. [`views-and-sets.md`](concepts/views-and-sets.md), then the split concept files under `concepts/`, and [`context-artifacts.md`](concepts/context-artifacts.md) for operational concept detail.
 5. [`turn-runtime-logic.md`](runtime/turn-runtime-logic.md) and [`future-integration-seams.md`](migration/future-integration-seams.md) when the task touches runtime boundaries or future interface placement.
-6. The interface fiches when the task needs a concrete first seam: [`session-window-interface.md`](interfaces/session-window-interface.md), [`context-pack-interface.md`](interfaces/context-pack-interface.md), [`strategy-resolver-interface.md`](interfaces/strategy-resolver-interface.md), [`graph-context-store-and-retriever-interface.md`](interfaces/graph-context-store-and-retriever-interface.md), [`mutation-guard-interface.md`](interfaces/mutation-guard-interface.md), [`orchestration-policies-interface.md`](interfaces/orchestration-policies-interface.md), and [`hook-bus-interface.md`](interfaces/hook-bus-interface.md).
+6. The interface fiches when the task needs a concrete first seam: [`context-pack-interface.md`](interfaces/context-pack-interface.md), [`strategy-resolver-interface.md`](interfaces/strategy-resolver-interface.md), [`graph-context-store-and-retriever-interface.md`](interfaces/graph-context-store-and-retriever-interface.md), [`mutation-guard-interface.md`](interfaces/mutation-guard-interface.md), [`orchestration-policies-interface.md`](interfaces/orchestration-policies-interface.md), and [`hook-bus-interface.md`](interfaces/hook-bus-interface.md). Read [`session-window-interface.md`](interfaces/session-window-interface.md) only as a retired migration note.
 7. [`glossary.md`](concepts/glossary.md) for concept routing.
 
 ## Architecture Map
@@ -127,13 +128,14 @@ This subtree is not for:
 | `packability.md` | how should packability and packable subgraphs work conceptually |
 | `graph-governed-agentics.md` | where should a reader start for graph-governed agentics framing |
 | `projection-governance.md` | how should projectability and NL projection be framed |
+| `context-frame.md` | how should invocation-oriented context composition be structured from governed graph projections |
+| `session-frame.md` | how should session-scoped provider context be projected from the active View |
 | `got.md` | how should mono-agent Graph-of-Thought reasoning be framed |
 | `agent-loop.md` | how should the mono-agent loop be read conceptually |
 | `set-system-spec-v0.md` | Set System v0: lifecycle, composition algebra, LLM export (playground slice) |
 | `context-artifacts.md` | which context and planning artifacts are distinct and how do budget concerns relate to them |
 | `turn-runtime-logic.md` | how should a turn resolve logically, including strategy resolution, where does the current runtime fit, and how do gateway/agent/memory/tools/providers/runtime/security articulate in current vs future paths |
 | `future-integration-seams.md` | which interface families, orchestration seams, and runtime seams should emerge next |
-| `session-window-interface.md` | what should become the governed runtime source of truth for visible context |
 | `context-pack-interface.md` | what should become the final model-visible packed context artifact |
 | `strategy-resolver-interface.md` | how should turn-time strategy choice become an explicit runtime seam |
 | `graph-context-store-and-retriever-interface.md` | how should graph-aware and memory-aware context supply be separated from higher-level context governance |

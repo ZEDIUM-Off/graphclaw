@@ -65,18 +65,19 @@ flowchart LR
         RS["ResolvedSet (derived)"]
         V["View (runtime)"]
         SR[StrategyResolution]
-        W[SessionWindow]
-        T[ThinkingContext]
+        CF[ContextFrame]
+        SF[SessionFrame]
         P[ContextPack]
         R[ResolutionTrace]
 
         ST --> RS
         RS --> V
         SR --> V
-        SR --> T
-        W --> T
-        V --> T
-        T --> P
+        V --> CF
+        V --> SF
+        SR --> CF
+        CF --> P
+        SF --> P
         P --> R
     end
 
@@ -126,34 +127,27 @@ Use the concept-specific canonical sources below instead of redefining those con
 - `Set`: [`set.md`](set.md)
 - `ResolvedSet`: [`resolved-set.md`](resolved-set.md)
 - `View`: [`view.md`](view.md)
-- `SessionWindow`: [`session-window-interface.md`](../interfaces/session-window-interface.md)
+- `ContextFrame`: [`context-frame.md`](context-frame.md)
+- `SessionFrame`: [`session-frame.md`](session-frame.md)
 - `ContextPack`: [`context-pack-interface.md`](../interfaces/context-pack-interface.md)
 - `StrategyResolution`: [`strategy-resolver-interface.md`](../interfaces/strategy-resolver-interface.md)
 - routing policy and concept registry: [`definition-governance.md`](definition-governance.md)
 
 This document keeps the top-level engine boundary, invariants, and cross-concept framing. It is not the canonical definition surface for every concept named in the engine model.
 
-### `ThinkingContext`
+### `SessionFrame`
 
-The `ThinkingContext` is the temporary reflection context used to explore, compare, test, and arbitrate before building the final `ContextPack`.
+The canonical definition lives in [`session-frame.md`](session-frame.md).
 
-In the target model, this phase is mandatory. It should not be documented as a hidden chain-of-thought contract or as a merely optional skill.
-
-It is better described as a system phase than as a standard tool.
-
-At the engine-boundary level, the current architecture reading is:
-
-- the active [`View`](view.md) remains the working subgraph;
-- a governed NL projection derives the `ThinkingContext` used for exploration work;
-- GoT-style reasoning may then generate, rank, refine, or aggregate thoughts before the next `View` is recomputed.
-
-For the more focused readings, see [`context-artifacts.md`](context-artifacts.md), [`projection-governance.md`](projection-governance.md), [`got.md`](got.md), and [`agent-loop.md`](agent-loop.md).
+At the engine-boundary level, `SessionFrame` is the session-oriented `ContextFrame` derived from the active [`View`](view.md) when some part of session state must be exposed to a provider invocation.
 
 ### `ContextPack`
 
 The canonical definition lives in [`context-pack-interface.md`](../interfaces/context-pack-interface.md).
 
-At the engine-boundary level, `ContextPack` is the final model-visible result rather than the whole exploration space.
+At the engine-boundary level, `ContextPack` is the final model-visible result for one provider invocation rather than the whole exploration space.
+
+It should be read as an ordered composition of [`ContextFrame`](context-frame.md) objects rather than as one undifferentiated provider payload.
 
 ### `ContextMutationProposal`
 
@@ -194,8 +188,7 @@ It owns:
 - task interpretation and turn-time strategy resolution for governed context work;
 - view resolution;
 - set construction and manipulation;
-- session-scoped visibility;
-- reflective context arbitration;
+- frame-oriented projection from the active [`View`](view.md);
 - final context packing and traceability.
 
 It does not by itself own:
@@ -258,7 +251,7 @@ The graph-theory anchors that matter most here are:
 
 The minimum meaning of the less obvious operators should stay fixed:
 
-- `bounded complement`: remove a set from an explicitly bounded working universe such as the current `View`, `SessionWindow`, or policy-limited candidate set. Never interpret it as "everything in the database except this set."
+- `bounded complement`: remove a set from an explicitly bounded working universe such as the current `View` or a policy-limited candidate set. Never interpret it as "everything in the database except this set."
 - `condensation`: reduce a large or redundant set into a smaller representative structure while preserving the distinctions required for the current reasoning or packing task.
 - `projection into a packable subgraph`: turn a logical set into a bounded subgraph candidate that includes the nodes, relations, provenance, and summary links needed to remain intelligible inside a `ContextPack`.
 
@@ -277,7 +270,7 @@ Without explicit cost, sets remain logical but not governable.
 
 The docs should distinguish between:
 
-- exploration cost inside `ThinkingContext`;
+- exploration cost inside the active `View` and the GoT process it supports;
 - candidate cost for a packable subgraph;
 - final model-visible cost of the `ContextPack`.
 
@@ -290,11 +283,12 @@ The target runtime should be described as a logical sequence, even before the im
 3. resolve the coherent strategy set for reflection, exploration, packing, and orchestration;
 4. resolve or refresh relevant views;
 5. build or refine candidate sets;
-6. enter `ThinkingContext` to compare costs, propose mutations, and evaluate trade-offs;
+6. use GoT-style reasoning to compare costs, propose mutations, and evaluate trade-offs on top of the active `View`;
 7. apply policy and budget rules;
-8. compile the final `ContextPack`;
-9. record a `ResolutionTrace`;
-10. pass the pack into response generation and any post-turn persistence flow.
+8. derive the `ContextFrame` set needed for the current invocation phase;
+9. compile the final `ContextPack`;
+10. record a `ResolutionTrace`;
+11. pass the pack into response generation and any post-turn persistence flow.
 
 This is a runtime logic description, not a commitment to a specific class layout.
 
@@ -326,8 +320,8 @@ These invariants should remain consistent across repository docs:
 6. `View` objects are first-class runtime working subgraphs.
 7. Context cost is an explicit constraint.
 8. Strategy resolution precedes bounded reflection, exploration, and packing.
-9. Context reflection precedes final response packing.
-10. The final `ContextPack` is distinct from the temporary `ThinkingContext`, and neither should be confused with the underlying `View`.
+9. GoT-style reasoning and frame derivation precede final response packing.
+10. The final `ContextPack` is distinct from the underlying `View` that made its frames possible.
 11. An `AgentPackage` is a versioned portable unit, not just a folder.
 12. Memgraph is a reference backend, not the GraphClaw business model.
 13. Directory-level docs should explain boundaries, not just contents.
@@ -342,7 +336,7 @@ This document therefore serves as:
 - a source of stable terminology for `README.md`, `AGENTS.md`, and local `CONTEXT.md` files;
 - a guardrail against prematurely collapsing GraphClaw into backend-specific or implementation-specific language.
 
-It does not claim that the current runtime already exposes a complete `SessionWindow`, `ThinkingContext`, `ContextPack`, or package protocol.
+It does not claim that the current runtime already exposes a complete `ContextFrame` / `ContextPack` pipeline or package protocol.
 
 The migration target is coexistence through cleaner boundaries: some future runtime processes should be able to branch either to inherited pipelines or to graph-native implementations behind explicit seams.
 

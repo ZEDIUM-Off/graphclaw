@@ -1,156 +1,201 @@
 # ContextPack Interface
 
-## Status
+## Statut
 
-This document defines the target role of `ContextPack` as a migration-facing GraphClaw interface.
+Ce document definit le role cible de `ContextPack` comme interface de migration pour GraphClaw.
 
-It does not claim that the inherited runtime already exposes a concrete `ContextPack` type in code. It defines the minimum boundary needed so final model-visible context can become explicit, budgeted, inspectable, and separable from broader exploration state.
+Il ne pretend pas que la runtime heritee expose deja un type `ContextPack` concret en code.
 
-## Why This Interface Matters
+Il fixe la frontiere minimale necessaire pour que le contexte final visible par le modele devienne explicite, budgete, inspectable, et distinct de l'etat plus large d'exploration.
 
-The inherited runtime can already send prompt-visible context to providers, but that context is still often assembled through a mixture of prompt sections, memory hydration, and transient runtime conventions.
+## Pourquoi Cette Interface Compte
 
-That leaves several questions under-specified:
+La runtime heritee peut deja envoyer du contexte visible dans le prompt aux providers, mais ce contexte reste encore souvent assemble a partir d'un melange de sections de prompt, de chargement memoire, et de conventions runtime transitoires.
 
-- what exact context was finally exposed to the model;
-- how budget and summarization shaped the result;
-- which visible material stayed exploratory and never became model-visible;
-- how the final packed result differs from the broader `SessionWindow`;
-- what trace should exist for the final packing decision.
+Cela laisse plusieurs questions insuffisamment precisees :
 
-`ContextPack` is the smallest interface that makes "what the model actually receives" a governed artifact rather than an implementation side effect.
+- quel contexte exact a finalement ete expose au modele ;
+- comment le budget et la summarisation ont modifie le resultat ;
+- quelle matiere visible est restee exploratoire sans jamais devenir visible au modele ;
+- en quoi le resultat packe final differe de la [`View`](../concepts/view.md) de travail plus large ;
+- quelle trace doit exister pour la decision finale de packing.
 
-## Reference Anchors
+`ContextPack` est la plus petite interface qui transforme "ce que le modele recoit effectivement" en artefact gouverne plutot qu'en effet de bord d'implementation.
 
-- graph theory reference: [`../../../.agents/skills/graphclaw/main_graphes/markdown.md`](../../../.agents/skills/graphclaw/main_graphes/markdown.md)
-- paths and shortest paths for keeping only intelligible minimal relation structure: [`../../../.agents/skills/graphclaw/main_graphes/pages/page-22/markdown.md`](../../../.agents/skills/graphclaw/main_graphes/pages/page-22/markdown.md), [`../../../.agents/skills/graphclaw/main_graphes/pages/page-25/markdown.md`](../../../.agents/skills/graphclaw/main_graphes/pages/page-25/markdown.md)
-- connectivity, cuts, articulation, and Menger for preserving critical structure while narrowing the final pack: [`../../../.agents/skills/graphclaw/main_graphes/pages/page-37/markdown.md`](../../../.agents/skills/graphclaw/main_graphes/pages/page-37/markdown.md), [`../../../.agents/skills/graphclaw/main_graphes/pages/page-44/markdown.md`](../../../.agents/skills/graphclaw/main_graphes/pages/page-44/markdown.md), [`../../../.agents/skills/graphclaw/main_graphes/pages/page-46/markdown.md`](../../../.agents/skills/graphclaw/main_graphes/pages/page-46/markdown.md), [`../../../.agents/skills/graphclaw/main_graphes/pages/page-49/markdown.md`](../../../.agents/skills/graphclaw/main_graphes/pages/page-49/markdown.md)
-- ranking intuition through PageRank: [`../../../.agents/skills/graphclaw/main_graphes/pages/page-87/markdown.md`](../../../.agents/skills/graphclaw/main_graphes/pages/page-87/markdown.md)
-- local GoT reference: [`../../../.agents/skills/graphclaw/graph-of-thought/markdown.md`](../../../.agents/skills/graphclaw/graph-of-thought/markdown.md)
-- GoT scoring and ranking for branch selection before final packing: section 3.3 in [`../../../.agents/skills/graphclaw/graph-of-thought/markdown.md`](../../../.agents/skills/graphclaw/graph-of-thought/markdown.md)
+## Ancrages De Reference
 
-## Interface Role
+- reference de theorie des graphes : [`../../../.agents/skills/graphclaw/main_graphes/markdown.md`](../../../.agents/skills/graphclaw/main_graphes/markdown.md)
+- chemins et plus courts chemins pour conserver une structure relationnelle minimale intelligible : [`../../../.agents/skills/graphclaw/main_graphes/pages/page-22/markdown.md`](../../../.agents/skills/graphclaw/main_graphes/pages/page-22/markdown.md), [`../../../.agents/skills/graphclaw/main_graphes/pages/page-25/markdown.md`](../../../.agents/skills/graphclaw/main_graphes/pages/page-25/markdown.md)
+- connectivite, coupes, articulation, et Menger pour preserver la structure critique pendant le retrecissement final du pack : [`../../../.agents/skills/graphclaw/main_graphes/pages/page-37/markdown.md`](../../../.agents/skills/graphclaw/main_graphes/pages/page-37/markdown.md), [`../../../.agents/skills/graphclaw/main_graphes/pages/page-44/markdown.md`](../../../.agents/skills/graphclaw/main_graphes/pages/page-44/markdown.md), [`../../../.agents/skills/graphclaw/main_graphes/pages/page-46/markdown.md`](../../../.agents/skills/graphclaw/main_graphes/pages/page-46/markdown.md), [`../../../.agents/skills/graphclaw/main_graphes/pages/page-49/markdown.md`](../../../.agents/skills/graphclaw/main_graphes/pages/page-49/markdown.md)
+- intuition de ranking via PageRank : [`../../../.agents/skills/graphclaw/main_graphes/pages/page-87/markdown.md`](../../../.agents/skills/graphclaw/main_graphes/pages/page-87/markdown.md)
+- reference GoT locale : [`../../../.agents/skills/graphclaw/graph-of-thought/markdown.md`](../../../.agents/skills/graphclaw/graph-of-thought/markdown.md)
+- scoring et ranking GoT avant packing final : section 3.3 de [`../../../.agents/skills/graphclaw/graph-of-thought/markdown.md`](../../../.agents/skills/graphclaw/graph-of-thought/markdown.md)
 
-`ContextPack` is the final budgeted, model-visible context artifact compiled from narrower runtime state such as `SessionWindow`, packable-subgraph candidates, summaries, and policy-constrained selections.
+## Definition
 
-It should sit between:
+Un `ContextPack` est l'artefact final, budgete, visible par le modele, compile pour une invocation provider donnee a partir d'un ensemble plus etroit d'artefacts gouvernes, notamment des [`ContextFrame`](../concepts/context-frame.md), des candidats packables, des resumés, et des selections contraintes par politique.
 
-- upstream context selection, mutation validation, and packing decisions;
-- downstream provider invocation, response generation, and trace or inspection surfaces.
+## Est
 
-It is not:
+Un `ContextPack` est :
 
-- the whole `ThinkingContext`;
-- the whole `SessionWindow`;
-- the entire conversation history;
-- a raw retrieval result;
-- an unrestricted dump of all available graph material.
+- l'artefact final visible par le modele pour une invocation provider ;
+- derive d'un etat gouverne plus etroit que la simple recuperation brute ;
+- compose de [`ContextFrame`](../concepts/context-frame.md) ordonnes ;
+- sensible au budget, a la politique, et a la phase du turn ;
+- inspectable et diffable ;
+- traçable dans sa construction.
 
-## Inputs And Outputs
+## N'est pas
 
-### Typical Inputs
+Un `ContextPack` n'est pas :
 
-- the currently accepted `SessionWindow`;
-- packable-subgraph candidates or equivalent bounded projections;
-- active packing strategy or packing policy inputs;
-- summary, compaction, or replacement results;
-- rights, budget, and redaction constraints;
-- evidence or provenance links needed to keep packed material intelligible.
+- la [`View`](../concepts/view.md) active complete ;
+- l'historique integral de la conversation ;
+- un resultat brut de retrieval ;
+- un dump non borne de tout le graphe disponible ;
+- une simple concatenation de texte sans gouvernance.
 
-### Typical Outputs
+## Entrees Et Sorties
 
-- final model-visible context sections or equivalent packed representation;
-- ordering, grouping, or summary choices suitable for provider consumption;
-- budget-relevant metadata about what survived packing;
-- traceable packing decisions suitable for `ResolutionTrace`;
-- optional inspection-friendly structure for gateway or UI surfaces.
+### Entrees Typiques
 
-## Minimum Responsibilities
+- un ou plusieurs [`ContextFrame`](../concepts/context-frame.md) derives de la [`View`](../concepts/view.md) active et d'autres etats gouvernes adjacents ;
+- des candidats de sous-graphe packable ou des projections bornees equivalentes ;
+- les entrees de strategie ou de politique de packing actives ;
+- des resultats de resume, de compaction, ou de remplacement ;
+- des contraintes de droits, de budget, et de redaction ;
+- des liens de preuve ou de provenance necessaires pour garder le pack intelligible.
 
-The interface should eventually support at least:
+### Sorties Typiques
 
-- representing the final bounded context actually passed to model execution;
-- preserving the distinction between visible runtime state and model-visible packed output;
-- reflecting summary and degradation choices explicitly rather than only through prompt text;
-- exposing enough structure that provider calls are downstream consumers rather than hidden owners of context shape;
-- remaining stable enough to inspect, diff, or trace even if formatting strategies change later.
+- une representation finale du contexte visible par le modele ;
+- une composition ordonnee de frames adaptee a une phase de turn et a une invocation provider ;
+- des choix d'ordre, de regroupement, ou de resume pour la consommation provider ;
+- des metadonnees de budget sur ce qui a survécu au packing ;
+- des decisions de packing traçables pour `ResolutionTrace` ;
+- une structure eventuellement plus facile a inspecter pour gateway ou UI.
 
-## Minimum Invariants
+## Responsabilites Minimales
 
-1. `ContextPack` is the final model-visible context artifact for the turn.
-2. `ContextPack` is derived from narrower governed runtime state rather than directly from unbounded retrieval.
-3. `ContextPack` is budgeted and policy-constrained.
-4. `ContextPack` is distinct from `SessionWindow`, `ThinkingContext`, and raw retrieval candidates.
-5. `ContextPack` may contain summaries, excerpts, or replacements instead of only full-fidelity source material.
-6. `ContextPack` creation should be traceable through explicit packing or degradation decisions.
+L'interface devrait a terme pouvoir au minimum :
 
-## Relationship To `SessionWindow`
+- representer le contexte final borne effectivement passe a l'execution modele ;
+- composer des [`ContextFrame`](../concepts/context-frame.md) typés plutot que tout aplatir dans une exportation indifferenciee ;
+- preserver la distinction entre etat runtime de travail et sortie finale visible par le modele ;
+- refleter explicitement les choix de resume ou de degradation plutot que de les cacher dans le texte du prompt ;
+- exposer assez de structure pour que les appels provider restent des consommateurs aval du pack plutot que ses proprietaires implicites ;
+- rester assez stable pour etre inspecte, compare, et trace meme si les strategies de formatage evoluent plus tard.
 
-The stable relationship should be:
+## Invariants Minimaux
 
-1. `SessionWindow` holds current visible and mobilizable context state;
-2. packing logic chooses what subset or representation becomes model-visible;
-3. `ContextPack` is the compiled result of that choice.
+1. `ContextPack` est l'artefact final visible par le modele pour une invocation provider a l'interieur d'un turn.
+2. `ContextPack` derive d'un etat runtime gouverne plus etroit que la recuperation non bornee.
+3. `ContextPack` est contraint par budget et par politique.
+4. `ContextPack` reste distinct de la [`View`](../concepts/view.md) active et des candidats bruts de retrieval.
+5. `ContextPack` est compose d'un ou plusieurs [`ContextFrame`](../concepts/context-frame.md) ordonnes.
+6. `ContextPack` peut contenir des resumes, des extraits, ou des remplacements plutot qu'un contenu en fidelite complete.
+7. La creation du `ContextPack` doit rester traçable via des decisions explicites de packing ou de degradation.
 
-This distinction matters because GraphClaw wants runtime-visible governable context without assuming every visible item must be packed in full.
+## Relation A `View` Et `SessionFrame`
 
-In the current concept split, this should be read together with:
+La relation stable doit etre lue ainsi :
 
-- [`../concepts/view.md`](../concepts/view.md) for the working subgraph itself;
-- [`../concepts/packability.md`](../concepts/packability.md) for packable-subgraph conditions;
-- [`../concepts/projection-governance.md`](../concepts/projection-governance.md) for the NL projection step that produces the final artifact.
+1. la [`View`](../concepts/view.md) active porte l'etat de travail dans le graphe et reste le seul espace de manipulation ;
+2. un ou plusieurs [`ContextFrame`](../concepts/context-frame.md) reconcilient des selections graphe gouvernees avec leurs projections NL pour l'invocation courante ;
+3. un [`SessionFrame`](../concepts/session-frame.md) peut faire partie de cet ensemble lorsque de la matiere de session doit etre exposee ;
+4. la logique de packing choisit quel sous-ensemble ou quelle representation devient visible par le modele ;
+5. le `ContextPack` est le resultat compile de ce choix.
 
-## Relationship To Providers
+Cette distinction compte parce que GraphClaw veut un contexte runtime gouverne sans supposer que tout element visible doit etre packe en entier.
 
-Providers should consume a `ContextPack` or a representation derived from it.
+Pour cette lecture, voir aussi :
 
-Providers should not define:
+- [`../concepts/view.md`](../concepts/view.md) pour le sous-graphe de travail ;
+- [`../concepts/context-frame.md`](../concepts/context-frame.md) pour l'unite de composition orientee invocation ;
+- [`../concepts/packability.md`](../concepts/packability.md) pour les conditions de sous-graphe packable ;
+- [`../concepts/projection-governance.md`](../concepts/projection-governance.md) pour la projection NL qui alimente les frames.
 
-- what counts as packable;
-- how summaries are chosen;
-- which visible material is excluded;
-- how budget or policy governs the final packed result.
+## Modele De Frames
 
-Provider-specific formatting or capability constraints may shape the final representation, but the conceptual meaning of `ContextPack` belongs above provider adapters.
+La lecture documentaire stable suppose maintenant un modele par frames a l'interieur du pack.
 
-## Errors, Rejection, And Degradation
+Les familles minimales deja suffisamment justifiees sont :
 
-The interface should make room for outcomes such as:
+- `SystemFrame` pour les instructions systeme stables et la base d'identite agent ;
+- `PhaseFrame` pour les instructions specifiques a la phase, comme l'entree de turn, la progression GoT, ou la reponse finale ;
+- `GoTFrame` pour les operations GoT, les reperes de branche, et la guidance de graphe de pensee dependante de la strategie ;
+- `CapabilityFrame` pour les capabilities exposees sur cette invocation ;
+- `ViewFrame` pour la projection de la [`View`](../concepts/view.md) active ;
+- `SessionFrame` pour la projection session-oriented derivee de la [`View`](../concepts/session-frame.md) active ;
+- `IdentitySetFrame` et `WorkspaceSetFrame` en option quand la strategie courante demande d'exposer ces ensembles comme matiere de travail directe.
 
-- exclude heavy material because final budget is too small;
-- replace full content with summary or excerpt form;
-- redact portions because rights or policy forbid full exposure;
-- preserve provenance while degrading detail;
-- refuse a requested packed expansion that violates the active view or current policy.
+Ces noms de frame sont des roles d'architecture, pas des noms de sections de wire format geles.
 
-These are packing outcomes, not merely prompt-formatting side effects.
+## Sensibilite A La Phase
 
-This is where graph-theory ideas such as cuts, articulation, and preserving enough path structure matter most: the final pack should shrink aggressively without making the surviving context unintelligible.
+`ContextPack` ne doit pas etre lu comme un pack monolithique unique pour tout le turn.
 
-## Compatibility With The Inherited Runtime
+La lecture stable est :
 
-The first migration step should preserve the current provider-facing prompt path.
+- un meme turn peut impliquer plusieurs invocations provider ;
+- des invocations differentes peuvent demander des compositions de frames differentes ;
+- des invocations GoT peuvent donc recomposer `ContextPack` a plusieurs reprises dans un meme turn lorsque la branche active, l'operation GoT, ou la strategie changent ;
+- l'entree de turn, la progression GoT, et la reponse finale peuvent donc consommer des packs differents tout en restant dans le meme turn logique.
 
-The compatibility rule is:
+Cette lecture garde explicite la variation de payload selon la phase sans transformer chaque operation interne en phase de plus haut niveau.
 
-> the inherited prompt assembly may continue to shape provider payloads initially, but it should progressively consume a `ContextPack` boundary instead of being the only place where final context exists.
+## Relation Aux Providers
 
-That means the first implementation can stay conservative:
+Les providers doivent consommer un `ContextPack` ou une representation derivee de celui-ci.
 
-- start with a small struct or equivalent wrapper around already assembled final context;
-- preserve current prompt formatting while naming and tracing the packed result explicitly;
-- keep provider adapters unchanged except for consuming a pack-derived representation;
-- refine later toward richer ordering, provenance, and summary metadata.
+Ils ne doivent pas definir :
 
-## Likely Source-Area Consumers
+- ce qui compte comme packable ;
+- comment les resumes sont choisis ;
+- quelle matiere visible est exclue ;
+- comment budget et politique gouvernent le resultat final.
+
+Les contraintes de formatage ou de capacite propres a un provider peuvent affecter la representation finale, mais le sens conceptuel de `ContextPack` reste au-dessus des adapters provider.
+
+## Erreurs, Refus, Et Degradation
+
+L'interface doit laisser une place a des issues telles que :
+
+- exclure une matiere trop lourde parce que le budget final est trop petit ;
+- remplacer une forme complete par un resume ou un extrait ;
+- redacter certaines portions parce que les droits ou la politique interdisent l'exposition complete ;
+- preserver la provenance tout en degradant le niveau de detail ;
+- refuser une expansion demandee si elle viole la `View` active ou la politique courante.
+
+Ces issues sont des decisions de packing, pas de simples effets de bord de formatage de prompt.
+
+C'est ici que les intuitions de theorie des graphes comme coupes, articulation, et preservation d'une structure de chemin suffisante comptent le plus : le pack final doit pouvoir retrecir agressivement sans rendre le contexte survivant inintelligible.
+
+## Compatibilite Avec La Runtime Heritee
+
+Le premier pas de migration doit preserver le chemin provider-facing actuel.
+
+La regle de compatibilite est :
+
+> l'assemblage herite du prompt peut continuer a faconner les payloads provider au debut, mais il doit progressivement consommer une frontiere `ContextPack` plutot que rester l'unique endroit ou le contexte final existe.
+
+Cela permet une premiere implementation conservative :
+
+- commencer avec une petite structure ou un wrapper autour du contexte final deja assemble ;
+- garder le formatage actuel du prompt tout en nommant et en tracant explicitement le resultat packe ;
+- laisser les adapters provider inchanges sauf pour consommer une representation derivee du pack ;
+- enrichir plus tard les metadonnees d'ordre, de provenance, et de resume.
+
+## Consommateurs Probables Dans Le Code
 
 ### `src/agent/`
 
-Likely role:
+Role probable :
 
-- primary consumer for final prompt-visible or provider-visible turn input.
+- consommateur principal du contexte final visible dans le prompt ou pour l'appel provider.
 
-Likely seam files:
+Fichiers de seam probables :
 
 - `src/agent/prompt.rs`
 - `src/agent/loop_.rs`
@@ -158,21 +203,21 @@ Likely seam files:
 
 ### `src/providers/`
 
-Likely role:
+Role probable :
 
-- consume the packed result through a provider-facing invocation boundary.
+- consommer le resultat packe a travers une frontiere d'invocation provider.
 
-Documentary caution:
+Precaution documentaire :
 
-- provider adapters should consume the pack, not define its semantics.
+- les adapters provider doivent consommer le pack, pas en definir la semantique.
 
-### `src/gateway/` and `web/`
+### `src/gateway/` et `web/`
 
-Likely role:
+Role probable :
 
-- later expose packed output, summaries, or trace-linked inspection surfaces.
+- exposer plus tard des sorties packees, des resumes, ou des surfaces d'inspection reliees a la trace.
 
-## Initial Files To Treat As Seams
+## Fichiers Initiaux A Traiter Comme Seams
 
 - `src/agent/prompt.rs`
 - `src/agent/dispatcher.rs`
@@ -182,17 +227,17 @@ Likely role:
 - `src/gateway/api.rs`
 - `src/gateway/sse.rs`
 
-## Recommended Minimal Introduction Order
+## Ordre Minimal D'Introduction Recommande
 
-1. Wrap current final context assembly in an explicit pack boundary.
-2. Keep prompt formatting behavior stable while making the packed artifact inspectable.
-3. Emit coarse pack-level trace information.
-4. Introduce richer pack metadata such as summaries, exclusions, and provenance later.
-5. Expose read-only packed output through transport or UI surfaces only after the boundary is stable.
+1. encapsuler l'assemblage actuel du contexte final dans une frontiere de pack explicite ;
+2. garder le comportement de formatage du prompt stable tout en rendant l'artefact packe inspectable ;
+3. emettre des informations de trace grossieres au niveau du pack ;
+4. introduire plus tard des metadonnees plus riches comme resumes, exclusions, et provenance ;
+5. exposer les sorties packees en lecture seule dans le transport ou l'UI seulement apres stabilisation de la frontiere.
 
 ## Slice JSON
 
-This slice is an orientation artifact, not an implementation claim.
+Ce slice est un artefact d'orientation, pas une affirmation d'implementation.
 
 ```json
 {
@@ -200,11 +245,11 @@ This slice is an orientation artifact, not an implementation claim.
     {
       "id": "n0",
       "position": { "x": -650, "y": -50 },
-      "caption": "SessionWindow",
-      "labels": ["SessionWindow"],
+      "caption": "SessionFrame",
+      "labels": ["SessionFrame"],
       "properties": {
-        "file_origin": "future explicit runtime state",
-        "role": "Visible context state before final packing"
+        "file_origin": "future session-oriented frame",
+        "role": "Session-specific projection composed before final packing"
       },
       "style": {}
     },
@@ -309,12 +354,12 @@ This slice is an orientation artifact, not an implementation claim.
 }
 ```
 
-## Related References
+## References Liees
 
-- [`../concepts/context-artifacts.md`](../concepts/context-artifacts.md) for artifact boundaries
-- [`../concepts/view.md`](../concepts/view.md) for the runtime working subgraph
-- [`../concepts/packability.md`](../concepts/packability.md) for packable-subgraph conditions
-- [`../concepts/projection-governance.md`](../concepts/projection-governance.md) for the projection step into model-visible form
-- [`../runtime/turn-runtime-logic.md`](../runtime/turn-runtime-logic.md) for broader turn sequencing
-- [`../migration/future-integration-seams.md`](../migration/future-integration-seams.md) for seam placement
-- [`session-window-interface.md`](session-window-interface.md) for the upstream visible-state boundary
+- [`../concepts/context-artifacts.md`](../concepts/context-artifacts.md) pour les frontieres d'artefacts
+- [`../concepts/view.md`](../concepts/view.md) pour le sous-graphe de travail runtime
+- [`../concepts/packability.md`](../concepts/packability.md) pour les conditions de sous-graphe packable
+- [`../concepts/projection-governance.md`](../concepts/projection-governance.md) pour la projection vers une forme visible par le modele
+- [`../runtime/turn-runtime-logic.md`](../runtime/turn-runtime-logic.md) pour la sequence plus large du turn
+- [`../migration/future-integration-seams.md`](../migration/future-integration-seams.md) pour le placement des seams
+- [`../concepts/session-frame.md`](../concepts/session-frame.md) pour le concept de frame oriente session

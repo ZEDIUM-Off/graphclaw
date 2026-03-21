@@ -5,6 +5,7 @@
 This document is cross-concept architecture framing.
 
 It introduces `ProjectionRegistry` and `NLProjection` as target concepts, but it does not make them canonical concept sources yet.
+It should be read together with the canonical [`ContextFrame`](context-frame.md) concept when the question is how a governed projection becomes part of an invocation payload.
 
 ## Purpose
 
@@ -50,8 +51,8 @@ At minimum it should fix:
 
 In practice, this is the layer that distinguishes:
 
-- an exploration-side projection feeding `ThinkingContext`;
-- a response-side projection feeding `ContextPack`.
+- a frame-oriented projection feeding one or more [`ContextFrame`](context-frame.md) objects;
+- a response-side projection feeding the final [`ContextPack`](../interfaces/context-pack-interface.md).
 
 ## Stable Reading
 
@@ -69,3 +70,15 @@ This applies to:
 - semantic relations;
 - runtime relations;
 - trace relations.
+
+## Relationship To `ContextFrame`
+
+The stable reading should now be:
+
+1. a [`View`](view.md) defines the working graph perimeter;
+2. `ProjectionRegistry` defines which elements are projectable and under which variants;
+3. `NLProjection` defines how a selected projectable portion is rendered for a runtime role;
+4. a [`ContextFrame`](context-frame.md) reconciles that governed selection, its NL projection, and its governance metadata for one invocation role;
+5. a [`ContextPack`](../interfaces/context-pack-interface.md) composes the resulting frames for a provider call.
+
+This distinction matters because GraphClaw does not want "projection" to collapse into "final prompt text". Projection remains governed and typed before final pack assembly.

@@ -48,11 +48,13 @@ The conceptual chain should be documented as:
 1. `TaskIntent` frames the minimum structured task;
 2. `StrategyResolution` selects the governing strategies for the turn;
 3. one or more `View` objects are built or refined from resolved Sets;
-4. a governed NL projection derives a `ThinkingContext` from the active `View` or a selected part of it;
+4. GoT-style reasoning and runtime reflection operate on the active `View`;
 5. a packable subgraph is derived from the candidate working sets;
-6. a governed NL projection derives the final `ContextPack` from the retained response-side `View`;
-7. `ResolutionTrace` records how the result was chosen;
-8. `ContextMutationProposal` can request changes to what remains visible or packable for later turns.
+6. one or more [`ContextFrame`](context-frame.md) objects are distilled from the relevant governed graph portions for a given provider invocation;
+7. a [`SessionFrame`](session-frame.md) may be derived when session material must be exposed;
+8. a governed composition derives the final [`ContextPack`](../interfaces/context-pack-interface.md) for the current invocation and turn phase;
+9. `ResolutionTrace` records how the result was chosen;
+10. `ContextMutationProposal` can request changes to what remains visible or packable for later turns.
 
 These artifacts are adjacent, but they are not synonyms.
 
@@ -65,8 +67,9 @@ flowchart LR
     I[TaskIntent]
     S[StrategyResolution]
     V[View]
-    T[ThinkingContext]
     P[Packable subgraph]
+    F[ContextFrame]
+    SF[SessionFrame]
     C[ContextPack]
     R[ResolutionTrace]
     M[ContextMutationProposal]
@@ -76,14 +79,17 @@ flowchart LR
 
     I --> S
     S --> V
-    S --> T
-    V --> T --> P --> C
-    T --> R
+    V --> P
+    V --> F
+    V --> SF
+    P --> F
+    F --> C
+    SF --> C
     C --> R
     M -. proposes changes for later selection .-> V
-    N -. constrains exploration .-> T
+    N -. constrains exploration .-> V
     B -. constrains candidate projection .-> P
-    F -. constrains model-visible result .-> C
+    X[Final context cost] -. constrains model-visible result .-> C
 ```
 
 ## `View`
@@ -94,6 +100,12 @@ It can exist before anything is ready for model injection.
 
 For deeper View semantics, see [`view.md`](view.md) and the family hub [`views-and-sets.md`](views-and-sets.md).
 For the current cross-concept framing around `ProjectionRegistry` and `NLProjection`, see [`projection-governance.md`](projection-governance.md).
+
+## `SessionFrame`
+
+`SessionFrame` est le [`ContextFrame`](context-frame.md) specialise qui projette en langage naturel les noeuds et relations de session retenus dans la [`View`](view.md) active.
+
+Il n'est pas un espace de manipulation runtime distinct. L'agent continue de manipuler les noeuds et relations dans la [`View`](view.md), puis le `SessionFrame` declare seulement quel sous-graphe de session est projete pour l'invocation courante.
 
 ## Planning Artifacts
 
@@ -108,28 +120,7 @@ The most important planning-side artifacts are:
 - `ContextEditPlan`: the explicit plan of requested context changes;
 - `OrchestrationPlan`: the explicit delegation and aggregation plan when the turn is not purely single-agent.
 
-These planning artifacts do not replace `ThinkingContext`, `ContextPack`, or `ResolutionTrace`. They make the path toward those artifacts more legible and governable.
-
-## `ThinkingContext`
-
-`ThinkingContext` is the temporary reflection context used before final response packing.
-
-In the current architecture reading, it should be understood as a natural-language projection derived from the active `View` for exploration work, not as the whole working subgraph itself.
-
-Its role is to:
-
-- explore candidate sets;
-- compare alternatives;
-- estimate trade-offs;
-- consider summarization or degradation;
-- prepare proposals for what should survive into the final packed context.
-
-This reading is consistent with:
-
-- graph-theory use of paths, connectivity, and bounded working subgraphs;
-- GoT use of a thought graph whose outputs can trigger the next refinement of the active `View`.
-
-This should be documented as a system phase. It may use operations that resemble tools or backend calls, but it should not be reduced to an ordinary user-facing tool.
+These planning artifacts do not replace `ContextPack` or `ResolutionTrace`. They make the path toward those artifacts more legible and governable.
 
 ## Packable Subgraph
 
@@ -143,9 +134,21 @@ It exists because:
 
 The packable subgraph is therefore a staging artifact between exploration and final packing.
 
+## `ContextFrame`
+
+A [`ContextFrame`](context-frame.md) is the invocation-oriented distillation layer between governed graph state and final packed provider context.
+
+Its role is to:
+
+- distill one relevant portion of the active [`View`](view.md) or adjacent governed set state;
+- reconcile that portion with an authorized natural-language projection;
+- carry the governance metadata needed for later ordering, inclusion, exclusion, or trace.
+
+The stable reading is that GraphClaw does not jump directly from `View` membership to final provider payload. It first derives typed frames, then composes them into the final pack.
+
 ## `ContextPack`
 
-The `ContextPack` is the final budgeted artifact retained for response generation.
+The `ContextPack` is the final budgeted artifact retained for response generation for one provider invocation.
 
 In the current architecture reading, it should be understood as a natural-language projection derived from the retained response-side `View`, not as the graph schema and not as the whole working graph.
 
@@ -157,7 +160,9 @@ It should represent what the runtime is actually willing to expose to the model 
 - condensation or summarization;
 - exclusions and degradations.
 
-The `ContextPack` is not the whole `ThinkingContext`, and it is not the entire session-visible graph.
+The `ContextPack` is not the entire working graph and it is not the entire session-visible graph.
+
+It should now also be read as a composition of ordered [`ContextFrame`](context-frame.md) objects rather than as one undifferentiated text export.
 
 ## `ContextMutationProposal`
 
@@ -195,7 +200,7 @@ GraphClaw should distinguish at least three kinds of cost:
 
 ### Navigation Cost
 
-The cost of exploring or evaluating candidate graph material during `ThinkingContext`.
+The cost of exploring or evaluating candidate graph material inside the active [`View`](view.md) and the GoT process it supports.
 
 This can be larger or broader than what eventually reaches the model.
 

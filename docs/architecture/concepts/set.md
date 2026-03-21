@@ -1,12 +1,14 @@
 # Set
 
-## Status
+## Statut
 
-This file is the canonical definition source for `Set`.
+Ce fichier est la source canonique de definition de `Set`.
 
-It is target-architecture documentation. It does not claim that the inherited runtime already exposes every form of `Set` described here.
+Il releve de la documentation d'architecture cible.
 
-## Reference Anchors
+Il ne pretend pas que la runtime heritee expose deja toutes les formes de `Set` decrites ici.
+
+## Ancrages De Reference
 
 - graph theory reference: [`../../../.agents/skills/graphclaw/main_graphes/markdown.md`](../../../.agents/skills/graphclaw/main_graphes/markdown.md)
 - graph as a relation on a set of vertices: [`../../../.agents/skills/graphclaw/main_graphes/pages/page-5/markdown.md`](../../../.agents/skills/graphclaw/main_graphes/pages/page-5/markdown.md)
@@ -52,22 +54,28 @@ Dans la representation graphe cible, un `Set` persiste peut etre represente par 
 
 Cette representation persiste est importante, mais elle ne doit pas etre prise pour l'unique lecture du concept.
 
-## Persisted Definition Forms
+## Representation Actuelle
 
-### Source Set
+Dans la representation graphe cible, un `Set` persiste peut etre represente par un noeud `(:Set)` avec une definition source ou composee.
 
-A persisted Set with no composition relations is defined by a source Cypher expression carried as a property (`source_cypher`) on the `(:Set)` node itself.
+Cette representation persiste est importante, mais elle ne doit pas etre prise pour l'unique lecture du concept.
 
-Examples:
+## Formes De Definition Persistante
+
+### Set Source
+
+Un `Set` persiste sans relation de composition est defini par une expression Cypher source portee comme propriete `source_cypher` sur le noeud `(:Set)` lui-meme.
+
+Exemples :
 
 - `MATCH (n:Agent) RETURN n`
 - `MATCH (n:Concept {type: "Finance"})<-[r]-(m) RETURN n, r, m`
 
-These expressions must be read-only, bounded, documented, and validated.
+Ces expressions doivent rester en lecture seule, bornees, documentees, et validees.
 
-### Composed Set
+### Set Compose
 
-A persisted Set defined by composition has one or more outgoing composition relations, all of the same type, pointing to operand Sets.
+Un `Set` persiste defini par composition porte une ou plusieurs relations de composition sortantes, toutes du meme type, vers des `Set` operandes.
 
 | Relation type | Set-algebraic operation | Arity | Associative | Commutative | Idempotent |
 | --- | --- | --- | --- | --- | --- |
@@ -76,35 +84,35 @@ A persisted Set defined by composition has one or more outgoing composition rela
 | `DIFF_OF` | A \ B | binary (N = 2, ordered) | no | no | no |
 | `SYMMETRIC_DIFF_OF` | A △ B | binary (N = 2) | yes | yes | no |
 
-Because `UNION_OF` and `INTERSECTION_OF` are associative and commutative, a single Set node can reference N ≥ 2 operands directly.
+Comme `UNION_OF` et `INTERSECTION_OF` sont associatives et commutatives, un meme noeud `Set` peut referencer directement N ≥ 2 operandes.
 
-Because `DIFF_OF` is neither associative nor commutative, it is strictly binary and ordered.
+Comme `DIFF_OF` n'est ni associative ni commutative, cette relation reste strictement binaire et ordonnee.
 
-Because n-ary symmetric difference has non-obvious semantics, `SYMMETRIC_DIFF_OF` remains restricted to binary form here.
+Comme la difference symetrique n-aire a une semantique moins lisible, `SYMMETRIC_DIFF_OF` reste ici limitee a une forme binaire.
 
-A composed Set may also carry an `additional_cypher` property that applies further adjustments to the composed result.
+Un `Set` compose peut aussi porter une propriete `additional_cypher` qui applique des ajustements supplementaires au resultat compose.
 
-## Composition Invariant
+## Invariants De Composition
 
-A persisted `Set` must have either 0 or N (N ≥ 2) outgoing composition relations:
+Un `Set` persiste doit avoir soit 0, soit N relations de composition sortantes avec N ≥ 2 :
 
-- 0 relations: the Set is a source Set, defined by `source_cypher`;
-- N ≥ 2 relations of the same type: the Set is a composed Set.
+- 0 relation : le `Set` est un `Set` source defini par `source_cypher` ;
+- N ≥ 2 relations du meme type : le `Set` est un `Set` compose.
 
-Structural validity rules:
+Regles minimales de validite structurelle :
 
-- a Set with exactly 1 composition relation is invalid;
-- all composition relations on a single Set must be of the same type;
-- for `DIFF_OF` and `SYMMETRIC_DIFF_OF`, N must be exactly 2;
-- for `UNION_OF` and `INTERSECTION_OF`, N may be any value ≥ 2.
+- un `Set` avec exactement 1 relation de composition est invalide ;
+- toutes les relations de composition d'un meme `Set` doivent etre du meme type ;
+- pour `DIFF_OF` et `SYMMETRIC_DIFF_OF`, N doit etre exactement egal a 2 ;
+- pour `UNION_OF` et `INTERSECTION_OF`, N peut prendre toute valeur ≥ 2.
 
-## Resolution Priority
+## Priorite De Resolution
 
-The engine resolves a persisted Set in this order:
+Le moteur resout un `Set` persiste dans cet ordre :
 
-1. if the Set has composition relations: resolve all operand Sets, then apply the composition operation;
-2. if the Set has `additional_cypher`: apply it to the composed result;
-3. if the Set has no composition relations: execute `source_cypher` as the primary definition.
+1. si le `Set` porte des relations de composition : resoudre tous les `Set` operandes, puis appliquer l'operation de composition ;
+2. si le `Set` porte `additional_cypher` : l'appliquer au resultat compose ;
+3. si le `Set` ne porte aucune relation de composition : executer `source_cypher` comme definition principale.
 
 ## Relations
 
@@ -126,10 +134,10 @@ These do not affect resolution.
 
 ## Validation
 
-At creation or update, the engine should be able to:
+A la creation ou a la mise a jour, le moteur devrait pouvoir :
 
-1. resolve the Set on a subgraph or the current graph;
-2. produce a schema of the result;
-3. verify that the schema is acceptable for the intended runtime usage.
+1. resoudre le `Set` sur un sous-graphe ou sur le graphe courant ;
+2. produire un schema du resultat ;
+3. verifier que ce schema est acceptable pour l'usage runtime vise.
 
-Validation metadata should include validation status, validation date, schema version, definition hash, estimated cost, and cache policy.
+Les metadonnees de validation devraient inclure au minimum le statut de validation, la date de validation, la version de schema, le hash de definition, le cout estime, et la politique de cache.

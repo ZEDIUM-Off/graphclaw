@@ -1,29 +1,29 @@
 # Packability
 
-## Status
+## Statut
 
-This file is the canonical definition source for `Packable Subgraph`, `Packability`, `Bounded Complement`, `Condensation`, and `Projection Into A Packable Subgraph`.
+Ce fichier est la source canonique de definition de `Packable Subgraph`, `Packability`, `Bounded Complement`, `Condensation`, et `Projection Into A Packable Subgraph`.
 
-It is target-architecture documentation.
+Il releve de la documentation d'architecture cible.
 
-## Reference Anchors
+## Ancrages De Reference
 
 - graph theory reference: [`../../../.agents/skills/graphclaw/main_graphes/markdown.md`](../../../.agents/skills/graphclaw/main_graphes/markdown.md)
 - paths and shortest paths: [`../../../.agents/skills/graphclaw/main_graphes/pages/page-22/markdown.md`](../../../.agents/skills/graphclaw/main_graphes/pages/page-22/markdown.md), [`../../../.agents/skills/graphclaw/main_graphes/pages/page-25/markdown.md`](../../../.agents/skills/graphclaw/main_graphes/pages/page-25/markdown.md)
 - connectivity, cuts, articulation, Menger: [`../../../.agents/skills/graphclaw/main_graphes/pages/page-37/markdown.md`](../../../.agents/skills/graphclaw/main_graphes/pages/page-37/markdown.md), [`../../../.agents/skills/graphclaw/main_graphes/pages/page-44/markdown.md`](../../../.agents/skills/graphclaw/main_graphes/pages/page-44/markdown.md), [`../../../.agents/skills/graphclaw/main_graphes/pages/page-46/markdown.md`](../../../.agents/skills/graphclaw/main_graphes/pages/page-46/markdown.md), [`../../../.agents/skills/graphclaw/main_graphes/pages/page-49/markdown.md`](../../../.agents/skills/graphclaw/main_graphes/pages/page-49/markdown.md)
 
-## Packable Subgraph
+## Sous-Graphe Packable
 
 ### Definition
 
-Un sous-graphe packable est une projection bornee derivee d'une [`View`](view.md), preparee pour une inclusion possible dans le `ContextPack` final.
+Un sous-graphe packable est une projection bornee derivee d'une [`View`](view.md), preparee pour alimenter un ou plusieurs [`ContextFrame`](context-frame.md) puis une inclusion possible dans le [`ContextPack`](../interfaces/context-pack-interface.md) final.
 
 ### Est
 
 Un sous-graphe packable est :
 
 - derive d'une ou plusieurs [`View`](view.md) ;
-- plus proche de l'artefact final visible par le modele qu'une `View` exploratoire ;
+- plus proche des artefacts visibles par le modele qu'une `View` exploratoire ;
 - borne par politique, budget, et intelligibilite.
 
 ### N'est pas
@@ -32,7 +32,8 @@ Un sous-graphe packable n'est pas :
 
 - une [`View`](view.md) complete ;
 - le graphe de session entier ;
-- le `ContextPack` lui-meme.
+- un [`ContextFrame`](context-frame.md) ;
+- le [`ContextPack`](../interfaces/context-pack-interface.md) lui-meme.
 
 ## Packability
 
@@ -105,7 +106,7 @@ La condensation n'est pas :
 
 ### Definition
 
-La projection vers un sous-graphe packable transforme un ensemble logique ou une [`View`](view.md) en un sous-graphe borne qui conserve les noeuds, relations, provenance, et liens resumes necessaires a une future inclusion dans le `ContextPack`.
+La projection vers un sous-graphe packable transforme un ensemble logique ou une [`View`](view.md) en un sous-graphe borne qui conserve les noeuds, relations, provenance, et liens resumes necessaires a une future inclusion dans un [`ContextFrame`](context-frame.md) puis dans le [`ContextPack`](../interfaces/context-pack-interface.md).
 
 ### Est
 
@@ -122,12 +123,13 @@ Cette projection n'est pas :
 - une simple serialisation brute de la `View` ;
 - une garantie d'inclusion finale.
 
-## Relationship To `Set`, `View`, And `ContextPack`
+## Relations
 
-The stable sequence is:
+La sequence stable est :
 
-1. one or more [`Set`](set.md) objects define governed graph-bounded matter;
-2. a runtime [`View`](view.md) derives from one or more resolved or composed Sets;
-3. Views are manipulated, composed, filtered, and refined at runtime;
-4. a packable subgraph is derived from some of those Views;
-5. the final `ContextPack` retains only the budgeted result of that derivation.
+1. un ou plusieurs [`Set`](set.md) definissent la matiere gouvernee bornee dans le graphe ;
+2. une [`View`](view.md) runtime derive d'un ou plusieurs ensembles resolus ou composes ;
+3. ces `View` sont manipulees, composees, filtrees, et affinees au runtime ;
+4. un sous-graphe packable est derive de certaines de ces `View` ;
+5. un ou plusieurs [`ContextFrame`](context-frame.md) peuvent etre derives de ce sous-graphe packable ;
+6. le [`ContextPack`](../interfaces/context-pack-interface.md) ne retient ensuite que le resultat budgete de cette derivation.

@@ -43,7 +43,7 @@ Typical choices may include:
 - current main-agent default route;
 - domain-specific router;
 - budget-aware route;
-- context-sensitive route based on current `SessionWindow`;
+- context-sensitive route based on current [`View`](../concepts/view.md) or current packed-context constraints;
 - refusal when no allowed route satisfies policy.
 
 ### Minimum Responsibility
@@ -79,7 +79,7 @@ Typical choices may include:
 
 Typical constraints may include:
 
-- reduced `SessionWindow`;
+- reduced session-oriented frame exposure;
 - narrower `View`;
 - lower runtime budget;
 - read-only or no-mutation mode;
@@ -155,7 +155,7 @@ That rule allows the current single-agent path to remain valid while still becom
 
 - `TaskIntent`;
 - `StrategyResolution`;
-- current `SessionWindow` or packed context constraints;
+- current [`View`](../concepts/view.md) or packed context constraints;
 - topology and capability information;
 - runtime and security constraints;
 - parent-agent preferences or package defaults.

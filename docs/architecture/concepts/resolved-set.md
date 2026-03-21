@@ -1,12 +1,12 @@
 # ResolvedSet
 
-## Status
+## Statut
 
-This file is the canonical definition source for `ResolvedSet`.
+Ce fichier est la source canonique de definition de `ResolvedSet`.
 
-It is target-architecture documentation.
+Il releve de la documentation d'architecture cible.
 
-## Reference Anchors
+## Ancrages De Reference
 
 - graph theory reference: [`../../../.agents/skills/graphclaw/main_graphes/markdown.md`](../../../.agents/skills/graphclaw/main_graphes/markdown.md)
 - adjacency matrix and graph structure: [`../../../.agents/skills/graphclaw/main_graphes/pages/page-69/markdown.md`](../../../.agents/skills/graphclaw/main_graphes/pages/page-69/markdown.md)
@@ -39,10 +39,10 @@ Un `ResolvedSet` n'est pas :
 
 ## Representation Actuelle
 
-A `ResolvedSet` should carry at least:
+Un `ResolvedSet` devrait porter au minimum :
 
-- the originating Set reference;
-- resolution timestamp;
-- schema snapshot;
-- cost;
-- composition trace.
+- la reference du [`Set`](set.md) d'origine ;
+- l'horodatage de resolution ;
+- un instantane de schema ;
+- un cout ;
+- une trace de composition.

@@ -12,7 +12,7 @@ This directory contains architecture interface fiches. Each file describes one m
 
 ## File Map
 
-- `session-window-interface.md` - governed visible-context runtime seam
+- `session-window-interface.md` - retired migration note redirecting to `View`, `SessionFrame`, and `ContextPack`
 - `context-pack-interface.md` - final packed-context seam
 - `strategy-resolver-interface.md` - turn-time strategy selection seam
 - `graph-context-store-and-retriever-interface.md` - graph-aware context supply seam

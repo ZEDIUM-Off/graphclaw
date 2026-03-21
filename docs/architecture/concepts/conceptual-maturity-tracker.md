@@ -35,7 +35,7 @@ When a concept is marked as established here, the canonical meaning still lives 
 
 ## Current Snapshot
 
-As of March 20, 2026, the architecture docs show a strong conceptual baseline around vocabulary, artifact separation, and migration discipline.
+As of March 21, 2026, the architecture docs show a strong conceptual baseline around vocabulary, artifact separation, and migration discipline.
 
 The least mature areas are not the top-level ideas themselves, but the transition from concept to governable runtime contract:
 
@@ -55,18 +55,18 @@ The least mature areas are not the top-level ideas themselves, but the transitio
 | `Set` / `ResolvedSet` / `View` distinction | `Established` | governed `Set`, derived `ResolvedSet`, and runtime `View` are now clearly separated | finalize some operating details around validation, relation names, and runtime representation | [`views-and-sets.md`](views-and-sets.md), [`set.md`](set.md), [`resolved-set.md`](resolved-set.md), [`view.md`](view.md), [`definition-governance.md`](definition-governance.md) |
 | artifact chain (`TaskIntent` to `ResolutionTrace`) | `Established` | the repo has a coherent target artifact chain and distinguishes planning artifacts from context artifacts | specify which artifacts must materialize and when | [`context-artifacts.md`](context-artifacts.md), [`turn-runtime-logic.md`](../runtime/turn-runtime-logic.md) |
 | strategy-family framing | `Established` | reflection, exploration, packing, and orchestration are explicit strategy families, not hidden habits | sharpen concrete strategy taxonomy later without collapsing the abstraction | [`graph-context-engine.md`](graph-context-engine.md), [`strategy-resolver-interface.md`](../interfaces/strategy-resolver-interface.md) |
-| reflection as system phase | `Established` | `ThinkingContext` is a system phase and must not be reduced to an ordinary tool | define its runtime visibility and trace depth more precisely | [`graph-context-engine.md`](graph-context-engine.md), [`context-artifacts.md`](context-artifacts.md), [`turn-runtime-logic.md`](../runtime/turn-runtime-logic.md) |
-| `SessionWindow` role | `Needs Precision` | there is a clear target role: governed runtime-visible context source of truth before final packing | sharpen exact state model, mutation semantics, and inspection surface boundaries | [`session-window-interface.md`](../interfaces/session-window-interface.md), [`context-artifacts.md`](context-artifacts.md) |
-| `ContextPack` role | `Needs Precision` | there is a clear target role: final model-visible, budgeted artifact derived from narrower governed state | sharpen exact representation contract, section model, and provenance expectations | [`context-pack-interface.md`](../interfaces/context-pack-interface.md), [`context-artifacts.md`](context-artifacts.md) |
+| frame-oriented context composition | `Established` | `ContextFrame` is the invocation-oriented distillation layer between governed graph state and provider-visible packed context | stabilize reusable frame metadata without reopening the concept boundary | [`context-frame.md`](context-frame.md), [`context-pack-interface.md`](../interfaces/context-pack-interface.md), [`context-artifacts.md`](context-artifacts.md) |
+| `SessionFrame` role | `Needs Precision` | `SessionFrame` is the session-oriented `ContextFrame` derived from the active `View` | sharpen exact projection contract and minimal session metadata vocabulary | [`session-frame.md`](session-frame.md), [`context-frame.md`](context-frame.md), [`context-pack-interface.md`](../interfaces/context-pack-interface.md) |
+| `ContextPack` role | `Needs Precision` | there is a clear target role: final model-visible, budgeted artifact derived from narrower governed state and composed from ordered `ContextFrame` objects | sharpen exact representation contract, provider-facing ordering rules, and provenance expectations | [`context-pack-interface.md`](../interfaces/context-pack-interface.md), [`context-frame.md`](context-frame.md), [`context-artifacts.md`](context-artifacts.md) |
 | `StrategyResolution` and `StrategyResolver` boundary | `Needs Precision` | the repo clearly distinguishes strategy choice from downstream execution | sharpen minimal input schema, coherence rules, and degradation vocabulary | [`strategy-resolver-interface.md`](../interfaces/strategy-resolver-interface.md), [`turn-runtime-logic.md`](../runtime/turn-runtime-logic.md) |
 | budget model | `Needs Precision` | navigation cost, packable-subgraph cost, and final context cost are conceptually separated | define what must be measured, estimated, or enforced at each layer | [`context-artifacts.md`](context-artifacts.md), [`turn-runtime-logic.md`](../runtime/turn-runtime-logic.md) |
 | set validation contract | `Needs Precision` | Sets should be schema-validatable and cost-aware | define the minimum schema contract and failure semantics | [`set.md`](set.md) |
 | view materialization model | `Needs Precision` | lazy versus materialized `View` is a meaningful distinction | define whether runtime views stay Rust-only, traceable artifacts, or mixed forms | [`view.md`](view.md) |
 | navigation versus definition relations | `Needs Precision` | the distinction is mandatory and structurally important | finalize the navigation/exposition relation family names | [`set.md`](set.md), [`graph-context-engine.md`](graph-context-engine.md) |
-| context mutation governance | `Needs Precision` | mutations should be explicit, validated, and traceable rather than prompt-local edits | define durable mutation classes and which ones remain turn-local only | [`context-artifacts.md`](context-artifacts.md), [`session-window-interface.md`](../interfaces/session-window-interface.md), [`mutation-guard-interface.md`](../interfaces/mutation-guard-interface.md) |
+| context mutation governance | `Needs Precision` | mutations should be explicit, validated, and traceable rather than prompt-local edits | define durable mutation classes and which ones remain turn-local only | [`context-artifacts.md`](context-artifacts.md), [`view.md`](view.md), [`mutation-guard-interface.md`](../interfaces/mutation-guard-interface.md) |
 | trace granularity | `Open / Fragile` | `ResolutionTrace` is a required concept and should record selection, degradation, and packing decisions | the required detail level for routine turns is still unresolved | [`context-artifacts.md`](context-artifacts.md), [`turn-runtime-logic.md`](../runtime/turn-runtime-logic.md), [`zero-to-graphclaw-transition.md`](../migration/zero-to-graphclaw-transition.md) |
 | persistence versus transient policy | `Open / Fragile` | the repo already distinguishes persisted definitions from transient runtime objects | exact persistability rules for views, packable subgraphs, and traces remain open | [`set.md`](set.md), [`view.md`](view.md), [`packability.md`](packability.md), [`context-artifacts.md`](context-artifacts.md), [`future-integration-seams.md`](../migration/future-integration-seams.md) |
-| rights and policy composition across layers | `Open / Fragile` | policy and rights are known to constrain views, mutations, packing, and exposure | the composition model across `Set`, `View`, `SessionWindow`, and `ContextPack` is not yet stabilized | [`set.md`](set.md), [`view.md`](view.md), [`context-pack-interface.md`](../interfaces/context-pack-interface.md), [`session-window-interface.md`](../interfaces/session-window-interface.md) |
+| rights and policy composition across layers | `Open / Fragile` | policy and rights are known to constrain views, mutations, packing, and exposure | the composition model across `Set`, `View`, `ContextFrame`, `SessionFrame`, and `ContextPack` is not yet stabilized | [`set.md`](set.md), [`view.md`](view.md), [`context-frame.md`](context-frame.md), [`session-frame.md`](session-frame.md), [`context-pack-interface.md`](../interfaces/context-pack-interface.md) |
 | first runtime insertion point | `Open / Fragile` | the docs agree that the inherited loop stays operational while a new seam appears beside it | the first concrete alternative context-creation branch is still undecided | [`zero-to-graphclaw-transition.md`](../migration/zero-to-graphclaw-transition.md), [`turn-runtime-logic.md`](../runtime/turn-runtime-logic.md), [`future-integration-seams.md`](../migration/future-integration-seams.md) |
 | packable content and attached readable material | `Open / Fragile` | the docs already recognize that some content is only packable through excerpts, summaries, or replacements | the exact representation rules for attached content are still weakly specified | [`packability.md`](packability.md), [`context-artifacts.md`](context-artifacts.md), [`context-pack-interface.md`](../interfaces/context-pack-interface.md) |
 
@@ -79,7 +79,7 @@ The clearest established points are:
 - GraphClaw is not "renamed ZeroClaw"; it is a transitional scaffold toward a graph-native context engine.
 - The conceptual boundary between engine, backend, runtime, and packaging is now explicit.
 - `Set`, `ResolvedSet`, and `View` are no longer conflated.
-- context selection, thinking, visible runtime state, and final packed model context are no longer treated as the same thing.
+- context selection, runtime graph work, frame derivation, and final packed model context are no longer treated as the same thing.
 - migration is framed as seam introduction, not mass renaming.
 
 Those points should now be treated as baseline doctrine unless an explicit design change revisits them.
@@ -90,11 +90,12 @@ The next conceptual work should bias toward contracts, not new slogans.
 
 The highest-value clarification areas are:
 
-1. define the minimum state contract for `SessionWindow`;
-2. define the minimum representational contract for `ContextPack`;
-3. define the minimum granularity and lifecycle of `ResolutionTrace`;
-4. define which artifacts are mandatory transient objects versus optional persisted artifacts;
-5. define how rights and policy checks compose across `Set`, `View`, `SessionWindow`, and `ContextPack`.
+1. define the minimum schema and governance metadata contract for `ContextFrame`;
+2. define the minimum projection contract for `SessionFrame`;
+3. define the minimum representational contract for `ContextPack`;
+4. define the minimum granularity and lifecycle of `ResolutionTrace`;
+5. define which artifacts are mandatory transient objects versus optional persisted artifacts;
+6. define how rights and policy checks compose across `Set`, `View`, `ContextFrame`, `SessionFrame`, and `ContextPack`.
 
 ## Working Rule For Future Architecture Edits
 

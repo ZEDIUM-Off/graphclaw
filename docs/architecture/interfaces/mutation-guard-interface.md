@@ -4,14 +4,14 @@
 
 This document defines the target role of `MutationGuard` as a migration-facing GraphClaw interface.
 
-It does not claim that the inherited runtime already exposes a dedicated mutation guard in code. It defines the minimum boundary needed if context edits to `SessionWindow` are to become validated, traceable, and policy-aware rather than being hidden inside prompt-local or retrieval-local behavior.
+It does not claim that the inherited runtime already exposes a dedicated mutation guard in code. It defines the minimum boundary needed if context edits to the active [`View`](../concepts/view.md) are to become validated, traceable, and policy-aware rather than being hidden inside prompt-local or retrieval-local behavior.
 
 ## Why This Interface Matters
 
 GraphClaw now distinguishes:
 
-- exploratory context work inside `ThinkingContext`;
-- visible runtime state inside `SessionWindow`;
+- runtime graph work inside the active [`View`](../concepts/view.md);
+- invocation-oriented projection inside [`ContextFrame`](../concepts/context-frame.md);
 - final model-visible output inside `ContextPack`.
 
 That distinction breaks down if any caller can freely mutate visible context without passing through an explicit validation boundary.
@@ -26,7 +26,7 @@ Without `MutationGuard`, it becomes difficult to answer:
 
 ## Interface Role
 
-`MutationGuard` validates, rejects, or degrades proposed changes to visible context before they become authoritative `SessionWindow` state.
+`MutationGuard` validates, rejects, or degrades proposed changes to visible context before they modify the authoritative working [`View`](../concepts/view.md).
 
 It should sit between:
 
@@ -45,7 +45,7 @@ It is not:
 ### Typical Inputs
 
 - `ContextEditPlan` operations or `ContextMutationProposal` records;
-- current `SessionWindow`;
+- current [`View`](../concepts/view.md);
 - active `View` constraints;
 - runtime budget and policy limits;
 - reference-integrity facts such as required relations, summaries, or evidence links;
@@ -71,7 +71,7 @@ The interface should eventually support at least:
 
 ## Minimum Invariants
 
-1. `SessionWindow` changes should pass through a validation boundary before becoming authoritative.
+1. `View` changes that affect later projections should pass through a validation boundary before becoming authoritative.
 2. Mutation validation must consider at least view, budget, and policy constraints.
 3. Rejection and degradation outcomes must be explicit enough to trace later.
 4. Mutation validation is distinct from final packing, even when accepted mutations force repacking.
@@ -88,22 +88,22 @@ The stable outcome families should be:
 
 This document does not freeze an enum or storage format for those outcomes.
 
-## Relationship To `SessionWindow`
+## Relationship To `View`
 
 The stable relationship should be:
 
-1. plans or proposals request window changes;
+1. plans or proposals request changes to the working [`View`](../concepts/view.md);
 2. `MutationGuard` validates those requests;
-3. only accepted or degraded results modify the `SessionWindow`;
-4. final packing sees the updated visible state rather than unvalidated requested state.
+3. only accepted or degraded results modify the `View`;
+4. final packing sees the updated working state rather than unvalidated requested state.
 
 ## Relationship To `ContextPack`
 
 `MutationGuard` does not produce the final packed artifact by itself.
 
-Its role is to decide whether the visible context state may change. After that:
+Its role is to decide whether the visible working state may change. After that:
 
-- `SessionWindow` is updated if appropriate;
+- the [`View`](../concepts/view.md) is updated if appropriate;
 - `ContextPack` may need to be recompiled from the new authoritative state;
 - `ResolutionTrace` records what was accepted, rejected, or degraded.
 
@@ -224,11 +224,11 @@ This slice is an orientation artifact, not an implementation claim.
     {
       "id": "n4",
       "position": { "x": 430, "y": -50 },
-      "caption": "SessionWindow",
-      "labels": ["SessionWindow"],
+      "caption": "View",
+      "labels": ["View"],
       "properties": {
         "file_origin": "future explicit runtime state",
-        "role": "Visible context state updated only after validated edits"
+        "role": "Working graph state updated only after validated edits"
       },
       "style": {}
     },
@@ -291,7 +291,7 @@ This slice is an orientation artifact, not an implementation claim.
 
 ## Related References
 
-- `session-window-interface.md`
-- `context-pack-interface.md`
-- `future-integration-seams.md`
-- `context-artifacts.md`
+- [`../concepts/view.md`](../concepts/view.md)
+- [`context-pack-interface.md`](context-pack-interface.md)
+- [`../migration/future-integration-seams.md`](../migration/future-integration-seams.md)
+- [`../concepts/context-artifacts.md`](../concepts/context-artifacts.md)

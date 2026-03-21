@@ -77,7 +77,7 @@ The interface should eventually support at least:
 
 It should not become:
 
-- the full `ThinkingContext`;
+- the full `ContextPack`;
 - the execution engine for plans;
 - a provider-owned reasoning channel;
 - a memory backend in disguise;

@@ -11,7 +11,7 @@ It does not claim that the inherited runtime already exposes a dedicated hook bu
 GraphClaw is moving toward explicit artifacts such as:
 
 - `StrategyResolution`;
-- `SessionWindow`;
+- `ContextFrame`;
 - `ContextPack`;
 - `OrchestrationPlan`;
 - `ResolutionTrace`.

@@ -87,7 +87,7 @@ These are the safest first seams to explore:
 2. `src/agent/memory_loader.rs`
    Replace flat recall hydration gradually with explicit context selection inputs.
 3. `src/agent/loop_.rs`
-   Introduce first-class runtime artifacts such as `SessionWindow`, `ContextPack`, or `ResolutionTrace` records without replacing the whole loop.
+   Introduce first-class runtime artifacts such as `ContextFrame`, `SessionFrame`, `ContextPack`, or `ResolutionTrace` records without replacing the whole loop.
 4. `src/memory/traits.rs` and `src/memory/backend.rs`
    Add a graph-facing storage boundary behind traits instead of deleting existing backends.
 5. `src/tools/traits.rs` and `src/tools/mod.rs`

@@ -1,6 +1,7 @@
 # AGENTS.md - GraphClaw
 
 ## Identity
+Agis comme mon mentor stratégique et partenaire intellectuel d’élite. Ton but est d’élever durablement mon niveau de pensée, de compréhension, d’apprentissage, de décision, de création, d’écriture, de stratégie et d’exécution. Recherche la vérité, pas le confort. Ne valide jamais mes idées par défaut : challenge hypothèses, logique, angles morts, raccourcis, faux dilemmes et conclusions hâtives. Si je me trompe, dis-le clairement et explique pourquoi. Même si mon input est bref, flou ou incomplet, réponds à intelligence maximale : reconstruis l’intention probable, explicite tes hypothèses, structure mieux que moi le problème, transforme le flou en options, décisions et actions, et pose seulement les questions qui augmentent vraiment la qualité du raisonnement. Sépare faits, hypothèses, inconnues et recommandations. Donne le meilleur contre-argument possible. Ramène toujours au concret : définitions, exemples, critères de réussite, priorités, arbitrages, risques, effets de second ordre, coûts d’opportunité. Sois créatif avec rigueur. Quand le sujet touche au business, raisonne comme un CEO. Replace toujours l’utilisateur final au centre : compréhension, ressenti, friction, confiance, valeur perçue. N’invente pas. Ne flatte pas. Ne remplis pas l’espace. Chaque réponse doit soit améliorer ma réflexion, soit ma compréhension, soit mon niveau intellectuel.
 
 This repository is GraphClaw.
 
@@ -49,6 +50,7 @@ Use these anchors before editing:
 | Rust runtime | [`src/CONTEXT.md`](src/CONTEXT.md) |
 | crates | [`crates/CONTEXT.md`](crates/CONTEXT.md) |
 | web | [`web/CONTEXT.md`](web/CONTEXT.md) |
+| ui | [`ui/CONTEXT.md`](ui/CONTEXT.md) |
 | Python | [`python/CONTEXT.md`](python/CONTEXT.md) |
 | firmware | [`firmware/CONTEXT.md`](firmware/CONTEXT.md) |
 | tests | [`tests/CONTEXT.md`](tests/CONTEXT.md) |
@@ -123,10 +125,11 @@ Use canonical concept sources instead of redefining terms locally:
 - `Set`: [`docs/architecture/concepts/set.md`](docs/architecture/concepts/set.md)
 - `ResolvedSet`: [`docs/architecture/concepts/resolved-set.md`](docs/architecture/concepts/resolved-set.md)
 - `View`: [`docs/architecture/concepts/view.md`](docs/architecture/concepts/view.md)
-- `SessionWindow`: [`docs/architecture/interfaces/session-window-interface.md`](docs/architecture/interfaces/session-window-interface.md)
+- `ContextFrame`: [`docs/architecture/concepts/context-frame.md`](docs/architecture/concepts/context-frame.md)
+- `SessionFrame`: [`docs/architecture/concepts/session-frame.md`](docs/architecture/concepts/session-frame.md)
 - `ContextPack`: [`docs/architecture/interfaces/context-pack-interface.md`](docs/architecture/interfaces/context-pack-interface.md)
 - `StrategyResolution`: [`docs/architecture/interfaces/strategy-resolver-interface.md`](docs/architecture/interfaces/strategy-resolver-interface.md)
-- `ThinkingContext`, `ContextMutationProposal`, `ResolutionTrace`, `TaskIntent`, `AgentPackage`: [`docs/architecture/concepts/graph-context-engine.md`](docs/architecture/concepts/graph-context-engine.md)
+- `ContextMutationProposal`, `ResolutionTrace`, `TaskIntent`, `AgentPackage`: [`docs/architecture/concepts/graph-context-engine.md`](docs/architecture/concepts/graph-context-engine.md)
 - routing policy and canonical registry: [`docs/architecture/concepts/definition-governance.md`](docs/architecture/concepts/definition-governance.md)
 
 When an agent document needs to mention one of these concepts, prefer:

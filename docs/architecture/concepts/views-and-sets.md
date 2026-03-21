@@ -1,34 +1,34 @@
 # Sets, Views, And Packability
 
-## Status
+## Statut
 
-This file is now a routing hub for the `Set` / `View` family.
+Ce fichier est un hub de routage pour la famille `Set` / `View`.
 
-It does not carry the canonical definition of every concept in that family anymore. Canonical definitions now live in concept-specific files so the repository can keep one stable source per concept.
+Il ne porte plus la definition canonique de chaque concept de cette famille. Les definitions canoniques vivent maintenant dans des fichiers dedies afin que le depot garde une seule source stable par concept.
 
-## Read Here First
+## Lire Ici D'Abord
 
 - `Set`: [`set.md`](set.md)
 - `ResolvedSet`: [`resolved-set.md`](resolved-set.md)
 - `View`: [`view.md`](view.md)
-- packable subgraph, packability, bounded complement, condensation, and projection into a packable subgraph: [`packability.md`](packability.md)
+- sous-graphe packable, packabilite, complement borne, condensation, et projection vers un sous-graphe packable : [`packability.md`](packability.md)
 
-## Why This Hub Exists
+## Pourquoi Ce Hub Existe
 
-`Set`, `ResolvedSet`, `View`, and packability remain tightly related.
+`Set`, `ResolvedSet`, `View`, et la packabilite restent etroitement lies.
 
-This hub keeps the family legible without forcing every reader to start from a single oversized page. It should be used to route quickly, not to redefine the linked concepts.
+Ce hub garde cette famille lisible sans obliger a commencer par une page unique trop large. Il sert a router rapidement, pas a redefinir les concepts lies.
 
-## Reading Order
+## Ordre De Lecture
 
-1. Read [`set.md`](set.md) for the base governed set abstraction and its persisted representation.
-2. Read [`resolved-set.md`](resolved-set.md) for the derived artifact produced by resolution.
-3. Read [`view.md`](view.md) for the runtime working-subgraph concept.
-4. Read [`packability.md`](packability.md) for packable subgraphs, packability conditions, and the relation to `ContextPack`.
+1. Lire [`set.md`](set.md) pour l'abstraction de base du `Set` gouverne et sa representation persistante.
+2. Lire [`resolved-set.md`](resolved-set.md) pour l'artefact derive produit par la resolution.
+3. Lire [`view.md`](view.md) pour le concept de sous-graphe de travail runtime.
+4. Lire [`packability.md`](packability.md) pour les sous-graphes packables, la packabilite, et leur relation avec [`ContextFrame`](context-frame.md) et [`ContextPack`](../interfaces/context-pack-interface.md).
 
-## Related Docs
+## Docs Liees
 
-- engine boundary and concept routing: [`graph-context-engine.md`](graph-context-engine.md)
-- context artifacts and budget layers: [`context-artifacts.md`](context-artifacts.md)
-- graph theory grounding, projection governance, GoT, and loop framing: [`graph-governed-agentics.md`](graph-governed-agentics.md), [`projection-governance.md`](projection-governance.md), [`got.md`](got.md), [`agent-loop.md`](agent-loop.md)
-- playground slice: [`../playground/set-system-spec-v0.md`](../playground/set-system-spec-v0.md)
+- frontiere du moteur et routage conceptuel : [`graph-context-engine.md`](graph-context-engine.md)
+- artefacts de contexte et couches de budget : [`context-artifacts.md`](context-artifacts.md)
+- theorie des graphes, gouvernance de projection, GoT, et boucle agent : [`graph-governed-agentics.md`](graph-governed-agentics.md), [`projection-governance.md`](projection-governance.md), [`got.md`](got.md), [`agent-loop.md`](agent-loop.md)
+- slice playground : [`../playground/set-system-spec-v0.md`](../playground/set-system-spec-v0.md)

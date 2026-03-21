@@ -50,7 +50,7 @@ It should eventually coordinate:
 - supporting resources or snapshots;
 - ranking or pre-compaction inputs for later context work.
 
-It is still not the owner of the final `SessionWindow`, `ContextPack`, or packing policy.
+It is still not the owner of the final frame set, `ContextPack`, or packing policy.
 
 ## Separation Rule
 
@@ -253,10 +253,10 @@ This slice is an orientation artifact, not an implementation claim.
     {
       "id": "n5",
       "position": { "x": 790, "y": -50 },
-      "caption": "SessionWindow",
-      "labels": ["SessionWindow"],
+      "caption": "ContextFrame Set",
+      "labels": ["ContextFrame"],
       "properties": {
-        "file_origin": "future explicit runtime object",
+        "file_origin": "future frame-derivation layer",
         "role": "Consumes validated candidate material later in the turn"
       },
       "style": {}

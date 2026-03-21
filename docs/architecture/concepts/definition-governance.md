@@ -93,10 +93,10 @@ Forme recommandee dans un `CONTEXT.md` de code :
 | `Set` | [`set.md`](set.md) |
 | `ResolvedSet` | [`resolved-set.md`](resolved-set.md) |
 | `View` | [`view.md`](view.md) |
-| `SessionWindow` | [`session-window-interface.md`](../interfaces/session-window-interface.md) |
+| `SessionFrame` | [`session-frame.md`](session-frame.md) |
 | `ContextPack` | [`context-pack-interface.md`](../interfaces/context-pack-interface.md) |
+| `ContextFrame` | [`context-frame.md`](context-frame.md) |
 | `StrategyResolution` | [`strategy-resolver-interface.md`](../interfaces/strategy-resolver-interface.md) |
-| `ThinkingContext` | [`graph-context-engine.md#thinkingcontext`](graph-context-engine.md#thinkingcontext) |
 | `ContextMutationProposal` | [`graph-context-engine.md#contextmutationproposal`](graph-context-engine.md#contextmutationproposal) |
 | `ResolutionTrace` | [`graph-context-engine.md#resolutiontrace`](graph-context-engine.md#resolutiontrace) |
 | `TaskIntent` | [`graph-context-engine.md#taskintent`](graph-context-engine.md#taskintent) |

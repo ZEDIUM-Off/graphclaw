@@ -17,6 +17,8 @@ The repo needs a shared way to talk about turn logic without confusing:
 
 This document therefore describes the logical phases of a turn and then maps them to the current runtime seams that are most likely to host those concerns during migration.
 
+When this document says "build the final `ContextPack`", read that as "build the current invocation-specific pack". A long turn may involve several provider invocations with different frame composition, even though the turn remains one logical unit.
+
 ## Logical Turn Phases
 
 The stable logical sequence should be documented as:
@@ -26,12 +28,13 @@ The stable logical sequence should be documented as:
 3. resolve the coherent strategy set for reflection, exploration, packing, and orchestration;
 4. resolve or refresh the relevant `View` scope;
 5. build, expand, or refine candidate `View` objects;
-6. enter `ThinkingContext` to compare candidate structures and possible mutations;
+6. use GoT-style reasoning on top of the active `View` to compare candidate structures and possible mutations;
 7. evaluate packability, policy, and budget;
 8. derive a packable subgraph candidate;
-9. build the final `ContextPack`;
-10. record a `ResolutionTrace`;
-11. hand the result into response generation and any post-turn persistence flow.
+9. choose the current provider-invocation phase and frame composition;
+10. build the invocation-specific `ContextPack`;
+11. record a `ResolutionTrace`;
+12. hand the result into response generation and any post-turn persistence flow.
 
 These are logical phases, not a fixed class diagram.
 
@@ -46,7 +49,7 @@ flowchart LR
     C[StrategyResolution]
     D[View resolution]
     E[View refinement]
-    F[ThinkingContext]
+    F[GoT reflection on View]
     G[Policy and budget evaluation]
     H[Packable subgraph]
     I[ContextPack]
@@ -200,7 +203,7 @@ flowchart TD
 ### How To Read The Comparison
 
 - **Current path**: gateway/channels → agent loop → memory_loader, prompt, dispatcher → providers, tools, runtime, security. Context is implicit (prompt assembly and recall); there is no explicit strategy resolution or ContextPack.
-- **Future path**: the same modules are used, but TaskIntent and StrategyResolution precede context creation; a governed Graph Engine seam produces ContextPack and consumes memory as one input; prompt consumes ContextPack; ResolutionTrace is recorded along the way. Orchestration, memory, tools, providers, runtime, and security remain in their current ownership; the new behavior is the explicit strategy and context layer between turn entry and prompt assembly, not a replacement of those modules.
+- **Future path**: the same modules are used, but TaskIntent and StrategyResolution precede context creation; a governed Graph Engine seam derives `ContextFrame` sets and produces `ContextPack`; prompt consumes `ContextPack`; `ResolutionTrace` is recorded along the way. Orchestration, memory, tools, providers, runtime, and security remain in their current ownership; the new behavior is the explicit strategy and context layer between turn entry and prompt assembly, not a replacement of those modules.
 
 For interface families and seam placement, see [future-integration-seams.md](../migration/future-integration-seams.md). For migration order and coexistence, see [zero-to-graphclaw-transition.md](../migration/zero-to-graphclaw-transition.md).
 
@@ -234,7 +237,7 @@ Current role:
 
 Future seam:
 
-- own the handoff between turn orchestration and explicit context artifacts such as `SessionWindow`, `ContextPack`, and `ResolutionTrace`.
+- own the handoff between turn orchestration and explicit context artifacts such as `ContextFrame`, `ContextPack`, and `ResolutionTrace`.
 
 ### `src/agent/dispatcher.rs`
 
@@ -267,7 +270,7 @@ That distinction matters especially for `src/agent/` and `src/tools/` documentat
 
 The docs should keep these costs separate:
 
-- broad exploration cost during `ThinkingContext`;
+- broad exploration cost during GoT work on the active `View`;
 - cost of a packable subgraph candidate;
 - final model-visible cost of the `ContextPack`.
 

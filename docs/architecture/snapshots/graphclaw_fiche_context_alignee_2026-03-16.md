@@ -4,6 +4,10 @@
 
 Cette fiche reste utile comme document d'alignement et de cadrage.
 
+Elle precede toutefois la simplification conceptuelle actuelle dans laquelle `SessionWindow` est retire comme concept actif au profit de [`SessionFrame`](../concepts/session-frame.md), et `ThinkingContext` est absorbe par un [`ContextPack`](../interfaces/context-pack-interface.md) phase-aware.
+
+Les occurrences de ces anciens termes dans cette fiche doivent donc etre lues comme des traces historiques, pas comme la doctrine courante.
+
 Pour le vocabulaire stable et le premier slice playground, les sources normatives a privilegier sont maintenant :
 
 - `graph-context-engine.md`

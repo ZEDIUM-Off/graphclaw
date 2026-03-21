@@ -19,8 +19,8 @@ Use this index to find the right source quickly, then read the linked document i
 | `Bounded Complement`                  | `[packability.md](packability.md)`                                                                   |
 | `Condensation`                        | `[packability.md](packability.md)`                                                                   |
 | `Projection Into A Packable Subgraph` | `[packability.md](packability.md)`                                                                   |
-| `SessionWindow`                       | `[session-window-interface.md](../interfaces/session-window-interface.md)`                           |
-| `ThinkingContext`                     | `[graph-context-engine.md#thinkingcontext](graph-context-engine.md#thinkingcontext)`                 |
+| `SessionFrame`                        | `[session-frame.md](session-frame.md)`                                                               |
+| `ContextFrame`                        | `[context-frame.md](context-frame.md)`                                                               |
 | `ContextPack`                         | `[context-pack-interface.md](../interfaces/context-pack-interface.md)`                               |
 | `ContextMutationProposal`             | `[graph-context-engine.md#contextmutationproposal](graph-context-engine.md#contextmutationproposal)` |
 | `ResolutionTrace`                     | `[graph-context-engine.md#resolutiontrace](graph-context-engine.md#resolutiontrace)`                 |
@@ -65,4 +65,3 @@ Use this index to find the right source quickly, then read the linked document i
 - use this file as an index, not as a definition source;
 - if a term needs a new canonical home, update `[definition-governance.md](definition-governance.md)` first;
 - if a non-canonical doc mentions a term, link the canonical source rather than redefining it.
-

@@ -59,8 +59,8 @@ Examples:
 
 - `Set`
 - `View`
-- `SessionWindow`
-- `ThinkingContext`
+- `ContextFrame`
+- `SessionFrame`
 - `ContextPack`
 - `ContextMutationProposal`
 - `ResolutionTrace`
@@ -116,7 +116,7 @@ GraphClaw use:
 
 - build or expand a `View`;
 - walk outward from anchors inside a `View`;
-- explore limited neighborhoods during `ThinkingContext`.
+- explore limited neighborhoods during GoT work on the active `View`.
 
 Memgraph role:
 
@@ -200,8 +200,8 @@ Memgraph role:
 | GraphClaw concept | Capability need | Memgraph role |
 | --- | --- | --- |
 | `View` | governed runtime projection, constrained expansion, reusable set construction, filtering, ranking, and composition | query and traversal substrate, query results, set-like operations, graph algorithms |
-| `SessionWindow` | bounded visible subgraph | bounded traversal, filtering, and materialization helpers |
-| `ThinkingContext` | temporary exploration and comparison | query execution and algorithm support for candidate evaluation |
+| `ContextFrame` | governed projection of a bounded portion of `View` | bounded traversal, filtering, materialization helpers, and projection support |
+| `SessionFrame` | session-oriented frame derived from `View` | bounded traversal, filtering, and projection support for session subgraphs |
 | packable subgraph | bounded projection close to final context | filtering, traversal, ranking inputs, optional materialization |
 | `ContextPack` | final budgeted subset | ranked selection, summarization inputs, optional materialization support |
 | `ContextMutationProposal` | structured context edits | graph update primitives and utility procedures |

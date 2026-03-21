@@ -1,59 +1,103 @@
 # Agent Loop
 
-## Status
+## Statut
 
-This document frames the mono-agent loop in the GraphClaw target architecture.
+Ce document cadre la boucle mono-agent dans l'architecture cible de GraphClaw.
 
-It is target-architecture documentation.
+Il releve de la documentation d'architecture cible.
 
-## Purpose
+## But
 
-The aim is to replace a purely linear prompt-first reading with a governed loop based on:
+Le but est de remplacer une lecture purement lineaire et prompt-first par une boucle gouvernee basee sur :
 
-- [`Set`](set.md) matter;
-- runtime [`View`](view.md) composition;
-- governed natural-language projection;
-- GoT-style thought evolution;
-- recomposition of the next working subgraph.
+- la matiere portee par les [`Set`](set.md) ;
+- la composition runtime de la [`View`](view.md) ;
+- la projection gouvernee en langage naturel ;
+- l'evolution de pensee de type GoT ;
+- la recomposition du sous-graphe de travail suivant.
 
-## Reference Anchors
+## Ancrages De Reference
 
-- graph theory reference: [`../../../.agents/skills/graphclaw/main_graphes/markdown.md`](../../../.agents/skills/graphclaw/main_graphes/markdown.md)
-- paths and shortest paths for bounded exploration and path-sensitive refinement: [`../../../.agents/skills/graphclaw/main_graphes/pages/page-22/markdown.md`](../../../.agents/skills/graphclaw/main_graphes/pages/page-22/markdown.md), [`../../../.agents/skills/graphclaw/main_graphes/pages/page-25/markdown.md`](../../../.agents/skills/graphclaw/main_graphes/pages/page-25/markdown.md)
-- connectivity and strongly connected components for branch separation and working-zone coherence: [`../../../.agents/skills/graphclaw/main_graphes/pages/page-37/markdown.md`](../../../.agents/skills/graphclaw/main_graphes/pages/page-37/markdown.md), [`../../../.agents/skills/graphclaw/main_graphes/pages/page-38/markdown.md`](../../../.agents/skills/graphclaw/main_graphes/pages/page-38/markdown.md)
-- cuts, articulation, and Menger for preserving critical structure during narrowing: [`../../../.agents/skills/graphclaw/main_graphes/pages/page-44/markdown.md`](../../../.agents/skills/graphclaw/main_graphes/pages/page-44/markdown.md), [`../../../.agents/skills/graphclaw/main_graphes/pages/page-46/markdown.md`](../../../.agents/skills/graphclaw/main_graphes/pages/page-46/markdown.md), [`../../../.agents/skills/graphclaw/main_graphes/pages/page-49/markdown.md`](../../../.agents/skills/graphclaw/main_graphes/pages/page-49/markdown.md)
-- local GoT reference: [`../../../.agents/skills/graphclaw/graph-of-thought/markdown.md`](../../../.agents/skills/graphclaw/graph-of-thought/markdown.md)
-- GoT reasoning graph model: section 3.1 in [`../../../.agents/skills/graphclaw/graph-of-thought/markdown.md`](../../../.agents/skills/graphclaw/graph-of-thought/markdown.md)
-- GoT transformations: section 3.2 in [`../../../.agents/skills/graphclaw/graph-of-thought/markdown.md`](../../../.agents/skills/graphclaw/graph-of-thought/markdown.md)
-- GoT scoring and ranking: section 3.3 in [`../../../.agents/skills/graphclaw/graph-of-thought/markdown.md`](../../../.agents/skills/graphclaw/graph-of-thought/markdown.md)
+- reference de theorie des graphes : [`../../../.agents/skills/graphclaw/main_graphes/markdown.md`](../../../.agents/skills/graphclaw/main_graphes/markdown.md)
+- chemins et plus courts chemins pour l'exploration bornee et le raffinement sensible aux parcours : [`../../../.agents/skills/graphclaw/main_graphes/pages/page-22/markdown.md`](../../../.agents/skills/graphclaw/main_graphes/pages/page-22/markdown.md), [`../../../.agents/skills/graphclaw/main_graphes/pages/page-25/markdown.md`](../../../.agents/skills/graphclaw/main_graphes/pages/page-25/markdown.md)
+- connectivite et composantes fortement connexes pour la coherence des zones de travail et la separation des branches : [`../../../.agents/skills/graphclaw/main_graphes/pages/page-37/markdown.md`](../../../.agents/skills/graphclaw/main_graphes/pages/page-37/markdown.md), [`../../../.agents/skills/graphclaw/main_graphes/pages/page-38/markdown.md`](../../../.agents/skills/graphclaw/main_graphes/pages/page-38/markdown.md)
+- coupes, articulation et Menger pour conserver la structure critique pendant le retrecissement : [`../../../.agents/skills/graphclaw/main_graphes/pages/page-44/markdown.md`](../../../.agents/skills/graphclaw/main_graphes/pages/page-44/markdown.md), [`../../../.agents/skills/graphclaw/main_graphes/pages/page-46/markdown.md`](../../../.agents/skills/graphclaw/main_graphes/pages/page-46/markdown.md), [`../../../.agents/skills/graphclaw/main_graphes/pages/page-49/markdown.md`](../../../.agents/skills/graphclaw/main_graphes/pages/page-49/markdown.md)
+- reference GoT locale : [`../../../.agents/skills/graphclaw/graph-of-thought/markdown.md`](../../../.agents/skills/graphclaw/graph-of-thought/markdown.md)
+- modele de graphe de raisonnement GoT : section 3.1 dans [`../../../.agents/skills/graphclaw/graph-of-thought/markdown.md`](../../../.agents/skills/graphclaw/graph-of-thought/markdown.md)
+- transformations GoT : section 3.2 dans [`../../../.agents/skills/graphclaw/graph-of-thought/markdown.md`](../../../.agents/skills/graphclaw/graph-of-thought/markdown.md)
+- scoring et ranking GoT : section 3.3 dans [`../../../.agents/skills/graphclaw/graph-of-thought/markdown.md`](../../../.agents/skills/graphclaw/graph-of-thought/markdown.md)
 
-## Loop
+## Boucle
 
-The target mono-agent loop can be read as:
+La boucle mono-agent cible peut etre lue ainsi :
 
-1. derive a minimum task intent;
-2. activate one or more starting [`Set`](set.md) objects;
-3. compose an initial [`View`](view.md);
-4. choose an exploration-side projection;
-5. derive a `ThinkingContext`;
-6. generate, critique, refine, or aggregate thoughts in a thought graph;
-7. use those thoughts to recompute the next `View`;
-8. iterate until one working branch is sufficient;
-9. choose a final projection;
-10. derive a `ContextPack`;
-11. record the selection path in a `ResolutionTrace`.
+1. deriver un `TaskIntent` minimal ;
+2. activer un ou plusieurs [`Set`](set.md) de depart ;
+3. composer une [`View`](view.md) initiale ;
+4. choisir le regime actif de reflexion et d'exploration ;
+5. generer, critiquer, raffiner, ou agreger des pensees dans un graphe de pensee appuye sur la [`View`](view.md) active ;
+6. utiliser ces sorties pour recomposer la `View` suivante ;
+7. iterer jusqu'a ce qu'une branche de travail soit suffisante ;
+8. choisir la phase d'invocation et sa strategie de projection ;
+9. deriver l'ensemble de [`ContextFrame`](context-frame.md) utile a cette invocation ;
+10. deriver un [`ContextPack`](../interfaces/context-pack-interface.md) ;
+11. enregistrer le chemin de selection dans une `ResolutionTrace`.
 
-## Reading Rule
+## Diagramme De Boucle
 
-This loop should be read with:
+```mermaid
+flowchart TD
+    A[TaskIntent]
+    B[Set de depart]
+    C[View active]
+    D[Strategie GoT active]
+    E[Step GoT courant]
+    F[Recomposer l'ensemble de ContextFrame]
+    G[Recomposer le ContextPack]
+    H[Invocation provider]
+    I[Mettre a jour la branche ou la View]
 
-- [`got.md`](got.md) for thought-graph orchestration;
-- [`projection-governance.md`](projection-governance.md) for projectability rules;
-- [`context-artifacts.md`](context-artifacts.md) for artifact distinctions;
-- [`../runtime/turn-runtime-logic.md`](../runtime/turn-runtime-logic.md) for broader turn sequencing.
+    A --> B --> C --> D --> E --> F --> G --> H --> I
+    I --> E
+    I --> C
+```
 
-This loop should be read as:
+Ce diagramme est conceptuel uniquement.
 
-- graph-theory grounded in bounded subgraph work, paths, components, and cuts;
-- GoT-grounded in graph-shaped thought evolution rather than a single reasoning chain;
-- GraphClaw-grounded in recomputing the next [`View`](view.md) rather than merely appending more prompt text.
+Il montre que :
+
+- la `View` reste l'espace de travail ;
+- le step GoT courant et la strategie selectionnee peuvent changer les frames utiles ;
+- le [`ContextPack`](../interfaces/context-pack-interface.md) peut donc etre recompose plusieurs fois a l'interieur d'une meme chaine GoT.
+
+## Regle De Lecture
+
+Cette boucle doit etre lue avec :
+
+- [`got.md`](got.md) pour l'orchestration du graphe de pensee ;
+- [`projection-governance.md`](projection-governance.md) pour les regles de projectabilite ;
+- [`context-artifacts.md`](context-artifacts.md) pour les distinctions entre artefacts ;
+- [`../runtime/turn-runtime-logic.md`](../runtime/turn-runtime-logic.md) pour la sequence plus large du turn.
+
+Elle doit etre lue comme :
+
+- ancree dans la theorie des graphes via le travail sur sous-graphes bornes, chemins, composantes, et coupes ;
+- ancree dans GoT via une evolution de pensee en graphe plutot qu'une seule chaine lineaire ;
+- ancree dans GraphClaw via la recomposition de la [`View`](view.md) suivante plutot que l'empilement de texte.
+
+## Lecture Phase-Aware Du Payload
+
+La boucle doit aussi etre lue comme phase-aware au moment des invocations provider.
+
+La lecture stable est :
+
+- l'entree de turn peut demander une forme de payload differente de la progression GoT ;
+- la progression GoT peut demander une forme de payload differente de la formation de reponse finale ;
+- deux steps GoT differents d'une meme phase peuvent aussi demander des payloads differents si la strategie selectionnee change l'ensemble utile des operations ou le focus de branche ;
+- ces differences doivent etre modelees par une composition phase-aware des [`ContextFrame`](context-frame.md) dans le [`ContextPack`](../interfaces/context-pack-interface.md), pas par une redefinition de la [`View`](view.md) a chaque fois.
+
+Cette lecture preserve la distinction entre :
+
+- l'etat de travail dans le graphe ;
+- la projection en langage naturel ;
+- le payload final envoye au provider.
