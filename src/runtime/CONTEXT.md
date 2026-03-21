@@ -13,12 +13,6 @@ This subtree exists to expose execution capabilities safely and consistently. It
 - source-adjacent `*.map.json` slices for runtime governance, mutation validation, and budget seams;
 - capability surfaces needed by tools and security-sensitive execution.
 
-## What Does Not Belong Here
-
-- context-selection policy and packing logic;
-- memory persistence or retrieval rules that belong in `src/memory/`;
-- stable GraphClaw vocabulary that belongs in `docs/architecture/`.
-
 ## File / Folder Map
 
 - `src/runtime/mod.rs` - module entry and runtime selection glue

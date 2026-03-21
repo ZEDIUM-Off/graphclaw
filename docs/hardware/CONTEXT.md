@@ -10,12 +10,6 @@ This subtree contains hardware-facing documentation: board setup instructions, p
 - hardware and peripheral design notes;
 - datasheet-oriented support material for supported boards.
 
-## What Does Not Belong Here
-
-- general contributor workflow documentation;
-- runtime API or CLI reference;
-- broad GraphClaw architecture narrative unrelated to hardware setup.
-
 ## File Map
 
 - `README.md` - hardware docs entrypoint

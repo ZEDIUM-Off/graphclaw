@@ -12,12 +12,6 @@ This subtree owns behavior validation for the current repository. It should expr
 - current behavior checks for the inherited runtime;
 - test strategy updates when runtime or process expectations change.
 
-## What Does Not Belong Here
-
-- architectural claims that belong in `docs/architecture/`;
-- production runtime logic;
-- documentation-only validation concerns being rewritten as product tests.
-
 ## File Map
 
 - `test_component.rs`, `test_integration.rs`, `test_live.rs`, `test_system.rs` - top-level suite entrypoints

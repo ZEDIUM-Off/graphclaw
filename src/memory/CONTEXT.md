@@ -13,12 +13,6 @@ This subtree owns persistence and retrieval for the inherited runtime. It is a m
 - source-adjacent `*.map.json` slices for retrieval, compaction, and evidence-flow seams;
 - memory-facing CLI and maintenance utilities.
 
-## What Does Not Belong Here
-
-- turn orchestration and prompt assembly that belong in `src/agent/`;
-- execution-environment logic that belongs in `src/runtime/`;
-- stable context-engine concept definitions that belong in `docs/architecture/`.
-
 ## File / Folder Map
 
 - `src/memory/mod.rs` - module entry and shared wiring

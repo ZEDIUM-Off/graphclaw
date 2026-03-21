@@ -12,12 +12,6 @@ This subtree currently owns operational usage accounting. It may later inform Gr
 - runtime tracking logic for cost-related measurements;
 - explicitly owned accounting rules.
 
-## What Does Not Belong Here
-
-- implicit context-packing policy;
-- provider-specific billing logic scattered outside shared tracking;
-- conceptual definitions for GraphClaw budget semantics that belong in `docs/architecture/`.
-
 ## File / Folder Map
 
 - `src/cost/mod.rs` - module entry

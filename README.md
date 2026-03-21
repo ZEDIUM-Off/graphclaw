@@ -52,7 +52,7 @@ GraphClaw documentation is intentionally layered:
 | intent | why does GraphClaw exist | `README.md`, strategy docs |
 | conceptual architecture | what are the reference concepts and strategy families being stabilized | `docs/architecture/concepts/definition-governance.md`, `docs/architecture/concepts/graph-context-engine.md`, concept-specific docs under `docs/architecture/` |
 | transition architecture | how does the inherited runtime gain seams without a rewrite-first migration | `docs/architecture/migration/zero-to-graphclaw-transition.md`, `docs/architecture/migration/future-integration-seams.md` |
-| context semantics | how should views, sets, artifacts, and budgets work | `docs/architecture/concepts/views-and-sets.md`, `docs/architecture/concepts/context-artifacts.md`, `docs/architecture/runtime/turn-runtime-logic.md` |
+| context semantics | how should views, sets, packability, artifacts, and budgets work | `docs/architecture/concepts/views-and-sets.md`, `docs/architecture/concepts/set.md`, `docs/architecture/concepts/view.md`, `docs/architecture/concepts/packability.md`, `docs/architecture/concepts/context-artifacts.md`, `docs/architecture/runtime/turn-runtime-logic.md` |
 | project architecture | how is the repo divided | `CONTEXT.md`, local `CONTEXT.md` files |
 | runtime logic | how should a turn resolve logically, including strategy resolution and bounded orchestration | `docs/architecture/runtime/turn-runtime-logic.md`, runtime-area docs |
 | backend integration | how does a concrete graph backend support the model | `docs/backends/memgraph.md` |
@@ -69,7 +69,7 @@ Use these entry points to orient work quickly:
 | repo identity, root framing, agent rules | [`README.md`](README.md), [`AGENTS.md`](AGENTS.md), [`CONTEXT.md`](CONTEXT.md) |
 | Graph Context Engine concepts, strategy families, or invariants | [`docs/architecture/README.md`](docs/architecture/README.md), [`docs/architecture/concepts/graph-context-engine.md`](docs/architecture/concepts/graph-context-engine.md) |
 | migration seams, transition thesis, orchestration framing, or future interface families | [`docs/architecture/migration/zero-to-graphclaw-transition.md`](docs/architecture/migration/zero-to-graphclaw-transition.md), [`docs/architecture/migration/future-integration-seams.md`](docs/architecture/migration/future-integration-seams.md) |
-| view, set, artifact, planning-artifact, or turn-logic semantics | [`docs/architecture/concepts/views-and-sets.md`](docs/architecture/concepts/views-and-sets.md), [`docs/architecture/concepts/context-artifacts.md`](docs/architecture/concepts/context-artifacts.md), [`docs/architecture/runtime/turn-runtime-logic.md`](docs/architecture/runtime/turn-runtime-logic.md) |
+| view, set, packability, artifact, planning-artifact, or turn-logic semantics | [`docs/architecture/concepts/views-and-sets.md`](docs/architecture/concepts/views-and-sets.md), [`docs/architecture/concepts/set.md`](docs/architecture/concepts/set.md), [`docs/architecture/concepts/view.md`](docs/architecture/concepts/view.md), [`docs/architecture/concepts/packability.md`](docs/architecture/concepts/packability.md), [`docs/architecture/concepts/context-artifacts.md`](docs/architecture/concepts/context-artifacts.md), [`docs/architecture/runtime/turn-runtime-logic.md`](docs/architecture/runtime/turn-runtime-logic.md) |
 | backend mapping or Memgraph constraints | [`docs/backends/README.md`](docs/backends/README.md), [`docs/backends/memgraph.md`](docs/backends/memgraph.md) |
 | Rust runtime behavior | [`src/CONTEXT.md`](src/CONTEXT.md) |
 | workspace crates | [`crates/CONTEXT.md`](crates/CONTEXT.md) |
@@ -114,7 +114,7 @@ GraphClaw is not migrating by renaming the whole repository first. The safer pat
 
 The intended order is:
 
-1. Documentation and canonical concept sources: stabilize the meaning of `Set` (persisted), `View` (runtime), `ResolvedSet` (derived), `SessionWindow`, `ThinkingContext`, `ContextPack`, `ContextMutationProposal`, `ResolutionTrace`, and portable agent packaging boundaries.
+1. Documentation and canonical concept sources: stabilize the meaning of `Set`, `View`, `ResolvedSet`, `SessionWindow`, `ThinkingContext`, `ContextPack`, `ContextMutationProposal`, `ResolutionTrace`, and portable agent packaging boundaries.
 2. Boundary docs: make repository and subsystem responsibilities explicit through `CONTEXT.md` files and architecture references.
 3. Runtime artifacts: make context-resolution objects explicit instead of relying on implicit prompt concatenation.
 4. Graph adapter boundary: add a graph-facing storage interface behind traits so topology-aware context selection can arrive without replacing every inherited backend at once.

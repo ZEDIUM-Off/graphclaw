@@ -85,5 +85,5 @@ In the **Export LLM** tab:
 ## References
 
 - [View System Spec v0](../architecture/view-system-spec-v0.md)
-- [Views and sets](../architecture/views-and-sets.md)
+- [Set / View family](../architecture/concepts/views-and-sets.md)
 - [Memgraph backend](backends/memgraph.md)

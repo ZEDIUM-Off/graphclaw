@@ -10,12 +10,6 @@ This subtree is the exact-lookup layer for current interfaces. It exists so oper
 - stable lookup material for current interfaces;
 - concise reference entrypoints that route readers into the correct detailed page.
 
-## What Does Not Belong Here
-
-- broad migration narrative or contributor workflow policy;
-- speculative interfaces that are not implemented;
-- operator runbooks that belong in `docs/ops/`.
-
 ## File Map
 
 - `README.md` - reference entrypoint

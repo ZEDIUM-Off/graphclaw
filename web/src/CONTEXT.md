@@ -12,12 +12,6 @@ This subtree owns frontend implementation detail for the current dashboard. It c
 - shared UI layout and transport-aware hooks;
 - frontend contract types that mirror real gateway behavior.
 
-## What Does Not Belong Here
-
-- speculative future GraphClaw route schemas;
-- backend ownership that belongs in `src/gateway/`;
-- canonical concept definitions that belong in `docs/architecture/`.
-
 ## File Map
 
 - `main.tsx` - browser bootstrap

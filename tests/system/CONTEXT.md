@@ -12,12 +12,6 @@ This subtree owns the highest-cost automated validation layer for the current ru
 - cross-subsystem confidence checks that cannot be localized lower;
 - sparse high-value coverage for externally meaningful behavior.
 
-## What Does Not Belong Here
-
-- routine unit-scale behavior checks;
-- architecture prose that belongs in docs;
-- broad scenario sprawl that duplicates integration coverage.
-
 ## File Map
 
 - `mod.rs` - local suite router

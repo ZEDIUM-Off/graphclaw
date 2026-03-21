@@ -20,6 +20,15 @@ That leaves several questions under-specified:
 
 `ContextPack` is the smallest interface that makes "what the model actually receives" a governed artifact rather than an implementation side effect.
 
+## Reference Anchors
+
+- graph theory reference: [`../../../.agents/skills/graphclaw/main_graphes/markdown.md`](../../../.agents/skills/graphclaw/main_graphes/markdown.md)
+- paths and shortest paths for keeping only intelligible minimal relation structure: [`../../../.agents/skills/graphclaw/main_graphes/pages/page-22/markdown.md`](../../../.agents/skills/graphclaw/main_graphes/pages/page-22/markdown.md), [`../../../.agents/skills/graphclaw/main_graphes/pages/page-25/markdown.md`](../../../.agents/skills/graphclaw/main_graphes/pages/page-25/markdown.md)
+- connectivity, cuts, articulation, and Menger for preserving critical structure while narrowing the final pack: [`../../../.agents/skills/graphclaw/main_graphes/pages/page-37/markdown.md`](../../../.agents/skills/graphclaw/main_graphes/pages/page-37/markdown.md), [`../../../.agents/skills/graphclaw/main_graphes/pages/page-44/markdown.md`](../../../.agents/skills/graphclaw/main_graphes/pages/page-44/markdown.md), [`../../../.agents/skills/graphclaw/main_graphes/pages/page-46/markdown.md`](../../../.agents/skills/graphclaw/main_graphes/pages/page-46/markdown.md), [`../../../.agents/skills/graphclaw/main_graphes/pages/page-49/markdown.md`](../../../.agents/skills/graphclaw/main_graphes/pages/page-49/markdown.md)
+- ranking intuition through PageRank: [`../../../.agents/skills/graphclaw/main_graphes/pages/page-87/markdown.md`](../../../.agents/skills/graphclaw/main_graphes/pages/page-87/markdown.md)
+- local GoT reference: [`../../../.agents/skills/graphclaw/graph-of-thought/markdown.md`](../../../.agents/skills/graphclaw/graph-of-thought/markdown.md)
+- GoT scoring and ranking for branch selection before final packing: section 3.3 in [`../../../.agents/skills/graphclaw/graph-of-thought/markdown.md`](../../../.agents/skills/graphclaw/graph-of-thought/markdown.md)
+
 ## Interface Role
 
 `ContextPack` is the final budgeted, model-visible context artifact compiled from narrower runtime state such as `SessionWindow`, packable-subgraph candidates, summaries, and policy-constrained selections.
@@ -85,6 +94,12 @@ The stable relationship should be:
 
 This distinction matters because GraphClaw wants runtime-visible governable context without assuming every visible item must be packed in full.
 
+In the current concept split, this should be read together with:
+
+- [`../concepts/view.md`](../concepts/view.md) for the working subgraph itself;
+- [`../concepts/packability.md`](../concepts/packability.md) for packable-subgraph conditions;
+- [`../concepts/projection-governance.md`](../concepts/projection-governance.md) for the NL projection step that produces the final artifact.
+
 ## Relationship To Providers
 
 Providers should consume a `ContextPack` or a representation derived from it.
@@ -109,6 +124,8 @@ The interface should make room for outcomes such as:
 - refuse a requested packed expansion that violates the active view or current policy.
 
 These are packing outcomes, not merely prompt-formatting side effects.
+
+This is where graph-theory ideas such as cuts, articulation, and preserving enough path structure matter most: the final pack should shrink aggressively without making the surviving context unintelligible.
 
 ## Compatibility With The Inherited Runtime
 
@@ -294,7 +311,10 @@ This slice is an orientation artifact, not an implementation claim.
 
 ## Related References
 
-- `context-artifacts.md`
-- `turn-runtime-logic.md`
-- `future-integration-seams.md`
-- `session-window-interface.md`
+- [`../concepts/context-artifacts.md`](../concepts/context-artifacts.md) for artifact boundaries
+- [`../concepts/view.md`](../concepts/view.md) for the runtime working subgraph
+- [`../concepts/packability.md`](../concepts/packability.md) for packable-subgraph conditions
+- [`../concepts/projection-governance.md`](../concepts/projection-governance.md) for the projection step into model-visible form
+- [`../runtime/turn-runtime-logic.md`](../runtime/turn-runtime-logic.md) for broader turn sequencing
+- [`../migration/future-integration-seams.md`](../migration/future-integration-seams.md) for seam placement
+- [`session-window-interface.md`](session-window-interface.md) for the upstream visible-state boundary

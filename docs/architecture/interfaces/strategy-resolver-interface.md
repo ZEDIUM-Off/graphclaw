@@ -20,6 +20,18 @@ Without an explicit strategy-resolution boundary:
 
 `StrategyResolver` is the smallest interface that makes those choices explicit without freezing a final class layout too early.
 
+## Reference Anchors
+
+- graph theory reference: [`../../../.agents/skills/graphclaw/main_graphes/markdown.md`](../../../.agents/skills/graphclaw/main_graphes/markdown.md)
+- shortest paths and bounded graph exploration: [`../../../.agents/skills/graphclaw/main_graphes/pages/page-22/markdown.md`](../../../.agents/skills/graphclaw/main_graphes/pages/page-22/markdown.md), [`../../../.agents/skills/graphclaw/main_graphes/pages/page-25/markdown.md`](../../../.agents/skills/graphclaw/main_graphes/pages/page-25/markdown.md)
+- connectivity, components, and branch coherence: [`../../../.agents/skills/graphclaw/main_graphes/pages/page-37/markdown.md`](../../../.agents/skills/graphclaw/main_graphes/pages/page-37/markdown.md), [`../../../.agents/skills/graphclaw/main_graphes/pages/page-38/markdown.md`](../../../.agents/skills/graphclaw/main_graphes/pages/page-38/markdown.md)
+- topological ordering and DAG-style dependency reading: [`../../../.agents/skills/graphclaw/main_graphes/pages/page-46/markdown.md`](../../../.agents/skills/graphclaw/main_graphes/pages/page-46/markdown.md)
+- ranking intuition through PageRank: [`../../../.agents/skills/graphclaw/main_graphes/pages/page-87/markdown.md`](../../../.agents/skills/graphclaw/main_graphes/pages/page-87/markdown.md)
+- local GoT reference: [`../../../.agents/skills/graphclaw/graph-of-thought/markdown.md`](../../../.agents/skills/graphclaw/graph-of-thought/markdown.md)
+- GoT reasoning model: section 3.1 in [`../../../.agents/skills/graphclaw/graph-of-thought/markdown.md`](../../../.agents/skills/graphclaw/graph-of-thought/markdown.md)
+- GoT transformations and scoring: section 3.2 and section 3.3 in [`../../../.agents/skills/graphclaw/graph-of-thought/markdown.md`](../../../.agents/skills/graphclaw/graph-of-thought/markdown.md)
+- GoT execution decomposition: section 4.5 in [`../../../.agents/skills/graphclaw/graph-of-thought/markdown.md`](../../../.agents/skills/graphclaw/graph-of-thought/markdown.md)
+
 ## Interface Role
 
 `StrategyResolver` resolves a coherent turn-time strategy set for a task under current runtime constraints.
@@ -91,6 +103,11 @@ This interface is expected to resolve families such as:
 - evidence-first versus ultra-compact packing;
 - single-agent versus delegated orchestration.
 
+In the current GraphClaw reading, these families should be understood against:
+
+- graph-theory distinctions between local neighborhood work, path-sensitive exploration, branch separation, and ordering;
+- GoT distinctions between generating, refining, aggregating, and ranking thought branches before the next runtime step is chosen.
+
 This document does not freeze the full taxonomy. It only establishes that strategy families should be selectable through an explicit boundary.
 
 ## Degradation And Fallback
@@ -103,6 +120,8 @@ The interface should make room for outcomes such as:
 - refuse a strategy set when policy or required capabilities are absent.
 
 These are strategy outcomes, not execution results.
+
+This is also the place where the architecture must stay sharper than a hidden prompt habit: fallback means changing the selected strategy regime, not merely writing a shorter or vaguer prompt.
 
 ## Compatibility With The Inherited Runtime
 
@@ -294,7 +313,9 @@ This slice is an orientation artifact, not an implementation claim.
 
 ## Related References
 
-- `graph-context-engine.md`
-- `context-artifacts.md`
-- `turn-runtime-logic.md`
-- `future-integration-seams.md`
+- [`../concepts/graph-context-engine.md`](../concepts/graph-context-engine.md) for the engine boundary
+- [`../concepts/got.md`](../concepts/got.md) for graph-shaped thought evolution
+- [`../concepts/agent-loop.md`](../concepts/agent-loop.md) for mono-agent loop placement
+- [`../concepts/context-artifacts.md`](../concepts/context-artifacts.md) for downstream artifacts
+- [`../runtime/turn-runtime-logic.md`](../runtime/turn-runtime-logic.md) for turn sequencing
+- [`../migration/future-integration-seams.md`](../migration/future-integration-seams.md) for seam placement

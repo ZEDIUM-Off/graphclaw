@@ -12,12 +12,6 @@ This subtree owns model access and provider compatibility. It sits adjacent to t
 - provider selection, retries, and compatibility behavior;
 - provider-specific API integration detail.
 
-## What Does Not Belong Here
-
-- context-engine concept definitions;
-- agent-loop policy for when a provider should be called;
-- persistence and retrieval logic that belongs in `src/memory/`.
-
 ## File / Folder Map
 
 - `src/providers/mod.rs` - provider registry and public entrypoints

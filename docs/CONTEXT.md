@@ -13,87 +13,23 @@ This subtree is the primary human-facing documentation surface for GraphClaw. It
 - documentation that frames variable reflection, exploration, packing, and orchestration strategies as target-architecture concepts rather than current runtime facts;
 - localized documentation and translation governance.
 
-## What Does Not Belong Here
-
-- source-level implementation notes that belong next to code;
-- speculative architecture written as if the migration is already complete;
-- workflow or CI behavior changes hidden inside documentation-only edits.
-
 ## File Map
 
-- `README.md` - primary docs entrypoint and navigation hub
-- `architecture/` - stable GraphClaw concepts, transition seams, artifact boundaries, and target runtime framing
-- `backends/` - backend integration references and coupling guidance
-- `contributing/` - contributor process, CI, review, release, and docs workflow material
-- `hardware/` - board, peripheral, and device setup/design notes
-- `i18n/` - translation structure and localized documentation governance
-- `maintainers/` - repo maps, inventories, and transition-oriented maintainer notes
-- `ops/` - operational runbooks and troubleshooting for the current runtime
-- `reference/` - exact CLI, API, and SOP lookup material
-- `security/` - security guidance, hardening notes, and roadmap material
-- `setup-guides/` - installation and service-specific setup guides
-- `vi/` - inherited Vietnamese documentation subtree retained from the baseline
-
-## Routing Diagram
-
-```mermaid
-flowchart LR
-    Docs[Docs context]
-    Architecture[Architecture docs]
-    Reference[Reference and setup]
-    Operations[Ops and security]
-    Localization[I18N and VI]
-    Maintainers[Maintainers and hardware]
-
-    Docs --> Architecture
-    Docs --> Reference
-    Docs --> Operations
-    Docs --> Localization
-    Docs --> Maintainers
-```
+- `README.md` - docs landing page
+- `architecture/` - concepts, migration, interfaces, runtime, and playground docs
+- `backends/` - backend capability mapping docs
+- `contributing/` - contributor and docs-process docs
+- `maintainers/` - repo maps, inventories, and governance support
+- `ops/`, `reference/`, `security/`, `setup-guides/` - current-state operational and reference docs
+- `i18n/`, `vi/` - translation and inherited localized docs
 
 ## Routing
 
-- contributor workflow or review policy changes belong in `docs/contributing/`
-- concept-model, strategy-family, canonical-definition governance, and glossary-routing work belong in `docs/architecture/`
-- transition-thesis, views-and-sets, context-artifact, turn-logic, and future-seam references belong in `docs/architecture/`
-- backend capability mapping belongs in `docs/backends/`
-- operator runbooks and runtime troubleshooting belong in `docs/ops/`
-- exact command, config, or interface references belong in `docs/reference/`
-- security posture and roadmap material belong in `docs/security/`
-- localized doc governance belongs in `docs/i18n/`
-- translation-heavy legacy Vietnamese content belongs in `docs/vi/`
-
-## References
-
-- `CONTEXT.md` - repo-wide migration and documentation truthfulness baseline
-- `README.md` - canonical docs landing page
-- `docs/architecture/concepts/graph-context-engine.md` - target concept model
-- `docs/architecture/migration/zero-to-graphclaw-transition.md` - seam-first migration framing
-- `docs/architecture/concepts/views-and-sets.md` - `Set` (persisted), `View` (runtime), and packability semantics
-- `docs/architecture/playground/set-system-spec-v0.md` - Set System v0 (playground lifecycle, algebra, LLM export)
-- `docs/architecture/playground/view-system-spec-v0.md` - superseded redirect to set-system-spec-v0.md
-- `docs/architecture/concepts/context-artifacts.md` - context artifact distinctions
-- `docs/architecture/migration/future-integration-seams.md` - future interface-family framing
-- `docs/backends/memgraph.md` - Memgraph backend reference
-- `docs/maintainers/repo-map.md` - repository navigation support for maintainers
-- `docs/maintainers/docs-inventory.md` - documentation inventory snapshot
-
-## Current Inherited State
-
-Most content in this tree is still inherited from ZeroClaw-era documentation. Many pages accurately describe `zeroclaw` names, commands, and workflows because those surfaces still exist in the current implementation. That is not stale branding by itself; it is current repository truth until the underlying product behavior changes.
-
-## GraphClaw Migration Relationship
-
-This tree should make the migration legible without pretending it is finished. Documentation may introduce GraphClaw framing, explain the graph-native direction, describe strategy resolution or modular orchestration as target concepts, and call out inherited terminology, but it must not silently rewrite current commands, config keys, APIs, or operating procedures into future-state names.
-
-## Cautions
-
-- keep current behavior and roadmap statements clearly separated
-- avoid taxonomy-wide rewrites unless the task is explicitly broad
-- do not remove localized or inherited docs just because the root framing changed
-- do not let target strategy concepts leak into current-state CLI or ops docs as if they were implemented features
-- if `docs/README.md` conflicts with local truth, resolve that deliberately rather than by distorting subtree context
+- concept or migration docs: go to `architecture/CONTEXT.md`
+- backend mapping docs: go to `backends/CONTEXT.md`
+- contributor process docs: go to `contributing/CONTEXT.md`
+- operational docs: go to `ops/CONTEXT.md`, `security/CONTEXT.md`, or `setup-guides/CONTEXT.md`
+- localized docs: go to `i18n/CONTEXT.md` or `vi/CONTEXT.md`
 
 ## Agent Workflow
 

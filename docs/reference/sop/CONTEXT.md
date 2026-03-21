@@ -10,12 +10,6 @@ This subtree documents the current SOP subsystem: its syntax, connectivity and o
 - cookbook-style examples that remain grounded in current behavior;
 - supporting notes for connectivity and observability within the SOP subsystem.
 
-## What Does Not Belong Here
-
-- generic operations guidance unrelated to SOP;
-- future GraphClaw context-policy claims presented as implemented SOP behavior;
-- contributor process documentation.
-
 ## File Map
 
 - `README.md` - SOP reference entrypoint

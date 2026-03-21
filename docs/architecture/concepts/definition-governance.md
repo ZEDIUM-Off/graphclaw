@@ -84,15 +84,15 @@ Lorsqu'un document non canonique cite un concept :
 Forme recommandee dans un `CONTEXT.md` de code :
 
 > Dans cette zone, `Set` est actuellement represente par `ViewTemplate` et des DTO de playground.  
-> Voir la definition canonique dans [`views-and-sets.md`](views-and-sets.md).
+> Voir la definition canonique dans [`set.md`](set.md).
 
 ## Registre Canonique Initial
 
 | Concept | Source canonique actuelle |
 | --- | --- |
-| `Set` | [`views-and-sets.md#set`](views-and-sets.md#set) |
-| `ResolvedSet` | [`views-and-sets.md#resolvedset`](views-and-sets.md#resolvedset) |
-| `View` | [`views-and-sets.md#view`](views-and-sets.md#view) |
+| `Set` | [`set.md`](set.md) |
+| `ResolvedSet` | [`resolved-set.md`](resolved-set.md) |
+| `View` | [`view.md`](view.md) |
 | `SessionWindow` | [`session-window-interface.md`](../interfaces/session-window-interface.md) |
 | `ContextPack` | [`context-pack-interface.md`](../interfaces/context-pack-interface.md) |
 | `StrategyResolution` | [`strategy-resolver-interface.md`](../interfaces/strategy-resolver-interface.md) |

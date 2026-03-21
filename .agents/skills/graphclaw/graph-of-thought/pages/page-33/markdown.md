@@ -1,0 +1,16 @@
+Table 21: Keyword counting for an example 4-passage split (GoT4): Step 1 (Prompt/Response)
+
+|  Step 1 – Prompt:  |
+| --- |
+|  <Instruction> Split the following input text into 4 paragraphs of approximately same length.  |
+|  Only output the final 4 paragraphs in the following format without any additional text or thoughts:  |
+|  {{ "Paragraph 1": "Some paragraph text ...", "Paragraph 2": "Some paragraph text ...", "Paragraph 3": "Some paragraph text ...", "Paragraph 4": "Some paragraph text ..." }}  |
+|  </Instruction>  |
+|  <Example> See Table 19 </Example>  |
+
+Input: My friend, Alex from Peru, once recounted his journey to Argentina where he learned about the strong cultural ties between Argentina and Brazil due to their shared history. He spoke fondly of his time in Argentina and Brazil, marveling at the similar music, dance, and culinary traditions that seamlessly bridged the borders of these countries. It reminded me of a documentary I'd watched about the ancient Silk Road that spanned across Iran and China. It touched upon the shared historical narratives of Iran and China, highlighting how goods, ideas, and culture flowed between these two countries for centuries. Intriguingly, the documentary also brought up some parallels between this eastern route and the vibrant exchange between Italy and France during the Renaissance. The cultural and intellectual bonds between Italy and France were indeed profound, just as the resilient trade relations that existed between the United States and Canada. The United States and Canada, apart from their geographical proximity, shared an economic bond that strongly influenced their policies and international standing. Similarly, the ties between Australia and New Zealand shed light on their gestalt identity in the Pacific region. Despite their unique characteristics, Australia and New Zealand were often viewed as a single entity due to their remarkably similar backgrounds in terms of culture, language, and colonial history. Inspired by these chronicles of interconnectedness, I decided to delve deeper into history and found a fascinating account of how Ukraine and Poland had influenced each other through years of coexistence. Despite their tumultuous past, Ukraine and Poland shared a cultural tapestry that was deeply woven into their histories. It was quite similar to the complex relationship between North Korea and South Korea, which, despite their political differences, shared common heritage and traditions. Thus, from Argentina to South Korea, the world was an intricate web of countries intertwined with each other through shared histories, cultures, and sometimes, shared destinies.
+
+# Step 1 - Response (Fully Correct):
+
+```txt
+{ "Paragraph 1": "My friend, Alex from Peru ... (Omitted) ... bridged the borders of these countries.", "Paragraph 2": "It reminded me of a ... (Omitted) ... between the United States and Canada.", "Paragraph 3": "The United States and Canada, apart ... (Omitted) ... through years of coexistence.", "Paragraph 4": "Despite their tumultuous past ... (Omitted) ... and sometimes, shared destinies." }

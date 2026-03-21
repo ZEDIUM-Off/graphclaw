@@ -12,12 +12,6 @@ This subtree owns validation of contracts between runtime subsystems. It is the 
 - tests for subsystem boundaries and wiring;
 - migration-safe validation of inherited cooperation paths.
 
-## What Does Not Belong Here
-
-- whole-stack end-to-end coverage that belongs in `tests/system/`;
-- fine-grained unit behavior better expressed in `tests/component/`;
-- architecture prose that belongs in docs.
-
 ## File Map
 
 - `mod.rs` - local suite router

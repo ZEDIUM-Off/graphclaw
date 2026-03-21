@@ -1,0 +1,28 @@
+to Polynomial Time. Proc. VLDB Endow., 3(1–2): 264–275.
+- [26] Feng, G.; Meng, X.; and Ammar, K. 2015. DISTINGER: A distributed graph data structure for massive dynamic graph processing. In Proceedings of the IEEE International Conference on Big Data, Big Data ’15, 1814–1822.
+- [27] Friggeri, A.; Chelius, G.; and Fleury, E. 2011. Triangles to Capture Social Cohesion. In Proceedings of the IEEE Third International Conference on Privacy, Security, Risk and Trust and IEEE Third International Conference on Social Computing, PASSAT/SocialCom ’11, 258–265.
+- [28] Friston, K. 2008. Hierarchical Models in the Brain. PLOS Computational Biology, 4(11): 1–24.
+- [29] Fu, Y.; Peng, H.; Sabharwal, A.; Clark, P.; and Khot, T. 2022. Complexity-Based Prompting for Multi-Step Reasoning. arXiv:2210.00720.
+- [30] Gianinazzi, L.; Fries, M.; Dryden, N.; Ben-Nun, T.; Besta, M.; and Hoefler, T. 2021. Learning Combinatorial Node Labeling Algorithms. arXiv:2106.03594.
+- [31] Gregor, D.; and Lumsdaine, A. 2005. Lifting Sequential Graph Algorithms for Distributed-Memory Parallel Computation. SIGPLAN Not., 40(10): 423–437.
+- [32] Gregor, D.; and Lumsdaine, A. 2005. The Parallel BGL: A generic library for distributed graph computations. Parallel Object-Oriented Scientific Computing (POOSC).
+- [33] Hamilton, W. L.; Ying, R.; and Leskovec, J. 2017. Representation Learning on Graphs: Methods and Applications. Bulletin of the Technical Committee on Data Engineering, 40(3): 52–74.
+- [34] Hartmann, M.; and Sonntag, D. 2022. A survey on improving NLP models with human explanations. In Proceedings of the First Workshop on Learning with Natural Language Supervision, 40–47. Association for Computational Linguistics.
+- [35] Horváth, T.; Gärtner, T.; and Wrobel, S. 2004. Cyclic Pattern Kernels for Predictive Graph Mining. In Proceedings of the Tenth ACM SIGKDD International Conference on Knowledge Discovery and Data Mining, KDD ’04, 158–167.
+- [36] Huang, W.; Abbeel, P.; Pathak, D.; and Mordatch, I. 2022. Language Models as Zero-Shot Planners: Extracting Actionable Knowledge for Embodied Agents. In Proceedings of the 39th International Conference on Machine Learning, volume 162 of Proceedings of Machine Learning Research, 9118–9147. PMLR.
+- [37] Huang, W.; Xia, F.; Xiao, T.; Chan, H.; Liang, J.; Florence, P.; Zeng, A.; Tompson, J.; Mordatch, I.; Chebotar, Y.; Sermanet, P.; Brown, N.; Jackson, T.; Luu, L.; Levine, S.; Hausman, K.; and Ichter, B. 2022. Inner Monologue: Embodied Reasoning through Planning with Language Models. arXiv:2207.05608.
+- [38] Jiang, C.; Coenen, F.; and Zito, M. 2013. A survey of frequent subgraph mining algorithms. The Knowledge Engineering Review, 28(1): 75–105.
+- [39] Kim, G.; Baldi, P.; and McAleer, S. 2023. Language Models can Solve Computer Tasks. arXiv:2303.17491.
+- [40] Lertvittayakumjorn, P.; and Toni, F. 2021. Explanation-Based Human Debugging of NLP Models: A Survey. Transactions of the Association for Computational Linguistics, 9: 1508–1528.
+- [41] Lester, B.; Al-Rfou, R.; and Constant, N. 2021. The Power of Scale for Parameter-Efficient Prompt Tuning. In Proceedings of the Conference on Empirical Methods in Natural Language Processing, EMNLP ’21, 3045–3059. Association for Computational Linguistics.
+- [42] Li, X. L.; and Liang, P. 2021. Prefix-Tuning: Optimizing Continuous Prompts for Generation. arXiv:2101.00190.
+- [43] Long, J. 2023. Large Language Model Guided Tree-of-Thought. arXiv:2305.08291.
+- [44] Lumsdaine, A.; Gregor, D.; Hendrickson, B.; and Berry, J. 2007. Challenges in Parallel Graph Processing. Parallel Processing Letters, 17(1): 5–20.
+- [45] Madaan, A.; Tandon, N.; Gupta, P.; Hallinan, S.; Gao, L.; Wiegreffe, S.; Alon, U.; Dziri, N.; Prabhumoye, S.; Yang, Y.; Gupta, S.; Majumder, B. P.; Hermann, K.; Welleck, S.; Yazdanbakhsh, A.; and Clark, P. 2023. Self-Refine: Iterative Refinement with Self-Feedback. arXiv:2303.17651.
+- [46] Malewicz, G.; Austern, M. H.; Bik, A. J.; Dehnert, J. C.; Horn, I.; Leiser, N.; and Czajkowski, G. 2010. Pregel: A System for Large-Scale Graph Processing. In Proceedings of the International Conference on Management of Data, SIGMOD ’10, 135–146. ACM.
+- [47] Ning, X.; Lin, Z.; Zhou, Z.; Wang, Z.; Yang, H.; and Wang, Y. 2023. Skeleton-of-Thought: Large Language Models Can Do Parallel Decoding. arXiv:2307.15337.
+- [48] Nye, M.; Andreassen, A. J.; Gur-Ari, G.; Michalewski, H.; Austin, J.; Bieber, D.; Dohan, D.; Lewkowycz, A.; Bosma, M.; Luan, D.; Sutton, C.; and Odena, A. 2021. Show Your Work: Scratchpads for Intermediate Computation with Language Models. arXiv:2112.00114.
+- [49] Paul, D.; Ismayilzada, M.; Peyrard, M.; Borges, B.; Bosselut, A.; West, R.; and Faltings, B. 2023. REFINER: Reasoning Feedback on Intermediate Representations. arXiv:2304.01904.
+- [50] Prat-Pérez, A.; Dominguez-Sal, D.; Brunat, J. M.; and Larriba-Pey, J.-L. 2012. Shaping Communities out of Triangles. In Proceedings of the 21st ACM International Conference on Information and Knowledge Management, CIKM ’12, 1677–1681.
+- [51] Qiao, S.; Ou, Y.; Zhang, N.; Chen, X.; Yao, Y.; Deng, S.; Tan, C.; Huang, F.; and Chen, H. 2023. Reasoning with Language Model Prompting: A Survey. In Proceedings of the 61st Annual Meeting of the Association for Computational Linguistics, ACL ’23, 5368–5393. Association for Computational Linguistics.
+- [52] qrdlgit. 2023. graph-of-thoughts Repository. https://github.com/qrdlgit/graph-of-thoughts. Accessed: 2023-10-11.

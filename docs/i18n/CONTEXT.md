@@ -10,12 +10,6 @@ This subtree governs documentation localization: how translated docs are organiz
 - translated documentation retained from the inherited baseline;
 - language-specific navigation and parity notes.
 
-## What Does Not Belong Here
-
-- root English documentation ownership rules repeated verbatim across translations;
-- product behavior changes that should be documented in the source-language page first;
-- casual deletion of translated material as a branding cleanup shortcut.
-
 ## File Map
 
 - `README.md` - i18n framing and localization entrypoint

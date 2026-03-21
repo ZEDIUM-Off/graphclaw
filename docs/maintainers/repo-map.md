@@ -141,7 +141,7 @@ The architecture documentation now distinguishes:
 - **`View`**: runtime-only, transient exploration surface;
 - **`ResolvedSet`**: derived resolution artifact, not the canonical definition.
 
-This vocabulary pivot is documented in [`docs/architecture/concepts/views-and-sets.md`](../architecture/views-and-sets.md), [`docs/architecture/playground/set-system-spec-v0.md`](../architecture/set-system-spec-v0.md), and routed through [`docs/architecture/concepts/glossary.md`](../architecture/glossary.md).
+This vocabulary pivot is documented in [`docs/architecture/concepts/views-and-sets.md`](../architecture/concepts/views-and-sets.md), [`docs/architecture/concepts/set.md`](../architecture/concepts/set.md), [`docs/architecture/concepts/view.md`](../architecture/concepts/view.md), [`docs/architecture/concepts/packability.md`](../architecture/concepts/packability.md), [`docs/architecture/playground/set-system-spec-v0.md`](../architecture/playground/set-system-spec-v0.md), and routed through [`docs/architecture/concepts/glossary.md`](../architecture/concepts/glossary.md).
 
 The current code (`crates/views/`, `src/gateway/playground.rs`, `web/src/`) still uses the pre-revision `ViewTemplate` / `ResolvedView` / `ViewsService` naming. A future code migration plan will align those types. Until then, treat the code-level `View*` names as implementation aliases for the `Set` concepts defined in the architecture docs.
 

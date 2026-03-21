@@ -10,12 +10,6 @@ This subtree documents how to operate, troubleshoot, and deploy the current runt
 - troubleshooting guidance and resource-limit notes;
 - operator playbooks for runtime support and proxy/network setup.
 
-## What Does Not Belong Here
-
-- speculative future architecture or roadmap content;
-- setup instructions for third-party integrations that belong in `docs/setup-guides/`;
-- implementation-level debugging notes that belong with source code.
-
 ## File Map
 
 - `README.md` - operations docs entrypoint

@@ -11,12 +11,6 @@ This subtree owns frontend-facing contract types for the current gateway surface
 - shared request and response types that mirror real runtime payloads;
 - dependency-light contract types used across hooks, pages, and transport helpers.
 
-## What Does Not Belong Here
-
-- speculative future GraphClaw payloads;
-- purely view-local aliases better kept next to a specific page or component;
-- canonical concept definitions that belong in `docs/architecture/`.
-
 ## File Map
 
 - `api.ts` - typed request/response shapes used across pages, hooks, and transport helpers

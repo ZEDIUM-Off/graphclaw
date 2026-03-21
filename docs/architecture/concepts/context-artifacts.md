@@ -20,6 +20,27 @@ GraphClaw needs clearer artifact boundaries so future work can answer:
 
 Without that separation, context creation remains implicit and difficult to interface cleanly.
 
+## Reference Anchors
+
+This document is not the canonical source for every concept it names, but it should still be read against explicit local references:
+
+- graph theory reference: [`../../../.agents/skills/graphclaw/main_graphes/markdown.md`](../../../.agents/skills/graphclaw/main_graphes/markdown.md)
+- mono-agent `Graph of Thoughts` reference: [`../../../.agents/skills/graphclaw/graph-of-thought/markdown.md`](../../../.agents/skills/graphclaw/graph-of-thought/markdown.md)
+
+The most relevant local graph-theory pages here are:
+
+- paths and shortest paths: [`page-22`](../../../.agents/skills/graphclaw/main_graphes/pages/page-22/markdown.md), [`page-25`](../../../.agents/skills/graphclaw/main_graphes/pages/page-25/markdown.md)
+- connectivity and strongly connected components: [`page-37`](../../../.agents/skills/graphclaw/main_graphes/pages/page-37/markdown.md), [`page-38`](../../../.agents/skills/graphclaw/main_graphes/pages/page-38/markdown.md)
+- cuts, articulation, Menger: [`page-44`](../../../.agents/skills/graphclaw/main_graphes/pages/page-44/markdown.md), [`page-46`](../../../.agents/skills/graphclaw/main_graphes/pages/page-46/markdown.md), [`page-49`](../../../.agents/skills/graphclaw/main_graphes/pages/page-49/markdown.md)
+- ranking intuition through PageRank: [`page-87`](../../../.agents/skills/graphclaw/main_graphes/pages/page-87/markdown.md)
+
+The most relevant GoT sections here are:
+
+- section 3.1 for reasoning as a directed thought graph;
+- section 3.2 for `Generate`, `Aggregate`, and refinement transformations;
+- section 3.3 for scoring and ranking;
+- section 4.5 for the distinction between `Graph of Operations` and `Graph Reasoning State`.
+
 ## Artifact Chain
 
 The conceptual chain should be documented as:
@@ -27,9 +48,9 @@ The conceptual chain should be documented as:
 1. `TaskIntent` frames the minimum structured task;
 2. `StrategyResolution` selects the governing strategies for the turn;
 3. one or more `View` objects are built or refined from resolved Sets;
-4. `ThinkingContext` uses those Views and plans to explore, compare, and arbitrate;
+4. a governed NL projection derives a `ThinkingContext` from the active `View` or a selected part of it;
 5. a packable subgraph is derived from the candidate working sets;
-6. the final `ContextPack` is budgeted and assembled;
+6. a governed NL projection derives the final `ContextPack` from the retained response-side `View`;
 7. `ResolutionTrace` records how the result was chosen;
 8. `ContextMutationProposal` can request changes to what remains visible or packable for later turns.
 
@@ -71,7 +92,8 @@ A `View` is the reusable logical runtime working set. It is useful for navigatio
 
 It can exist before anything is ready for model injection.
 
-For deeper View semantics, see [`views-and-sets.md`](views-and-sets.md).
+For deeper View semantics, see [`view.md`](view.md) and the family hub [`views-and-sets.md`](views-and-sets.md).
+For the current cross-concept framing around `ProjectionRegistry` and `NLProjection`, see [`projection-governance.md`](projection-governance.md).
 
 ## Planning Artifacts
 
@@ -92,6 +114,8 @@ These planning artifacts do not replace `ThinkingContext`, `ContextPack`, or `Re
 
 `ThinkingContext` is the temporary reflection context used before final response packing.
 
+In the current architecture reading, it should be understood as a natural-language projection derived from the active `View` for exploration work, not as the whole working subgraph itself.
+
 Its role is to:
 
 - explore candidate sets;
@@ -99,6 +123,11 @@ Its role is to:
 - estimate trade-offs;
 - consider summarization or degradation;
 - prepare proposals for what should survive into the final packed context.
+
+This reading is consistent with:
+
+- graph-theory use of paths, connectivity, and bounded working subgraphs;
+- GoT use of a thought graph whose outputs can trigger the next refinement of the active `View`.
 
 This should be documented as a system phase. It may use operations that resemble tools or backend calls, but it should not be reduced to an ordinary user-facing tool.
 
@@ -117,6 +146,8 @@ The packable subgraph is therefore a staging artifact between exploration and fi
 ## `ContextPack`
 
 The `ContextPack` is the final budgeted artifact retained for response generation.
+
+In the current architecture reading, it should be understood as a natural-language projection derived from the retained response-side `View`, not as the graph schema and not as the whole working graph.
 
 It should represent what the runtime is actually willing to expose to the model after:
 
@@ -168,6 +199,8 @@ The cost of exploring or evaluating candidate graph material during `ThinkingCon
 
 This can be larger or broader than what eventually reaches the model.
 
+This layer maps naturally to the graph-theory intuition of bounded exploration over paths, neighborhoods, and connected zones.
+
 ### Packable Subgraph Cost
 
 The cost of a bounded candidate projection that is close enough to the final pack to support policy and budget decisions.
@@ -179,6 +212,8 @@ This is narrower than unconstrained exploration.
 The cost of what the model actually receives in the `ContextPack`.
 
 This is the budget that must be treated as hard or governing for response generation.
+
+This separation also matches the GoT reading where scoring and ranking of intermediate thoughts do not automatically imply final exposure to the model.
 
 ## Artifact Ownership Boundaries
 

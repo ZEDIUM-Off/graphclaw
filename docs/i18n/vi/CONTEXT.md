@@ -10,12 +10,6 @@ This subtree holds Vietnamese localized documentation within the `docs/i18n/` st
 - localized navigation such as `README.md` and `SUMMARY.md`;
 - language-specific organization for translated security, reference, operations, and setup pages.
 
-## What Does Not Belong Here
-
-- English-source rewrites that should happen in the source docs first;
-- migration claims not reflected in the implementation or in the source-language page;
-- repo-wide cleanup that treats this subtree as disposable.
-
 ## File Map
 
 - `README.md` and `SUMMARY.md` - Vietnamese navigation and table-of-contents material

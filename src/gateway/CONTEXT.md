@@ -12,12 +12,6 @@ This subtree owns external transport contracts. It may later expose GraphClaw-fa
 - request and response contract ownership;
 - delivery of the current web-facing runtime surface.
 
-## What Does Not Belong Here
-
-- stable GraphClaw concept definitions that belong in `docs/architecture/`;
-- internal context-resolution policy that belongs in the future owning runtime seam;
-- web application implementation that belongs in `web/`.
-
 ## File / Folder Map
 
 - `src/gateway/mod.rs` - gateway entry and shared glue

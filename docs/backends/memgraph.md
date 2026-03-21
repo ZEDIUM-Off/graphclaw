@@ -17,7 +17,10 @@ It does not make GraphClaw "a Memgraph project." GraphClaw remains defined by it
 For the concept model behind those terms, read:
 
 - [`../architecture/graph-context-engine.md`](../architecture/graph-context-engine.md)
-- [`../architecture/views-and-sets.md`](../architecture/views-and-sets.md)
+- [`../architecture/concepts/views-and-sets.md`](../architecture/concepts/views-and-sets.md)
+- [`../architecture/concepts/set.md`](../architecture/concepts/set.md)
+- [`../architecture/concepts/view.md`](../architecture/concepts/view.md)
+- [`../architecture/concepts/packability.md`](../architecture/concepts/packability.md)
 - [`../architecture/context-artifacts.md`](../architecture/context-artifacts.md)
 - [`../architecture/future-integration-seams.md`](../architecture/future-integration-seams.md)
 

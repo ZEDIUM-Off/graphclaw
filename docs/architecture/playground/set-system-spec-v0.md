@@ -6,7 +6,7 @@ This document is the **first documentary pass** on the Set concept for GraphClaw
 
 This spec supersedes the earlier `view-system-spec-v0.md` following the vocabulary pivot in Revision v0.1. The current playground code still uses `ViewTemplate` / `ResolvedView` naming; a future code migration will align those types with this specification.
 
-For the broader operational semantics of Set and View (governed perimeter, packability, lazy vs materialized), see [views-and-sets.md](../concepts/views-and-sets.md). For terminology routing, see [glossary.md](../concepts/glossary.md).
+For the broader operational semantics of the `Set` / `View` family (governed perimeter, packability, lazy vs materialized), see [views-and-sets.md](../concepts/views-and-sets.md), [set.md](../concepts/set.md), [view.md](../concepts/view.md), and [packability.md](../concepts/packability.md). For terminology routing, see [glossary.md](../concepts/glossary.md).
 
 ## Why This Document Exists
 
@@ -329,6 +329,9 @@ The current playground implementation (`crates/views/`, `src/gateway/playground.
 
 ## References
 
-- [views-and-sets.md](../concepts/views-and-sets.md) -- operational semantics of Set, View, packability, lazy vs materialised.
+- [views-and-sets.md](../concepts/views-and-sets.md) -- routing hub for the Set / View family.
+- [set.md](../concepts/set.md) -- canonical Set semantics.
+- [view.md](../concepts/view.md) -- canonical View semantics.
+- [packability.md](../concepts/packability.md) -- canonical packability semantics.
 - [glossary.md](../concepts/glossary.md) -- terminology routing index.
 - [graph-context-engine.md](../concepts/graph-context-engine.md) -- target concept model (Set System v0 is a subset for the playground, not the full engine).

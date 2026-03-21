@@ -11,12 +11,6 @@ This area is intentionally narrow. It should document a retrieval seam, not masq
 - narrowly scoped RAG-facing entrypoints;
 - thin glue that clearly belongs neither in `src/agent/` nor in `src/memory/`.
 
-## What Does Not Belong Here
-
-- a generic dumping ground for context-engine work;
-- backend adapter documentation;
-- broad memory or agent-loop ownership that belongs elsewhere.
-
 ## File / Folder Map
 
 - `src/rag/mod.rs` - current RAG-facing surface

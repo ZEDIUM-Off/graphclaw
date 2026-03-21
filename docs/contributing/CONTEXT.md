@@ -11,12 +11,6 @@ This subtree documents how people change the repository: contribution rules, rev
 - docs-writing contracts and change playbooks;
 - release-process guidance that explains how the inherited system is operated.
 
-## What Does Not Belong Here
-
-- product architecture or runtime behavior reference;
-- board-specific setup that belongs in `docs/hardware/`;
-- exact command or API reference that belongs in `docs/reference/`.
-
 ## File Map
 
 - `README.md` - contributing entrypoint

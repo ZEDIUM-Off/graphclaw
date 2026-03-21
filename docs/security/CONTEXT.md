@@ -10,12 +10,6 @@ This subtree documents the repository's security posture: current hardening and 
 - audit logging and sandboxing documentation;
 - clearly labeled roadmap material for planned security work.
 
-## What Does Not Belong Here
-
-- vague reassurance language that hides limitations;
-- general setup or ops walkthroughs better owned elsewhere;
-- future protections described as if already enforced.
-
 ## File Map
 
 - `README.md` - security docs entrypoint

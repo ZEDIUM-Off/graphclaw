@@ -12,12 +12,6 @@ This subtree owns the current browser-facing operator surface for the inherited 
 - browser-facing transport glue for the current gateway UI;
 - truthful presentation of current runtime capabilities to operators.
 
-## What Does Not Belong Here
-
-- backend contract claims that are not implemented in `src/gateway/`;
-- stable GraphClaw concept definitions that belong in `docs/architecture/`;
-- source-of-truth transport semantics that belong in runtime docs and code.
-
 ## File Map
 
 - `package.json` - frontend package manifest

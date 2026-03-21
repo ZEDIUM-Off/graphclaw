@@ -16,7 +16,15 @@ Canonical concept sources, concept-governance rules, terminology routing, and co
 
 - `definition-governance.md` - single-definition policy and canonical registry
 - `graph-context-engine.md` - top-level engine framing
-- `views-and-sets.md` - canonical `Set`, `ResolvedSet`, and `View` semantics
+- `views-and-sets.md` - routing hub for the `Set` / `View` / packability family
+- `set.md` - canonical `Set` semantics
+- `resolved-set.md` - canonical `ResolvedSet` semantics
+- `view.md` - canonical `View` semantics
+- `packability.md` - canonical packability family semantics
+- `graph-governed-agentics.md` - routing hub for graph theory, GoT, projection governance, and mono-agent loop framing
+- `projection-governance.md` - `ProjectionRegistry`, `NLProjection`, and projectability rules
+- `got.md` - mono-agent Graph-of-Thought framing
+- `agent-loop.md` - mono-agent loop framing
 - `context-artifacts.md` - artifact and planning distinctions
 - `glossary.md` - terminology routing index
 - `conceptual-maturity-tracker.md` - maturity map
@@ -25,4 +33,5 @@ Canonical concept sources, concept-governance rules, terminology routing, and co
 
 - if the task is about what a concept means, start here;
 - if the task is about where a concept should live canonically, start with `definition-governance.md`;
-- if the task is about Sets, Views, or packability, start with `views-and-sets.md`.
+- if the task is about Sets, Views, or packability, start with `views-and-sets.md`, then move to `set.md`, `view.md`, or `packability.md`.
+- if the task is about graph-theory grounding, `ProjectionRegistry`, GoT, or mono-agent loop orchestration, start with `graph-governed-agentics.md`, then move to `projection-governance.md`, `got.md`, or `agent-loop.md`.

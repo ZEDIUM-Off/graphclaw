@@ -9,12 +9,6 @@ This subtree is the command reference for the current CLI surface. It should let
 - command-level reference for the current CLI;
 - localized command-reference variants that mirror the implemented command surface.
 
-## What Does Not Belong Here
-
-- installation walkthroughs and operational tutorials;
-- speculative command renames for future GraphClaw identity;
-- feature marketing or migration narrative.
-
 ## File Map
 
 - `commands-reference.md` - canonical command reference

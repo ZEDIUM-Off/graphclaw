@@ -12,12 +12,6 @@ This subtree owns the fastest validation layer for precise runtime contracts. It
 - schema, config, security, and regression guards;
 - fast validation for explicit low-level contracts.
 
-## What Does Not Belong Here
-
-- orchestration-heavy scenarios that belong in `tests/integration/`;
-- end-to-end runtime confidence that belongs in `tests/system/`;
-- architecture prose that belongs in docs.
-
 ## File Map
 
 - `mod.rs` - local module router

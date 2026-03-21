@@ -12,12 +12,6 @@ This subtree owns page-level composition for the current operator dashboard. It 
 - page-specific loading, rendering, and interaction behavior;
 - truthful presentation of current gateway-backed operations.
 
-## What Does Not Belong Here
-
-- shared view logic that belongs in `components/`, `hooks/`, or `lib/`;
-- speculative route semantics not mounted in `App.tsx`;
-- canonical GraphClaw concept definitions that belong in `docs/architecture/`.
-
 ## File Map
 
 - `Dashboard.tsx` - default landing page

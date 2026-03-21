@@ -10,12 +10,6 @@ This subtree is an inherited Vietnamese documentation tree retained from the bas
 - broad language-specific navigation retained for continuity;
 - parity or cleanup work explicitly scoped to the legacy Vietnamese tree.
 
-## What Does Not Belong Here
-
-- casual repo-wide cleanup that removes or rewrites this subtree by default;
-- English-source documentation ownership;
-- migration claims that are not reflected in source docs or implementation.
-
 ## File Map
 
 - `README.md` - inherited Vietnamese docs entrypoint

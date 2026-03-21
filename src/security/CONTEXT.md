@@ -12,12 +12,6 @@ This subtree owns safety constraints for the current runtime. Future GraphClaw c
 - secret protection and audit support;
 - sandbox and operator-control security flows.
 
-## What Does Not Belong Here
-
-- generic context-resolution logic;
-- provider integration detail that belongs in `src/providers/`;
-- transport contract ownership that belongs in `src/gateway/`.
-
 ## File / Folder Map
 
 - `src/security/mod.rs` - module entry and shared exports

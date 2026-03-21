@@ -8,6 +8,9 @@ Pour le vocabulaire stable et le premier slice playground, les sources normative
 
 - `graph-context-engine.md`
 - `views-and-sets.md`
+- `set.md`
+- `view.md`
+- `packability.md`
 - `view-system-spec-v0.md`
 
 Cette fiche ne doit donc pas etre lue comme la source principale pour le cycle de vie v0 ni pour le nommage final de l'artefact d'export.

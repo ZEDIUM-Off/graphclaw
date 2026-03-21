@@ -309,7 +309,9 @@ This slice is an orientation artifact, not an implementation claim.
 
 ## Related References
 
-- `views-and-sets.md`
-- `context-artifacts.md`
-- `future-integration-seams.md`
-- `../backends/memgraph.md`
+- [`../concepts/set.md`](../concepts/set.md) for governed set matter and composition
+- [`../concepts/view.md`](../concepts/view.md) for runtime working-subgraph semantics
+- [`../concepts/packability.md`](../concepts/packability.md) for packable-subgraph distinctions
+- [`../concepts/context-artifacts.md`](../concepts/context-artifacts.md) for artifact boundaries
+- [`../migration/future-integration-seams.md`](../migration/future-integration-seams.md) for seam placement
+- [`../../backends/memgraph.md`](../../backends/memgraph.md) for backend capability mapping

@@ -2,23 +2,15 @@
 
 ## Local Purpose
 
-This subtree holds the stable conceptual architecture for GraphClaw. It defines the target vocabulary, invariants, and logical runtime model that should remain meaningful even while the inherited implementation changes.
+This subtree holds the architecture documentation for GraphClaw. It routes readers to the right documentation family for concepts, migration framing, interfaces, runtime logic, playground specs, and dated snapshots.
 
 ## What Belongs Here
 
 - Graph Context Engine concepts and invariants;
 - canonical-definition governance and concept-source routing;
-- Graph Engine framing as governed context resolution plus strategy resolution;
 - canonical concept sources and shared terminology routing;
-- variable strategy families for reflection, exploration, packing, and orchestration;
-- explicit runtime planning and trace artifacts such as task intent, strategy resolution, and bounded execution plans;
-- architecture-level references that explain the target model without claiming it is already implemented.
-
-## What Does Not Belong Here
-
-- source-level implementation notes that belong next to code;
-- backend-specific operational detail that belongs in `docs/backends/`;
-- speculative code plans written as if already approved runtime work.
+- migration-facing architecture references;
+- runtime, interface, playground, and snapshot docs that belong to architecture documentation.
 
 ## File Map
 
@@ -39,7 +31,7 @@ This subtree holds the stable conceptual architecture for GraphClaw. It defines 
 - bounded playground specifications belong in `playground/`
 - dated alignment notes belong in `snapshots/`
 - backend capability mapping belongs in `docs/backends/`
-- repo and subtree ownership boundaries belong in the nearest `CONTEXT.md` files
+- repo-wide doc routing belongs in parent `docs/CONTEXT.md`
 
 ## Mermaid Convention
 
@@ -50,7 +42,7 @@ Architecture docs in this subtree use Mermaid only to clarify routing, concept b
 - use dotted arrows for future seam placement or coexistence targets that are not yet implemented;
 - include explicit `current`, `target`, or `future` wording where omission could blur repository truth.
 
-These diagrams must not imply that the target Graph Context Engine already exists in runtime code.
+These diagrams must not imply that a documentation relationship is the same thing as an implemented runtime relationship.
 
 ## Routing Diagram
 
@@ -80,30 +72,15 @@ flowchart LR
     B --> D
 ```
 
-## References
-
-- `docs/README.md` - top-level docs routing
-- `README.md` - repo identity and migration framing
-- `AGENTS.md` - repo-wide rules and vocabulary expectations
-
-## Current Inherited State
-
-The current runtime still uses inherited `zeroclaw` technical surfaces. This subtree does not override that truth. It explains the target architecture the repo is moving toward, including variable strategy selection and modular orchestration as migration-facing concepts rather than code facts.
-
-## GraphClaw Migration Relationship
-
-This area should make the migration legible before the runtime is fully reworked. It exists to stabilize meaning and reduce architecture drift across docs, code discussions, and future implementation seams.
-
 ## Cautions
 
-- do not describe target concepts as if they already exist in runtime code
-- do not let backend details redefine GraphClaw business concepts
-- do not collapse declarative strategy definitions into hidden runtime behavior when documenting target seams
-- do not duplicate subtree boundary guidance that belongs in local `CONTEXT.md` files
+- do not redefine a concept here when its canonical source lives under `concepts/`
+- do not move backend explanation into architecture docs when it belongs in `docs/backends/`
+- do not duplicate child-directory routing that belongs in local `CONTEXT.md` files
 
 ## Agent Workflow
 
 1. Read this file before editing conceptual architecture docs in this subtree.
 2. Move to the nearest child `CONTEXT.md` before editing inside `concepts/`, `migration/`, `interfaces/`, `runtime/`, `playground/`, or `snapshots/`.
-3. Keep definitions backend-agnostic unless a backend reference is explicitly required.
-4. Update linked routing docs when a new architecture reference is added here or when new first-class concept families change the expected reading path.
+3. Keep this file focused on architecture-doc structure and branch routing.
+4. Update linked routing docs when a new architecture-doc family changes the expected reading path.

@@ -8,54 +8,61 @@ Use this index to find the right source quickly, then read the linked document i
 
 ## Core Context Terms
 
-| Term | Canonical source |
-| --- | --- |
-| `Set` | [`views-and-sets.md#set`](views-and-sets.md#set) |
-| `ResolvedSet` | [`views-and-sets.md#resolvedset`](views-and-sets.md#resolvedset) |
-| `View` | [`views-and-sets.md#view`](views-and-sets.md#view) |
-| `Packable Subgraph` | [`views-and-sets.md#packable-subgraph`](views-and-sets.md#packable-subgraph) |
-| `Packability` | [`views-and-sets.md#packability`](views-and-sets.md#packability) |
-| `Bounded Complement` | [`views-and-sets.md#bounded-complement`](views-and-sets.md#bounded-complement) |
-| `Condensation` | [`views-and-sets.md#condensation`](views-and-sets.md#condensation) |
-| `Projection Into A Packable Subgraph` | [`views-and-sets.md#projection-into-a-packable-subgraph`](views-and-sets.md#projection-into-a-packable-subgraph) |
-| `SessionWindow` | [`session-window-interface.md`](../interfaces/session-window-interface.md) |
-| `ThinkingContext` | [`graph-context-engine.md#thinkingcontext`](graph-context-engine.md#thinkingcontext) |
-| `ContextPack` | [`context-pack-interface.md`](../interfaces/context-pack-interface.md) |
-| `ContextMutationProposal` | [`graph-context-engine.md#contextmutationproposal`](graph-context-engine.md#contextmutationproposal) |
-| `ResolutionTrace` | [`graph-context-engine.md#resolutiontrace`](graph-context-engine.md#resolutiontrace) |
-| `TaskIntent` | [`graph-context-engine.md#taskintent`](graph-context-engine.md#taskintent) |
-| `StrategyResolution` | [`strategy-resolver-interface.md`](../interfaces/strategy-resolver-interface.md) |
-| `ReflectionPlan` | [`context-artifacts.md`](context-artifacts.md) |
-| `ExplorationPlan` | [`context-artifacts.md`](context-artifacts.md) |
-| `ContextEditPlan` | [`context-artifacts.md`](context-artifacts.md) |
-| `MutationGuard` | [`mutation-guard-interface.md`](../interfaces/mutation-guard-interface.md) |
-| `OrchestrationPlan` | [`context-artifacts.md`](context-artifacts.md) |
+
+| Term                                  | Canonical source                                                                                     |
+| ------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| `Set`                                 | `[set.md](set.md)`                                                                                   |
+| `ResolvedSet`                         | `[resolved-set.md](resolved-set.md)`                                                                 |
+| `View`                                | `[view.md](view.md)`                                                                                 |
+| `Packable Subgraph`                   | `[packability.md](packability.md)`                                                                   |
+| `Packability`                         | `[packability.md](packability.md)`                                                                   |
+| `Bounded Complement`                  | `[packability.md](packability.md)`                                                                   |
+| `Condensation`                        | `[packability.md](packability.md)`                                                                   |
+| `Projection Into A Packable Subgraph` | `[packability.md](packability.md)`                                                                   |
+| `SessionWindow`                       | `[session-window-interface.md](../interfaces/session-window-interface.md)`                           |
+| `ThinkingContext`                     | `[graph-context-engine.md#thinkingcontext](graph-context-engine.md#thinkingcontext)`                 |
+| `ContextPack`                         | `[context-pack-interface.md](../interfaces/context-pack-interface.md)`                               |
+| `ContextMutationProposal`             | `[graph-context-engine.md#contextmutationproposal](graph-context-engine.md#contextmutationproposal)` |
+| `ResolutionTrace`                     | `[graph-context-engine.md#resolutiontrace](graph-context-engine.md#resolutiontrace)`                 |
+| `TaskIntent`                          | `[graph-context-engine.md#taskintent](graph-context-engine.md#taskintent)`                           |
+| `StrategyResolution`                  | `[strategy-resolver-interface.md](../interfaces/strategy-resolver-interface.md)`                     |
+| `ReflectionPlan`                      | `[context-artifacts.md](context-artifacts.md)`                                                       |
+| `ExplorationPlan`                     | `[context-artifacts.md](context-artifacts.md)`                                                       |
+| `ContextEditPlan`                     | `[context-artifacts.md](context-artifacts.md)`                                                       |
+| `MutationGuard`                       | `[mutation-guard-interface.md](../interfaces/mutation-guard-interface.md)`                           |
+| `OrchestrationPlan`                   | `[context-artifacts.md](context-artifacts.md)`                                                       |
+
 
 ## Strategy Terms
 
-| Term | Canonical source |
-| --- | --- |
-| `ReflectionStrategyDefinition` | [`graph-context-engine.md#strategy-families`](graph-context-engine.md#strategy-families) |
-| `ExplorationStrategyDefinition` | [`graph-context-engine.md#strategy-families`](graph-context-engine.md#strategy-families) |
-| `PackingStrategyDefinition` | [`graph-context-engine.md#strategy-families`](graph-context-engine.md#strategy-families) |
-| `OrchestrationStrategyDefinition` | [`graph-context-engine.md#strategy-families`](graph-context-engine.md#strategy-families) |
-| `RoutingPolicy` | [`orchestration-policies-interface.md`](../interfaces/orchestration-policies-interface.md) |
-| `SpawnPolicy` | [`orchestration-policies-interface.md`](../interfaces/orchestration-policies-interface.md) |
-| `SubAgentRuntimePolicy` | [`orchestration-policies-interface.md`](../interfaces/orchestration-policies-interface.md) |
-| `AggregationPolicy` | [`orchestration-policies-interface.md`](../interfaces/orchestration-policies-interface.md) |
-| `HookBus` | [`hook-bus-interface.md`](../interfaces/hook-bus-interface.md) |
+
+| Term                              | Canonical source                                                                           |
+| --------------------------------- | ------------------------------------------------------------------------------------------ |
+| `ReflectionStrategyDefinition`    | `[graph-context-engine.md#strategy-families](graph-context-engine.md#strategy-families)`   |
+| `ExplorationStrategyDefinition`   | `[graph-context-engine.md#strategy-families](graph-context-engine.md#strategy-families)`   |
+| `PackingStrategyDefinition`       | `[graph-context-engine.md#strategy-families](graph-context-engine.md#strategy-families)`   |
+| `OrchestrationStrategyDefinition` | `[graph-context-engine.md#strategy-families](graph-context-engine.md#strategy-families)`   |
+| `RoutingPolicy`                   | `[orchestration-policies-interface.md](../interfaces/orchestration-policies-interface.md)` |
+| `SpawnPolicy`                     | `[orchestration-policies-interface.md](../interfaces/orchestration-policies-interface.md)` |
+| `SubAgentRuntimePolicy`           | `[orchestration-policies-interface.md](../interfaces/orchestration-policies-interface.md)` |
+| `AggregationPolicy`               | `[orchestration-policies-interface.md](../interfaces/orchestration-policies-interface.md)` |
+| `HookBus`                         | `[hook-bus-interface.md](../interfaces/hook-bus-interface.md)`                             |
+
 
 ## Agent Packaging Terms
 
-| Term | Canonical source |
-| --- | --- |
-| `AgentPackage` | [`graph-context-engine.md#agentpackage`](graph-context-engine.md#agentpackage) |
-| `AgentInstance` | [`graph-context-engine.md#agentpackage`](graph-context-engine.md#agentpackage) |
-| `AgentSession` | [`graph-context-engine.md#agentpackage`](graph-context-engine.md#agentpackage) |
-| `Bindings` | [`graph-context-engine.md#agentpackage`](graph-context-engine.md#agentpackage) |
+
+| Term            | Canonical source                                                               |
+| --------------- | ------------------------------------------------------------------------------ |
+| `AgentPackage`  | `[graph-context-engine.md#agentpackage](graph-context-engine.md#agentpackage)` |
+| `AgentInstance` | `[graph-context-engine.md#agentpackage](graph-context-engine.md#agentpackage)` |
+| `AgentSession`  | `[graph-context-engine.md#agentpackage](graph-context-engine.md#agentpackage)` |
+| `Bindings`      | `[graph-context-engine.md#agentpackage](graph-context-engine.md#agentpackage)` |
+
 
 ## Framing Rules
 
 - use this file as an index, not as a definition source;
-- if a term needs a new canonical home, update [`definition-governance.md`](definition-governance.md) first;
+- if a term needs a new canonical home, update `[definition-governance.md](definition-governance.md)` first;
 - if a non-canonical doc mentions a term, link the canonical source rather than redefining it.
+

@@ -19,6 +19,18 @@ This reference exists to:
 
 This document is the umbrella reference. Supporting documents under `docs/architecture/` break out the transition thesis, set semantics, artifact boundaries, turn logic, and future seams in more detail.
 
+## Reference Anchors
+
+This umbrella reference should be read against explicit local references when it relies on graph-theory or GoT intuitions:
+
+- graph theory reference: [`../../../.agents/skills/graphclaw/main_graphes/markdown.md`](../../../.agents/skills/graphclaw/main_graphes/markdown.md)
+- graph as relation, directed structure, and local adjacency: [`../../../.agents/skills/graphclaw/main_graphes/pages/page-5/markdown.md`](../../../.agents/skills/graphclaw/main_graphes/pages/page-5/markdown.md), [`../../../.agents/skills/graphclaw/main_graphes/pages/page-6/markdown.md`](../../../.agents/skills/graphclaw/main_graphes/pages/page-6/markdown.md)
+- paths, shortest paths, and bounded exploration: [`../../../.agents/skills/graphclaw/main_graphes/pages/page-22/markdown.md`](../../../.agents/skills/graphclaw/main_graphes/pages/page-22/markdown.md), [`../../../.agents/skills/graphclaw/main_graphes/pages/page-25/markdown.md`](../../../.agents/skills/graphclaw/main_graphes/pages/page-25/markdown.md)
+- connectivity, strongly connected components, cuts, articulation, Menger, and topological ordering: [`../../../.agents/skills/graphclaw/main_graphes/pages/page-37/markdown.md`](../../../.agents/skills/graphclaw/main_graphes/pages/page-37/markdown.md), [`../../../.agents/skills/graphclaw/main_graphes/pages/page-38/markdown.md`](../../../.agents/skills/graphclaw/main_graphes/pages/page-38/markdown.md), [`../../../.agents/skills/graphclaw/main_graphes/pages/page-44/markdown.md`](../../../.agents/skills/graphclaw/main_graphes/pages/page-44/markdown.md), [`../../../.agents/skills/graphclaw/main_graphes/pages/page-46/markdown.md`](../../../.agents/skills/graphclaw/main_graphes/pages/page-46/markdown.md), [`../../../.agents/skills/graphclaw/main_graphes/pages/page-49/markdown.md`](../../../.agents/skills/graphclaw/main_graphes/pages/page-49/markdown.md)
+- adjacency matrix and ranking intuition: [`../../../.agents/skills/graphclaw/main_graphes/pages/page-69/markdown.md`](../../../.agents/skills/graphclaw/main_graphes/pages/page-69/markdown.md), [`../../../.agents/skills/graphclaw/main_graphes/pages/page-87/markdown.md`](../../../.agents/skills/graphclaw/main_graphes/pages/page-87/markdown.md)
+- local GoT reference: [`../../../.agents/skills/graphclaw/graph-of-thought/markdown.md`](../../../.agents/skills/graphclaw/graph-of-thought/markdown.md)
+- especially GoT section 1, section 3.1, section 3.2, section 3.3, and section 4.5 in [`../../../.agents/skills/graphclaw/graph-of-thought/markdown.md`](../../../.agents/skills/graphclaw/graph-of-thought/markdown.md)
+
 ## Target Position
 
 GraphClaw is intended to become a `Graph Context Engine`.
@@ -35,8 +47,10 @@ In the newer GraphClaw reading, `Graph Engine` is best treated as shorthand for 
 That target should be read together with:
 
 - [`zero-to-graphclaw-transition.md`](../migration/zero-to-graphclaw-transition.md) for seam-first migration framing;
-- [`views-and-sets.md`](views-and-sets.md) for operational `Set` and `View` semantics;
+- [`views-and-sets.md`](views-and-sets.md) for the `Set` / `View` family hub;
+- [`set.md`](set.md), [`resolved-set.md`](resolved-set.md), and [`view.md`](view.md) for canonical `Set`, `ResolvedSet`, and `View` semantics;
 - [`context-artifacts.md`](context-artifacts.md) for artifact boundaries and budget layers;
+- [`projection-governance.md`](projection-governance.md), [`got.md`](got.md), and [`agent-loop.md`](agent-loop.md) for graph-governed agentics framing;
 - [`turn-runtime-logic.md`](../runtime/turn-runtime-logic.md) for logical turn phases;
 - [`future-integration-seams.md`](../migration/future-integration-seams.md) for future interface families.
 
@@ -109,7 +123,9 @@ The required order is semantics first, boundaries second, mechanisms third, impl
 
 Use the concept-specific canonical sources below instead of redefining those concepts in multiple architecture documents.
 
-- `Set`, `ResolvedSet`, `View`: [`views-and-sets.md`](views-and-sets.md)
+- `Set`: [`set.md`](set.md)
+- `ResolvedSet`: [`resolved-set.md`](resolved-set.md)
+- `View`: [`view.md`](view.md)
 - `SessionWindow`: [`session-window-interface.md`](../interfaces/session-window-interface.md)
 - `ContextPack`: [`context-pack-interface.md`](../interfaces/context-pack-interface.md)
 - `StrategyResolution`: [`strategy-resolver-interface.md`](../interfaces/strategy-resolver-interface.md)
@@ -124,6 +140,14 @@ The `ThinkingContext` is the temporary reflection context used to explore, compa
 In the target model, this phase is mandatory. It should not be documented as a hidden chain-of-thought contract or as a merely optional skill.
 
 It is better described as a system phase than as a standard tool.
+
+At the engine-boundary level, the current architecture reading is:
+
+- the active [`View`](view.md) remains the working subgraph;
+- a governed NL projection derives the `ThinkingContext` used for exploration work;
+- GoT-style reasoning may then generate, rank, refine, or aggregate thoughts before the next `View` is recomputed.
+
+For the more focused readings, see [`context-artifacts.md`](context-artifacts.md), [`projection-governance.md`](projection-governance.md), [`got.md`](got.md), and [`agent-loop.md`](agent-loop.md).
 
 ### `ContextPack`
 
@@ -224,7 +248,13 @@ The documentation model should treat these as business operations before backend
 - replacement by summary;
 - projection into a packable subgraph.
 
-For the fuller operational treatment of lazy versus materialized sets, referenced content, and packability, see [`views-and-sets.md`](views-and-sets.md).
+For the fuller operational treatment of the `Set` / `View` family and packability, see [`views-and-sets.md`](views-and-sets.md), [`set.md`](set.md), [`view.md`](view.md), and [`packability.md`](packability.md).
+
+The graph-theory anchors that matter most here are:
+
+- graph as a set-plus-relation object: [`../../../.agents/skills/graphclaw/main_graphes/pages/page-5/markdown.md`](../../../.agents/skills/graphclaw/main_graphes/pages/page-5/markdown.md)
+- local adjacency and successor/predecessor structure: [`../../../.agents/skills/graphclaw/main_graphes/pages/page-6/markdown.md`](../../../.agents/skills/graphclaw/main_graphes/pages/page-6/markdown.md)
+- subgraphs, paths, and bounded traversal: [`../../../.agents/skills/graphclaw/main_graphes/pages/page-22/markdown.md`](../../../.agents/skills/graphclaw/main_graphes/pages/page-22/markdown.md), [`../../../.agents/skills/graphclaw/main_graphes/pages/page-25/markdown.md`](../../../.agents/skills/graphclaw/main_graphes/pages/page-25/markdown.md), [`../../../.agents/skills/graphclaw/main_graphes/pages/page-37/markdown.md`](../../../.agents/skills/graphclaw/main_graphes/pages/page-37/markdown.md)
 
 The minimum meaning of the less obvious operators should stay fixed:
 
@@ -270,20 +300,34 @@ This is a runtime logic description, not a commitment to a specific class layout
 
 For a more explicit mapping onto current runtime seams such as `src/agent/prompt.rs`, `memory_loader.rs`, `loop_.rs`, and `dispatcher.rs`, see [`turn-runtime-logic.md`](../runtime/turn-runtime-logic.md).
 
+For the split architecture reading behind this sequence, also see:
+
+- [`agent-loop.md`](agent-loop.md) for the mono-agent loop;
+- [`got.md`](got.md) for graph-shaped thought evolution;
+- [`projection-governance.md`](projection-governance.md) for projectability and NL projection;
+- [`context-artifacts.md`](context-artifacts.md) for the artifact chain.
+
+The strongest local anchors for this pipeline are:
+
+- shortest-path and bounded exploration intuition: [`../../../.agents/skills/graphclaw/main_graphes/pages/page-25/markdown.md`](../../../.agents/skills/graphclaw/main_graphes/pages/page-25/markdown.md)
+- connectivity and strongly connected components: [`../../../.agents/skills/graphclaw/main_graphes/pages/page-37/markdown.md`](../../../.agents/skills/graphclaw/main_graphes/pages/page-37/markdown.md), [`../../../.agents/skills/graphclaw/main_graphes/pages/page-38/markdown.md`](../../../.agents/skills/graphclaw/main_graphes/pages/page-38/markdown.md)
+- cuts and Menger for preserving critical structure while narrowing context: [`../../../.agents/skills/graphclaw/main_graphes/pages/page-44/markdown.md`](../../../.agents/skills/graphclaw/main_graphes/pages/page-44/markdown.md), [`../../../.agents/skills/graphclaw/main_graphes/pages/page-46/markdown.md`](../../../.agents/skills/graphclaw/main_graphes/pages/page-46/markdown.md), [`../../../.agents/skills/graphclaw/main_graphes/pages/page-49/markdown.md`](../../../.agents/skills/graphclaw/main_graphes/pages/page-49/markdown.md)
+- GoT reasoning graph, transformations, and scoring: section 3.1, section 3.2, section 3.3, and section 4.5 in [`../../../.agents/skills/graphclaw/graph-of-thought/markdown.md`](../../../.agents/skills/graphclaw/graph-of-thought/markdown.md)
+
 ## Project Invariants
 
 These invariants should remain consistent across repository docs:
 
 1. The context engine is not the memory system.
-2. `Set` is the persisted governed object; `View` is runtime-only.
+2. `Set` is the governed graph-bounded abstraction; persisted `Set` objects are a primary form of that abstraction; `View` is runtime-only.
 3. A `Set` has 0 or N (N ≥ 2) homogeneous composition relations, never 1, never mixed types. Arity depends on the operation: n-ary for union/intersection, binary for difference/symmetric difference.
 4. `BOUNDED_BY` is reserved for `(:Agent:Runtime)-[:BOUNDED_BY]->(:Set)`.
 5. Definition relations and navigation/exposition relations between Sets are distinct.
-6. `View` objects are first-class runtime working sets.
+6. `View` objects are first-class runtime working subgraphs.
 7. Context cost is an explicit constraint.
 8. Strategy resolution precedes bounded reflection, exploration, and packing.
 9. Context reflection precedes final response packing.
-10. The final `ContextPack` is distinct from the temporary `ThinkingContext`.
+10. The final `ContextPack` is distinct from the temporary `ThinkingContext`, and neither should be confused with the underlying `View`.
 11. An `AgentPackage` is a versioned portable unit, not just a folder.
 12. Memgraph is a reference backend, not the GraphClaw business model.
 13. Directory-level docs should explain boundaries, not just contents.
@@ -318,7 +362,14 @@ Never reverse that order and let a backend procedure catalog define the GraphCla
 
 - [`zero-to-graphclaw-transition.md`](../migration/zero-to-graphclaw-transition.md)
 - [`views-and-sets.md`](views-and-sets.md)
+- [`set.md`](set.md)
+- [`resolved-set.md`](resolved-set.md)
+- [`view.md`](view.md)
+- [`packability.md`](packability.md)
 - [`context-artifacts.md`](context-artifacts.md)
+- [`projection-governance.md`](projection-governance.md)
+- [`got.md`](got.md)
+- [`agent-loop.md`](agent-loop.md)
 - [`turn-runtime-logic.md`](../runtime/turn-runtime-logic.md)
 - [`future-integration-seams.md`](../migration/future-integration-seams.md)
 - [`glossary.md`](glossary.md)

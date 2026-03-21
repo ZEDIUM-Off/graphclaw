@@ -12,12 +12,6 @@ This subtree owns the inherited Python package surface. It is maintained for com
 - Python-specific integrations and tool implementations;
 - compatibility-preserving package documentation.
 
-## What Does Not Belong Here
-
-- premature package renaming;
-- canonical GraphClaw concept definitions;
-- Rust runtime ownership or transport contracts.
-
 ## File Map
 
 - `__init__.py` - package surface

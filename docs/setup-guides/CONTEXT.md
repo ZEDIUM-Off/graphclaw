@@ -10,12 +10,6 @@ This subtree holds installation and service-specific setup instructions. It is w
 - install and uninstall guidance;
 - localized setup variants where the file structure already includes them.
 
-## What Does Not Belong Here
-
-- broad operations runbooks that assume a deployed system;
-- exact CLI reference tables;
-- future-state naming or setup flows that do not exist yet.
-
 ## File Map
 
 - `README.md` - setup-guides entrypoint

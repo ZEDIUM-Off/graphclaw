@@ -43,7 +43,7 @@ Use these anchors before editing:
 | documentation | [`docs/README.md`](docs/README.md), [`docs/CONTEXT.md`](docs/CONTEXT.md) |
 | concept model and stable vocabulary | [`docs/architecture/README.md`](docs/architecture/README.md), [`docs/architecture/concepts/definition-governance.md`](docs/architecture/concepts/definition-governance.md), [`docs/architecture/concepts/graph-context-engine.md`](docs/architecture/concepts/graph-context-engine.md), [`docs/architecture/concepts/glossary.md`](docs/architecture/concepts/glossary.md) |
 | migration thesis and future seams | [`docs/architecture/migration/zero-to-graphclaw-transition.md`](docs/architecture/migration/zero-to-graphclaw-transition.md), [`docs/architecture/migration/future-integration-seams.md`](docs/architecture/migration/future-integration-seams.md) |
-| views, sets, artifacts, and turn logic | [`docs/architecture/concepts/views-and-sets.md`](docs/architecture/concepts/views-and-sets.md), [`docs/architecture/concepts/context-artifacts.md`](docs/architecture/concepts/context-artifacts.md), [`docs/architecture/runtime/turn-runtime-logic.md`](docs/architecture/runtime/turn-runtime-logic.md) |
+| views, sets, packability, artifacts, and turn logic | [`docs/architecture/concepts/views-and-sets.md`](docs/architecture/concepts/views-and-sets.md), [`docs/architecture/concepts/set.md`](docs/architecture/concepts/set.md), [`docs/architecture/concepts/view.md`](docs/architecture/concepts/view.md), [`docs/architecture/concepts/packability.md`](docs/architecture/concepts/packability.md), [`docs/architecture/concepts/context-artifacts.md`](docs/architecture/concepts/context-artifacts.md), [`docs/architecture/runtime/turn-runtime-logic.md`](docs/architecture/runtime/turn-runtime-logic.md) |
 | backend capability mapping | [`docs/backends/README.md`](docs/backends/README.md), [`docs/backends/memgraph.md`](docs/backends/memgraph.md) |
 | contributor workflow | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
 | Rust runtime | [`src/CONTEXT.md`](src/CONTEXT.md) |
@@ -120,7 +120,9 @@ Therefore:
 
 Use canonical concept sources instead of redefining terms locally:
 
-- `Set`, `ResolvedSet`, `View`: [`docs/architecture/concepts/views-and-sets.md`](docs/architecture/concepts/views-and-sets.md)
+- `Set`: [`docs/architecture/concepts/set.md`](docs/architecture/concepts/set.md)
+- `ResolvedSet`: [`docs/architecture/concepts/resolved-set.md`](docs/architecture/concepts/resolved-set.md)
+- `View`: [`docs/architecture/concepts/view.md`](docs/architecture/concepts/view.md)
 - `SessionWindow`: [`docs/architecture/interfaces/session-window-interface.md`](docs/architecture/interfaces/session-window-interface.md)
 - `ContextPack`: [`docs/architecture/interfaces/context-pack-interface.md`](docs/architecture/interfaces/context-pack-interface.md)
 - `StrategyResolution`: [`docs/architecture/interfaces/strategy-resolver-interface.md`](docs/architecture/interfaces/strategy-resolver-interface.md)

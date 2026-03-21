@@ -11,12 +11,6 @@ This subtree runs the Memgraph graph database and Memgraph Lab as part of the Gr
 - environment files for Memgraph and Lab (`.memgraph.env`, `.memlab.env`);
 - local operational notes and routing to backend reference docs.
 
-## What Does Not Belong Here
-
-- GraphClaw concept definitions (those live in `docs/architecture/`);
-- adapter or runtime code that talks to Memgraph (that lives in `src/`, `crates/`, or `python/`);
-- redefinition of View, ContextPack, or other stable vocabulary.
-
 ## Key Files
 
 | File or path | Role |

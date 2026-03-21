@@ -10,12 +10,6 @@ This subtree documents the current configuration and integration surfaces expose
 - provider and channel reference tied to implemented behavior;
 - localized API/config reference variants that mirror current docs structure.
 
-## What Does Not Belong Here
-
-- aspirational API design for GraphClaw's future architecture;
-- operational playbooks or setup tutorials;
-- source-code implementation discussion better handled near `src/`.
-
 ## File Map
 
 - `config-reference.md` - canonical config reference

@@ -13,12 +13,6 @@ This subtree owns capability exposure and execution contracts. It is adjacent to
 - source-adjacent `*.map.json` slices for capability, action, and execution seams;
 - concrete tool execution behavior.
 
-## What Does Not Belong Here
-
-- turn orchestration policy that belongs in `src/agent/`;
-- runtime adapter implementation that belongs in `src/runtime/`;
-- stable context semantics that belong in `docs/architecture/`.
-
 ## File / Folder Map
 
 - `src/tools/mod.rs` - tool registry and module entry

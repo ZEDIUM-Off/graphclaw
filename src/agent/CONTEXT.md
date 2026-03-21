@@ -13,12 +13,6 @@ This subtree owns the current agent loop. It sits adjacent to the future Graph E
 - source-adjacent `*.map.json` slices for turn coordination, context exploration, and orchestration seams;
 - session-adjacent runtime flow for current agent execution.
 
-## What Does Not Belong Here
-
-- persistence backends and retrieval implementation details that belong in `src/memory/`;
-- execution-environment adapter logic that belongs in `src/runtime/`;
-- backend-agnostic concept definitions that belong in `docs/architecture/`.
-
 ## File / Folder Map
 
 - `src/agent/mod.rs` - module entry and public surface

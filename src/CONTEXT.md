@@ -13,12 +13,6 @@ This subtree is where most future GraphClaw runtime seams will eventually land, 
 - source-adjacent `*.map.json` graph slices that document likely runtime seams, artifact flows, and technical-map pictures for `src/`;
 - source-adjacent documentation that explains which subsystem owns which runtime concern.
 
-## What Does Not Belong Here
-
-- docs that present the target Graph Context Engine as already implemented here;
-- backend reference catalogs that belong in `docs/backends/`;
-- conceptual definitions that should stay stable in `docs/architecture/`.
-
 ## File / Folder Map
 
 - `src/lib.rs` - library module graph and shared command enums

@@ -304,7 +304,9 @@ This slice is an orientation artifact, not an implementation claim.
 
 ## Related References
 
-- `context-artifacts.md`
-- `turn-runtime-logic.md`
-- `future-integration-seams.md`
-- `views-and-sets.md`
+- [`../concepts/context-artifacts.md`](../concepts/context-artifacts.md) for artifact boundaries
+- [`../runtime/turn-runtime-logic.md`](../runtime/turn-runtime-logic.md) for turn sequencing
+- [`../migration/future-integration-seams.md`](../migration/future-integration-seams.md) for seam placement
+- [`../concepts/set.md`](../concepts/set.md) for governed set matter
+- [`../concepts/view.md`](../concepts/view.md) for runtime working-subgraph semantics
+- [`../concepts/packability.md`](../concepts/packability.md) for packable-subgraph distinctions

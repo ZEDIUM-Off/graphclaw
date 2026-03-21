@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "skills": {
+    "self-improvement": {
+      "source": "peterskoett/self-improving-agent",
+      "sourceType": "github",
+      "computedHash": "941bf1f3d2862e2b5a0f7dfa8f86103b84922df15e155eb86bcadd7d6bdeacfc"
+    }
+  }
+}

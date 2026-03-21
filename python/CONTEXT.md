@@ -12,12 +12,6 @@ This subtree owns a compatibility-oriented Python surface for the repository. It
 - the inherited `zeroclaw_tools` compatibility package;
 - Python-side tests for that compatibility surface.
 
-## What Does Not Belong Here
-
-- premature rebranding of imports or package names;
-- canonical GraphClaw concept definitions that belong in `docs/architecture/`;
-- Rust runtime ownership that belongs under `src/`.
-
 ## File Map
 
 - `pyproject.toml` - Python package metadata
