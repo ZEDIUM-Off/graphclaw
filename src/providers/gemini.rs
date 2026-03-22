@@ -5,7 +5,7 @@
 //! - Google Cloud ADC (`GOOGLE_APPLICATION_CREDENTIALS`)
 
 use crate::auth::AuthService;
-use crate::providers::traits::{ChatMessage, ChatResponse, Provider, TokenUsage};
+use crate::providers::traits::{ChatMessage, ChatResponse, Provider, ProviderCapabilities, TokenUsage};
 use async_trait::async_trait;
 use base64::Engine;
 use directories::UserDirs;
@@ -135,8 +135,50 @@ struct Content {
 }
 
 #[derive(Debug, Serialize, Clone)]
-struct Part {
-    text: String,
+#[serde(untagged)]
+enum Part {
+    Text { text: String },
+    Inline { inline_data: InlineData },
+}
+
+impl Part {
+    fn text(s: impl Into<String>) -> Self {
+        Part::Text { text: s.into() }
+    }
+}
+
+#[derive(Debug, Serialize, Clone)]
+struct InlineData {
+    mime_type: String,
+    data: String,
+}
+
+fn build_parts(content: &str) -> Vec<Part> {
+    let (text, image_refs) = crate::multimodal::parse_image_markers(content);
+    let mut parts = Vec::new();
+    let trimmed = text.trim();
+    if !trimmed.is_empty() {
+        parts.push(Part::text(trimmed));
+    }
+    for uri in &image_refs {
+        if let Some(rest) = uri.strip_prefix("data:") {
+            if let Some(semi_pos) = rest.find(';') {
+                let mime = &rest[..semi_pos];
+                if let Some(b64) = rest[semi_pos + 1..].strip_prefix("base64,") {
+                    parts.push(Part::Inline {
+                        inline_data: InlineData {
+                            mime_type: mime.to_string(),
+                            data: b64.to_string(),
+                        },
+                    });
+                }
+            }
+        }
+    }
+    if parts.is_empty() {
+        parts.push(Part::text(content));
+    }
+    parts
 }
 
 #[derive(Debug, Serialize, Clone)]
@@ -1128,6 +1170,7 @@ impl GeminiProvider {
         let usage = result.usage_metadata.map(|u| TokenUsage {
             input_tokens: u.prompt_token_count,
             output_tokens: u.candidates_token_count,
+            cached_input_tokens: None,
         });
 
         let text = result
@@ -1143,6 +1186,14 @@ impl GeminiProvider {
 
 #[async_trait]
 impl Provider for GeminiProvider {
+    fn capabilities(&self) -> ProviderCapabilities {
+        ProviderCapabilities {
+            vision: true,
+            native_tool_calling: false,
+            prompt_caching: false,
+        }
+    }
+
     async fn chat_with_system(
         &self,
         system_prompt: Option<&str>,
@@ -1152,16 +1203,12 @@ impl Provider for GeminiProvider {
     ) -> anyhow::Result<String> {
         let system_instruction = system_prompt.map(|sys| Content {
             role: None,
-            parts: vec![Part {
-                text: sys.to_string(),
-            }],
+            parts: vec![Part::text(sys)],
         });
 
         let contents = vec![Content {
             role: Some("user".to_string()),
-            parts: vec![Part {
-                text: message.to_string(),
-            }],
+            parts: build_parts(message),
         }];
 
         let (text, _usage) = self
@@ -1187,18 +1234,14 @@ impl Provider for GeminiProvider {
                 "user" => {
                     contents.push(Content {
                         role: Some("user".to_string()),
-                        parts: vec![Part {
-                            text: msg.content.clone(),
-                        }],
+                        parts: build_parts(&msg.content),
                     });
                 }
                 "assistant" => {
                     // Gemini API uses "model" role instead of "assistant"
                     contents.push(Content {
                         role: Some("model".to_string()),
-                        parts: vec![Part {
-                            text: msg.content.clone(),
-                        }],
+                        parts: vec![Part::text(&msg.content)],
                     });
                 }
                 _ => {}
@@ -1210,9 +1253,7 @@ impl Provider for GeminiProvider {
         } else {
             Some(Content {
                 role: None,
-                parts: vec![Part {
-                    text: system_parts.join("\n\n"),
-                }],
+                parts: vec![Part::text(system_parts.join("\n\n"))],
             })
         };
 
@@ -1236,15 +1277,11 @@ impl Provider for GeminiProvider {
                 "system" => system_parts.push(&msg.content),
                 "user" => contents.push(Content {
                     role: Some("user".to_string()),
-                    parts: vec![Part {
-                        text: msg.content.clone(),
-                    }],
+                    parts: build_parts(&msg.content),
                 }),
                 "assistant" => contents.push(Content {
                     role: Some("model".to_string()),
-                    parts: vec![Part {
-                        text: msg.content.clone(),
-                    }],
+                    parts: vec![Part::text(&msg.content)],
                 }),
                 _ => {}
             }
@@ -1255,9 +1292,7 @@ impl Provider for GeminiProvider {
         } else {
             Some(Content {
                 role: None,
-                parts: vec![Part {
-                    text: system_parts.join("\n\n"),
-                }],
+                parts: vec![Part::text(system_parts.join("\n\n"))],
             })
         };
 
@@ -1542,9 +1577,7 @@ mod tests {
         let body = GenerateContentRequest {
             contents: vec![Content {
                 role: Some("user".into()),
-                parts: vec![Part {
-                    text: "hello".into(),
-                }],
+                parts: vec![Part::text("hello")],
             }],
             system_instruction: None,
             generation_config: GenerationConfig {
@@ -1583,9 +1616,7 @@ mod tests {
         let body = GenerateContentRequest {
             contents: vec![Content {
                 role: Some("user".into()),
-                parts: vec![Part {
-                    text: "hello".into(),
-                }],
+                parts: vec![Part::text("hello")],
             }],
             system_instruction: None,
             generation_config: GenerationConfig {
@@ -1627,9 +1658,7 @@ mod tests {
         let body = GenerateContentRequest {
             contents: vec![Content {
                 role: Some("user".into()),
-                parts: vec![Part {
-                    text: "hello".into(),
-                }],
+                parts: vec![Part::text("hello")],
             }],
             system_instruction: None,
             generation_config: GenerationConfig {
@@ -1659,15 +1688,11 @@ mod tests {
         let request = GenerateContentRequest {
             contents: vec![Content {
                 role: Some("user".to_string()),
-                parts: vec![Part {
-                    text: "Hello".to_string(),
-                }],
+                parts: vec![Part::text("Hello")],
             }],
             system_instruction: Some(Content {
                 role: None,
-                parts: vec![Part {
-                    text: "You are helpful".to_string(),
-                }],
+                parts: vec![Part::text("You are helpful")],
             }),
             generation_config: GenerationConfig {
                 temperature: 0.7,
@@ -1693,9 +1718,7 @@ mod tests {
             request: InternalGenerateContentRequest {
                 contents: vec![Content {
                     role: Some("user".to_string()),
-                    parts: vec![Part {
-                        text: "Hello".to_string(),
-                    }],
+                    parts: vec![Part::text("Hello")],
                 }],
                 system_instruction: None,
                 generation_config: Some(GenerationConfig {
@@ -1725,9 +1748,7 @@ mod tests {
             request: InternalGenerateContentRequest {
                 contents: vec![Content {
                     role: Some("user".to_string()),
-                    parts: vec![Part {
-                        text: "Hello".to_string(),
-                    }],
+                    parts: vec![Part::text("Hello")],
                 }],
                 system_instruction: None,
                 generation_config: None,
@@ -1748,9 +1769,7 @@ mod tests {
             request: InternalGenerateContentRequest {
                 contents: vec![Content {
                     role: Some("user".to_string()),
-                    parts: vec![Part {
-                        text: "Hello".to_string(),
-                    }],
+                    parts: vec![Part::text("Hello")],
                 }],
                 system_instruction: None,
                 generation_config: None,

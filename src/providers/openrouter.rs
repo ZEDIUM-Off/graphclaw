@@ -6,11 +6,16 @@ use crate::providers::traits::{
 use crate::tools::ToolSpec;
 use async_trait::async_trait;
 use reqwest::Client;
+use serde::de::DeserializeOwned;
 use serde::{Deserialize, Serialize};
 
 pub struct OpenRouterProvider {
     credential: Option<String>,
+    timeout_secs: u64,
 }
+
+const DEFAULT_OPENROUTER_TIMEOUT_SECS: u64 = 120;
+const OPENROUTER_CONNECT_TIMEOUT_SECS: u64 = 10;
 
 #[derive(Debug, Serialize)]
 struct ChatRequest {
@@ -146,10 +151,18 @@ struct NativeResponseMessage {
 }
 
 impl OpenRouterProvider {
-    pub fn new(credential: Option<&str>) -> Self {
+    pub fn new(credential: Option<&str>, timeout_secs: Option<u64>) -> Self {
         Self {
             credential: credential.map(ToString::to_string),
+            timeout_secs: timeout_secs
+                .filter(|secs| *secs > 0)
+                .unwrap_or(DEFAULT_OPENROUTER_TIMEOUT_SECS),
         }
+    }
+
+    pub fn with_timeout_secs(mut self, secs: u64) -> Self {
+        self.timeout_secs = secs;
+        self
     }
 
     fn convert_tools(tools: Option<&[ToolSpec]>) -> Option<Vec<NativeToolSpec>> {
@@ -295,8 +308,44 @@ impl OpenRouterProvider {
         }
     }
 
+    fn compact_sanitized_body_snippet(body: &str) -> String {
+        super::sanitize_api_error(body)
+            .split_whitespace()
+            .collect::<Vec<_>>()
+            .join(" ")
+    }
+
+    async fn read_response_body(
+        provider_name: &str,
+        response: reqwest::Response,
+    ) -> anyhow::Result<String> {
+        response.text().await.map_err(|error| {
+            let sanitized = super::sanitize_api_error(&error.to_string());
+            anyhow::anyhow!(
+                "{provider_name} transport error while reading response body: {sanitized}"
+            )
+        })
+    }
+
+    fn parse_response_body<T: DeserializeOwned>(
+        provider_name: &str,
+        body: &str,
+        kind: &str,
+    ) -> anyhow::Result<T> {
+        serde_json::from_str::<T>(body).map_err(|error| {
+            let snippet = Self::compact_sanitized_body_snippet(body);
+            anyhow::anyhow!(
+                "{provider_name} API returned an unexpected {kind} payload: {error}; body={snippet}"
+            )
+        })
+    }
+
     fn http_client(&self) -> Client {
-        crate::config::build_runtime_proxy_client_with_timeouts("provider.openrouter", 120, 10)
+        crate::config::build_runtime_proxy_client_with_timeouts(
+            "provider.openrouter",
+            self.timeout_secs,
+            OPENROUTER_CONNECT_TIMEOUT_SECS,
+        )
     }
 }
 
@@ -306,6 +355,7 @@ impl Provider for OpenRouterProvider {
         ProviderCapabilities {
             native_tool_calling: true,
             vision: true,
+            prompt_caching: false,
         }
     }
 
@@ -367,7 +417,9 @@ impl Provider for OpenRouterProvider {
             return Err(super::api_error("OpenRouter", response).await);
         }
 
-        let chat_response: ApiChatResponse = response.json().await?;
+        let body = Self::read_response_body("OpenRouter", response).await?;
+        let chat_response =
+            Self::parse_response_body::<ApiChatResponse>("OpenRouter", &body, "chat-completions")?;
 
         chat_response
             .choices
@@ -414,7 +466,9 @@ impl Provider for OpenRouterProvider {
             return Err(super::api_error("OpenRouter", response).await);
         }
 
-        let chat_response: ApiChatResponse = response.json().await?;
+        let body = Self::read_response_body("OpenRouter", response).await?;
+        let chat_response =
+            Self::parse_response_body::<ApiChatResponse>("OpenRouter", &body, "chat-completions")?;
 
         chat_response
             .choices
@@ -459,10 +513,13 @@ impl Provider for OpenRouterProvider {
             return Err(super::api_error("OpenRouter", response).await);
         }
 
-        let native_response: NativeChatResponse = response.json().await?;
+        let body = Self::read_response_body("OpenRouter", response).await?;
+        let native_response =
+            Self::parse_response_body::<NativeChatResponse>("OpenRouter", &body, "native chat")?;
         let usage = native_response.usage.map(|u| TokenUsage {
             input_tokens: u.prompt_tokens,
             output_tokens: u.completion_tokens,
+            cached_input_tokens: None,
         });
         let message = native_response
             .choices
@@ -550,10 +607,13 @@ impl Provider for OpenRouterProvider {
             return Err(super::api_error("OpenRouter", response).await);
         }
 
-        let native_response: NativeChatResponse = response.json().await?;
+        let body = Self::read_response_body("OpenRouter", response).await?;
+        let native_response =
+            Self::parse_response_body::<NativeChatResponse>("OpenRouter", &body, "native chat")?;
         let usage = native_response.usage.map(|u| TokenUsage {
             input_tokens: u.prompt_tokens,
             output_tokens: u.completion_tokens,
+            cached_input_tokens: None,
         });
         let message = native_response
             .choices
@@ -574,7 +634,7 @@ mod tests {
 
     #[test]
     fn capabilities_report_vision_support() {
-        let provider = OpenRouterProvider::new(Some("openrouter-test-credential"));
+        let provider = OpenRouterProvider::new(Some("openrouter-test-credential"), None);
         let caps = <OpenRouterProvider as Provider>::capabilities(&provider);
         assert!(caps.native_tool_calling);
         assert!(caps.vision);
@@ -582,7 +642,7 @@ mod tests {
 
     #[test]
     fn creates_with_key() {
-        let provider = OpenRouterProvider::new(Some("openrouter-test-credential"));
+        let provider = OpenRouterProvider::new(Some("openrouter-test-credential"), None);
         assert_eq!(
             provider.credential.as_deref(),
             Some("openrouter-test-credential")
@@ -591,20 +651,20 @@ mod tests {
 
     #[test]
     fn creates_without_key() {
-        let provider = OpenRouterProvider::new(None);
+        let provider = OpenRouterProvider::new(None, None);
         assert!(provider.credential.is_none());
     }
 
     #[tokio::test]
     async fn warmup_without_key_is_noop() {
-        let provider = OpenRouterProvider::new(None);
+        let provider = OpenRouterProvider::new(None, None);
         let result = provider.warmup().await;
         assert!(result.is_ok());
     }
 
     #[tokio::test]
     async fn chat_with_system_fails_without_key() {
-        let provider = OpenRouterProvider::new(None);
+        let provider = OpenRouterProvider::new(None, None);
         let result = provider
             .chat_with_system(Some("system"), "hello", "openai/gpt-4o", 0.2)
             .await;
@@ -615,7 +675,7 @@ mod tests {
 
     #[tokio::test]
     async fn chat_with_history_fails_without_key() {
-        let provider = OpenRouterProvider::new(None);
+        let provider = OpenRouterProvider::new(None, None);
         let messages = vec![
             ChatMessage {
                 role: "system".into(),
@@ -712,7 +772,7 @@ mod tests {
 
     #[tokio::test]
     async fn chat_with_tools_fails_without_key() {
-        let provider = OpenRouterProvider::new(None);
+        let provider = OpenRouterProvider::new(None, None);
         let messages = vec![ChatMessage {
             role: "user".into(),
             content: "What is the date?".into(),

@@ -203,13 +203,13 @@ docs-links:
 	./scripts/ci/docs_links_gate.sh
 
 web-dev:
-	$(NPM) --prefix $(WEB_DIR) run dev
+	cd $(WEB_DIR) && $(PNPM) run dev
 
 web-build:
-	$(NPM) --prefix $(WEB_DIR) run build
+	cd $(WEB_DIR) && $(PNPM) run build
 
 web-preview:
-	$(NPM) --prefix $(WEB_DIR) run preview
+	cd $(WEB_DIR) && $(PNPM) run preview
 
 ui-install:
 	cd $(UI_DIR) && $(PNPM) install

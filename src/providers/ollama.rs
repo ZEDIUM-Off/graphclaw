@@ -27,7 +27,7 @@ struct ChatRequest {
     tools: Option<Vec<serde_json::Value>>,
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Clone, Serialize)]
 struct Message {
     role: String,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -40,14 +40,14 @@ struct Message {
     tool_name: Option<String>,
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Clone, Serialize)]
 struct OutgoingToolCall {
     #[serde(rename = "type")]
     kind: String,
     function: OutgoingFunction,
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Clone, Serialize)]
 struct OutgoingFunction {
     name: String,
     arguments: serde_json::Value,
@@ -89,8 +89,24 @@ struct OllamaToolCall {
 #[derive(Debug, Deserialize)]
 struct OllamaFunction {
     name: String,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "deserialize_args")]
     arguments: serde_json::Value,
+}
+
+fn deserialize_args<'de, D>(deserializer: D) -> Result<serde_json::Value, D::Error>
+where
+    D: serde::Deserializer<'de>,
+{
+    let value = serde_json::Value::deserialize(deserializer)?;
+
+    if let Some(s) = value.as_str() {
+        match serde_json::from_str::<serde_json::Value>(s) {
+            Ok(v) => Ok(v),
+            Err(_) => Ok(serde_json::json!({})),
+        }
+    } else {
+        Ok(value)
+    }
 }
 
 // ─── Implementation ───────────────────────────────────────────────────────────
@@ -169,11 +185,51 @@ impl OllamaProvider {
     }
 
     fn normalize_response_text(content: String) -> Option<String> {
-        if content.trim().is_empty() {
+        let stripped = Self::strip_think_tags(&content);
+        if stripped.trim().is_empty() {
             None
         } else {
-            Some(content)
+            Some(stripped)
         }
+    }
+
+    fn strip_think_tags(s: &str) -> String {
+        let mut result = String::with_capacity(s.len());
+        let mut rest = s;
+        loop {
+            if let Some(start) = rest.find("<think>") {
+                result.push_str(&rest[..start]);
+                if let Some(end) = rest[start..].find("</think>") {
+                    rest = &rest[start + end + "</think>".len()..];
+                } else {
+                    break;
+                }
+            } else {
+                result.push_str(rest);
+                break;
+            }
+        }
+        result.trim().to_string()
+    }
+
+    fn effective_content(content: &str, thinking: Option<&str>) -> Option<String> {
+        let stripped = Self::strip_think_tags(content);
+        if !stripped.trim().is_empty() {
+            return Some(stripped);
+        }
+
+        if let Some(thinking) = thinking.map(str::trim).filter(|t| !t.is_empty()) {
+            let stripped_thinking = Self::strip_think_tags(thinking);
+            if !stripped_thinking.trim().is_empty() {
+                tracing::debug!(
+                    "Ollama: using thinking field as effective content ({} chars)",
+                    stripped_thinking.len()
+                );
+                return Some(stripped_thinking);
+            }
+        }
+
+        None
     }
 
     fn fallback_text_for_empty_content(model: &str, thinking: Option<&str>) -> String {
@@ -206,12 +262,29 @@ impl OllamaProvider {
         temperature: f64,
         tools: Option<&[serde_json::Value]>,
     ) -> ChatRequest {
+        self.build_chat_request_with_think(
+            messages,
+            model,
+            temperature,
+            tools,
+            self.reasoning_enabled,
+        )
+    }
+
+    fn build_chat_request_with_think(
+        &self,
+        messages: Vec<Message>,
+        model: &str,
+        temperature: f64,
+        tools: Option<&[serde_json::Value]>,
+        think: Option<bool>,
+    ) -> ChatRequest {
         ChatRequest {
             model: model.to_string(),
             messages,
             stream: false,
             options: Options { temperature },
-            think: self.reasoning_enabled,
+            think,
             tools: tools.map(|t| t.to_vec()),
         }
     }
@@ -345,15 +418,17 @@ impl OllamaProvider {
 
     /// Send a request to Ollama and get the parsed response.
     /// Pass `tools` to enable native function-calling for models that support it.
-    async fn send_request(
+    async fn send_request_inner(
         &self,
-        messages: Vec<Message>,
+        messages: &[Message],
         model: &str,
         temperature: f64,
         should_auth: bool,
         tools: Option<&[serde_json::Value]>,
+        think: Option<bool>,
     ) -> anyhow::Result<ApiChatResponse> {
-        let request = self.build_chat_request(messages, model, temperature, tools);
+        let request =
+            self.build_chat_request_with_think(messages.to_vec(), model, temperature, tools, think);
 
         let url = format!("{}/api/chat", self.base_url);
 
@@ -411,6 +486,49 @@ impl OllamaProvider {
         };
 
         Ok(chat_response)
+    }
+
+    async fn send_request(
+        &self,
+        messages: Vec<Message>,
+        model: &str,
+        temperature: f64,
+        should_auth: bool,
+        tools: Option<&[serde_json::Value]>,
+    ) -> anyhow::Result<ApiChatResponse> {
+        let result = self
+            .send_request_inner(
+                &messages,
+                model,
+                temperature,
+                should_auth,
+                tools,
+                self.reasoning_enabled,
+            )
+            .await;
+
+        match result {
+            Ok(resp) => Ok(resp),
+            Err(first_err) if self.reasoning_enabled == Some(true) => {
+                tracing::warn!(
+                    model = model,
+                    error = %first_err,
+                    "Ollama request failed with think=true; retrying without reasoning"
+                );
+                self.send_request_inner(&messages, model, temperature, should_auth, tools, None)
+                    .await
+                    .map_err(|retry_err| {
+                        tracing::error!(
+                            model = model,
+                            original_error = %first_err,
+                            retry_error = %retry_err,
+                            "Ollama request also failed without think; returning original error"
+                        );
+                        first_err
+                    })
+            }
+            Err(err) => Err(err),
+        }
     }
 
     /// Convert Ollama tool calls to the JSON format expected by parse_tool_calls in loop_.rs
@@ -491,6 +609,7 @@ impl Provider for OllamaProvider {
         ProviderCapabilities {
             native_tool_calling: true,
             vision: true,
+            prompt_caching: false,
         }
     }
 
@@ -538,8 +657,10 @@ impl Provider for OllamaProvider {
         }
 
         // Plain text response
-        let content = response.message.content;
-        if let Some(content) = Self::normalize_response_text(content) {
+        if let Some(content) = Self::effective_content(
+            &response.message.content,
+            response.message.thinking.as_deref(),
+        ) {
             return Ok(content);
         }
 
@@ -579,8 +700,10 @@ impl Provider for OllamaProvider {
         }
 
         // Plain text response
-        let content = response.message.content;
-        if let Some(content) = Self::normalize_response_text(content) {
+        if let Some(content) = Self::effective_content(
+            &response.message.content,
+            response.message.thinking.as_deref(),
+        ) {
             return Ok(content);
         }
 
@@ -619,6 +742,7 @@ impl Provider for OllamaProvider {
             Some(TokenUsage {
                 input_tokens: response.prompt_eval_count,
                 output_tokens: response.eval_count,
+                cached_input_tokens: None,
             })
         } else {
             None
@@ -643,7 +767,10 @@ impl Provider for OllamaProvider {
                     }
                 })
                 .collect();
-            let text = Self::normalize_response_text(response.message.content);
+            let text = Self::effective_content(
+                &response.message.content,
+                response.message.thinking.as_deref(),
+            );
             return Ok(ChatResponse {
                 text,
                 tool_calls,
@@ -653,8 +780,10 @@ impl Provider for OllamaProvider {
         }
 
         // Plain text response.
-        let content = response.message.content;
-        let text = if let Some(content) = Self::normalize_response_text(content) {
+        let text = if let Some(content) = Self::effective_content(
+            &response.message.content,
+            response.message.thinking.as_deref(),
+        ) {
             content
         } else {
             Self::fallback_text_for_empty_content(

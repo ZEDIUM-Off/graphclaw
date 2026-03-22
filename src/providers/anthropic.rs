@@ -1,9 +1,10 @@
 use crate::providers::traits::{
     ChatMessage, ChatRequest as ProviderChatRequest, ChatResponse as ProviderChatResponse,
-    Provider, TokenUsage, ToolCall as ProviderToolCall,
+    Provider, ProviderCapabilities, TokenUsage, ToolCall as ProviderToolCall,
 };
 use crate::tools::ToolSpec;
 use async_trait::async_trait;
+use base64::Engine as _;
 use reqwest::Client;
 use serde::{Deserialize, Serialize};
 
@@ -51,12 +52,22 @@ struct NativeChatRequest<'a> {
     temperature: f64,
     #[serde(skip_serializing_if = "Option::is_none")]
     tools: Option<Vec<NativeToolSpec<'a>>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    tool_choice: Option<serde_json::Value>,
 }
 
 #[derive(Debug, Serialize)]
 struct NativeMessage {
     role: String,
     content: Vec<NativeContentOut>,
+}
+
+#[derive(Debug, Serialize)]
+struct ImageSource {
+    #[serde(rename = "type")]
+    source_type: String,
+    media_type: String,
+    data: String,
 }
 
 #[derive(Debug, Serialize)]
@@ -68,6 +79,8 @@ enum NativeContentOut {
         #[serde(skip_serializing_if = "Option::is_none")]
         cache_control: Option<CacheControl>,
     },
+    #[serde(rename = "image")]
+    Image { source: ImageSource },
     #[serde(rename = "tool_use")]
     ToolUse {
         id: String,
@@ -138,6 +151,10 @@ struct AnthropicUsage {
     input_tokens: Option<u64>,
     #[serde(default)]
     output_tokens: Option<u64>,
+    #[serde(default)]
+    cache_creation_input_tokens: Option<u64>,
+    #[serde(default)]
+    cache_read_input_tokens: Option<u64>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -185,9 +202,36 @@ impl AnthropicProvider {
         if Self::is_setup_token(credential) {
             request
                 .header("Authorization", format!("Bearer {credential}"))
-                .header("anthropic-beta", "oauth-2025-04-20")
+                .header(
+                    "anthropic-beta",
+                    "claude-code-20250219,oauth-2025-04-20,interleaved-thinking-2025-05-14",
+                )
+                .header("anthropic-dangerous-direct-browser-access", "true")
         } else {
             request.header("x-api-key", credential)
+        }
+    }
+
+    fn apply_oauth_system_prompt(system: Option<SystemPrompt>) -> Option<SystemPrompt> {
+        let prefix = SystemBlock {
+            block_type: "text".to_string(),
+            text: "You are Claude Code, Anthropic's official CLI for Claude.".to_string(),
+            cache_control: Some(CacheControl::ephemeral()),
+        };
+        match system {
+            Some(SystemPrompt::Blocks(mut blocks)) => {
+                blocks.insert(0, prefix);
+                Some(SystemPrompt::Blocks(blocks))
+            }
+            Some(SystemPrompt::String(s)) => Some(SystemPrompt::Blocks(vec![
+                prefix,
+                SystemBlock {
+                    block_type: "text".to_string(),
+                    text: s,
+                    cache_control: Some(CacheControl::ephemeral()),
+                },
+            ])),
+            None => Some(SystemPrompt::Blocks(vec![prefix])),
         }
     }
 
@@ -196,9 +240,9 @@ impl AnthropicProvider {
         text.len() > 3072
     }
 
-    /// Cache conversations with more than 4 messages (excluding system)
+    /// Cache after the first exchange to improve follow-up latency and reuse.
     fn should_cache_conversation(messages: &[ChatMessage]) -> bool {
-        messages.iter().filter(|m| m.role != "system").count() > 4
+        messages.iter().filter(|m| m.role != "system").count() > 1
     }
 
     /// Apply cache control to the last message content block
@@ -210,7 +254,7 @@ impl AnthropicProvider {
                     | NativeContentOut::ToolResult { cache_control, .. } => {
                         *cache_control = Some(CacheControl::ephemeral());
                     }
-                    NativeContentOut::ToolUse { .. } => {}
+                    NativeContentOut::ToolUse { .. } | NativeContentOut::Image { .. } => {}
                 }
             }
         }
@@ -308,7 +352,7 @@ impl AnthropicProvider {
                             role: "assistant".to_string(),
                             content: blocks,
                         });
-                    } else {
+                    } else if !msg.content.trim().is_empty() {
                         native_messages.push(NativeMessage {
                             role: "assistant".to_string(),
                             content: vec![NativeContentOut::Text {
@@ -319,41 +363,115 @@ impl AnthropicProvider {
                     }
                 }
                 "tool" => {
-                    if let Some(tool_result) = Self::parse_tool_result_message(&msg.content) {
-                        native_messages.push(tool_result);
-                    } else {
-                        native_messages.push(NativeMessage {
+                    let tool_msg = if let Some(tool_result) = Self::parse_tool_result_message(&msg.content) {
+                        tool_result
+                    } else if !msg.content.trim().is_empty() {
+                        NativeMessage {
                             role: "user".to_string(),
                             content: vec![NativeContentOut::Text {
                                 text: msg.content.clone(),
                                 cache_control: None,
                             }],
-                        });
+                        }
+                    } else {
+                        continue;
+                    };
+
+                    if native_messages
+                        .last()
+                        .is_some_and(|m| m.role == tool_msg.role)
+                    {
+                        native_messages
+                            .last_mut()
+                            .expect("last exists")
+                            .content
+                            .extend(tool_msg.content);
+                    } else {
+                        native_messages.push(tool_msg);
                     }
                 }
                 _ => {
-                    native_messages.push(NativeMessage {
-                        role: "user".to_string(),
-                        content: vec![NativeContentOut::Text {
-                            text: msg.content.clone(),
+                    let (text, image_refs) = crate::multimodal::parse_image_markers(&msg.content);
+                    let mut content_blocks: Vec<NativeContentOut> = Vec::new();
+
+                    for img_ref in &image_refs {
+                        let (media_type, data) = if img_ref.starts_with("data:") {
+                            if let Some(comma) = img_ref.find(',') {
+                                let header = &img_ref[5..comma];
+                                let mime =
+                                    header.split(';').next().unwrap_or("image/jpeg").to_string();
+                                let b64 = img_ref[comma + 1..].trim().to_string();
+                                (mime, b64)
+                            } else {
+                                continue;
+                            }
+                        } else if std::path::Path::new(img_ref.trim()).exists() {
+                            match std::fs::read(img_ref.trim()) {
+                                Ok(bytes) => {
+                                    let b64 =
+                                        base64::engine::general_purpose::STANDARD.encode(&bytes);
+                                    let ext = std::path::Path::new(img_ref.trim())
+                                        .extension()
+                                        .and_then(|e| e.to_str())
+                                        .unwrap_or("jpg");
+                                    let mime = match ext {
+                                        "png" => "image/png",
+                                        "gif" => "image/gif",
+                                        "webp" => "image/webp",
+                                        _ => "image/jpeg",
+                                    }
+                                    .to_string();
+                                    (mime, b64)
+                                }
+                                Err(_) => continue,
+                            }
+                        } else {
+                            continue;
+                        };
+
+                        content_blocks.push(NativeContentOut::Image {
+                            source: ImageSource {
+                                source_type: "base64".to_string(),
+                                media_type,
+                                data,
+                            },
+                        });
+                    }
+
+                    if text.is_empty() && !image_refs.is_empty() {
+                        content_blocks.push(NativeContentOut::Text {
+                            text: "[image]".to_string(),
                             cache_control: None,
-                        }],
-                    });
+                        });
+                    } else if !text.trim().is_empty() {
+                        content_blocks.push(NativeContentOut::Text {
+                            text,
+                            cache_control: None,
+                        });
+                    }
+
+                    if native_messages.last().is_some_and(|m| m.role == "user") {
+                        native_messages
+                            .last_mut()
+                            .expect("last exists")
+                            .content
+                            .extend(content_blocks);
+                    } else {
+                        native_messages.push(NativeMessage {
+                            role: "user".to_string(),
+                            content: content_blocks,
+                        });
+                    }
                 }
             }
         }
 
-        // Convert system text to SystemPrompt with cache control if large
         let system_prompt = system_text.map(|text| {
-            if Self::should_cache_system(&text) {
-                SystemPrompt::Blocks(vec![SystemBlock {
-                    block_type: "text".to_string(),
-                    text,
-                    cache_control: Some(CacheControl::ephemeral()),
-                }])
-            } else {
-                SystemPrompt::String(text)
-            }
+            SystemPrompt::Blocks(vec![SystemBlock {
+                block_type: "text".to_string(),
+                text,
+                cache_control: Some(CacheControl::ephemeral()),
+            }])
         });
 
         (system_prompt, native_messages)
@@ -375,6 +493,7 @@ impl AnthropicProvider {
         let usage = response.usage.map(|u| TokenUsage {
             input_tokens: u.input_tokens,
             output_tokens: u.output_tokens,
+            cached_input_tokens: u.cache_read_input_tokens,
         });
 
         for block in response.content {
@@ -423,6 +542,14 @@ impl AnthropicProvider {
 
 #[async_trait]
 impl Provider for AnthropicProvider {
+    fn capabilities(&self) -> ProviderCapabilities {
+        ProviderCapabilities {
+            native_tool_calling: true,
+            vision: true,
+            prompt_caching: true,
+        }
+    }
+
     async fn chat_with_system(
         &self,
         system_prompt: Option<&str>,
@@ -436,15 +563,27 @@ impl Provider for AnthropicProvider {
             )
         })?;
 
-        let request = ChatRequest {
+        let system = system_prompt.map(|s| SystemPrompt::String(s.to_string()));
+        let system = if Self::is_setup_token(credential) {
+            Self::apply_oauth_system_prompt(system)
+        } else {
+            system
+        };
+
+        let request = NativeChatRequest {
             model: model.to_string(),
             max_tokens: 4096,
-            system: system_prompt.map(ToString::to_string),
-            messages: vec![Message {
+            system,
+            messages: vec![NativeMessage {
                 role: "user".to_string(),
-                content: message.to_string(),
+                content: vec![NativeContentOut::Text {
+                    text: message.to_string(),
+                    cache_control: None,
+                }],
             }],
             temperature,
+            tools: None,
+            tool_choice: None,
         };
 
         let mut request = self
@@ -462,8 +601,10 @@ impl Provider for AnthropicProvider {
             return Err(super::api_error("Anthropic", response).await);
         }
 
-        let chat_response: ChatResponse = response.json().await?;
-        Self::parse_text_response(chat_response)
+        let chat_response: NativeChatResponse = response.json().await?;
+        Self::parse_native_response(chat_response)
+            .text
+            .ok_or_else(|| anyhow::anyhow!("No response from Anthropic"))
     }
 
     async fn chat(
@@ -485,6 +626,12 @@ impl Provider for AnthropicProvider {
             Self::apply_cache_to_last_message(&mut messages);
         }
 
+        let system_prompt = if Self::is_setup_token(credential) {
+            Self::apply_oauth_system_prompt(system_prompt)
+        } else {
+            system_prompt
+        };
+
         let native_request = NativeChatRequest {
             model: model.to_string(),
             max_tokens: 4096,
@@ -492,6 +639,7 @@ impl Provider for AnthropicProvider {
             messages,
             temperature,
             tools: Self::convert_tools(request.tools),
+            tool_choice: None,
         };
 
         let req = self
@@ -1141,12 +1289,15 @@ mod tests {
     }
 
     #[test]
-    fn backward_compatibility_native_chat_request() {
-        // Test that requests without cache_control serialize identically to old format
+    fn native_chat_request_with_blocks_system() {
         let req = NativeChatRequest {
             model: "claude-3-opus".to_string(),
             max_tokens: 4096,
-            system: Some(SystemPrompt::String("System".to_string())),
+            system: Some(SystemPrompt::Blocks(vec![SystemBlock {
+                block_type: "text".to_string(),
+                text: "System".to_string(),
+                cache_control: Some(CacheControl::ephemeral()),
+            }])),
             messages: vec![NativeMessage {
                 role: "user".to_string(),
                 content: vec![NativeContentOut::Text {
@@ -1156,11 +1307,12 @@ mod tests {
             }],
             temperature: 0.7,
             tools: None,
+            tool_choice: None,
         };
 
         let json = serde_json::to_string(&req).unwrap();
-        assert!(!json.contains("cache_control"));
-        assert!(json.contains(r#""system":"System""#));
+        assert!(json.contains("System"));
+        assert!(json.contains(r#""cache_control":{"type":"ephemeral"}"#));
     }
 
     #[tokio::test]

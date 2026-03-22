@@ -18,6 +18,7 @@ This directory contains the runnable GitHub Actions workflow entry files and a s
 ## File Map
 
 - `checks-on-pr.yml` - pull request validation workflow
+- `ci-run.yml` - consolidated CI workflow for pushes and pull requests
 - `cross-platform-build-manual.yml` - manual build workflow
 - `release-beta-on-push.yml` - beta release automation
 - `release-stable-manual.yml` - manual stable release automation
@@ -35,10 +36,12 @@ This directory contains the runnable GitHub Actions workflow entry files and a s
 ```mermaid
 flowchart TD
     Events[PR push and manual triggers] --> Checks[checks-on-pr.yml]
+    Events --> CI[ci-run.yml]
     Events --> Build[cross-platform-build-manual.yml]
     Events --> Beta[release-beta-on-push.yml]
     Events --> Stable[release-stable-manual.yml]
     Checks --> Scripts[scripts/ci]
+    CI --> Scripts
     Build --> Scripts
     Beta --> Scripts
     Stable --> Scripts

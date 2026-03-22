@@ -17,10 +17,14 @@
 //! in [`create_provider_with_url`]. See `AGENTS.md` §7.1 for the full change playbook.
 
 pub mod anthropic;
+pub mod azure_openai;
 pub mod bedrock;
+pub mod claude_code;
 pub mod compatible;
 pub mod copilot;
 pub mod gemini;
+pub mod gemini_cli;
+pub mod kilocli;
 pub mod ollama;
 pub mod openai;
 pub mod openai_codex;
@@ -1035,9 +1039,25 @@ fn create_provider_with_url_and_options(
             )?))
         }
         // ── Primary providers (custom implementations) ───────
-        "openrouter" => Ok(Box::new(openrouter::OpenRouterProvider::new(key))),
+        "openrouter" => Ok(Box::new(openrouter::OpenRouterProvider::new(key, None))),
         "anthropic" => Ok(Box::new(anthropic::AnthropicProvider::new(key))),
         "openai" => Ok(Box::new(openai::OpenAiProvider::with_base_url(api_url, key))),
+        "azure_openai" | "azure-openai" | "azure" => {
+            let resource_name = api_url
+                .map(str::to_owned)
+                .or_else(|| std::env::var("AZURE_OPENAI_ENDPOINT").ok())
+                .ok_or_else(|| anyhow::anyhow!("Azure OpenAI requires api_url or AZURE_OPENAI_ENDPOINT"))?;
+            let deployment = std::env::var("AZURE_OPENAI_DEPLOYMENT")
+                .map_err(|_| anyhow::anyhow!("Azure OpenAI requires AZURE_OPENAI_DEPLOYMENT"))?;
+            let api_version = std::env::var("AZURE_OPENAI_API_VERSION")
+                .unwrap_or_else(|_| "2024-10-21".to_string());
+            Ok(Box::new(azure_openai::AzureOpenAiProvider::new(
+                Some(key.ok_or_else(|| anyhow::anyhow!("Azure OpenAI requires an API key"))?),
+                &resource_name,
+                &deployment,
+                Some(&api_version),
+            )))
+        }
         // Ollama uses api_url for custom base URL (e.g. remote Ollama instance)
         "ollama" => Ok(Box::new(ollama::OllamaProvider::new_with_reasoning(
             api_url,
@@ -1062,6 +1082,9 @@ fn create_provider_with_url_and_options(
             )))
         }
         "telnyx" => Ok(Box::new(telnyx::TelnyxProvider::new(key))),
+        "claude-code" => Ok(Box::new(claude_code::ClaudeCodeProvider::new())),
+        "gemini-cli" => Ok(Box::new(gemini_cli::GeminiCliProvider::new())),
+        "kilocli" | "kilo" => Ok(Box::new(kilocli::KiloCliProvider::new())),
 
         // ── OpenAI-compatible providers ──────────────────────
         "venice" => Ok(Box::new(OpenAiCompatibleProvider::new(

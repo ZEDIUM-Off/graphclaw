@@ -2,6 +2,7 @@ import type {
   StatusResponse,
   ToolSpec,
   CronJob,
+  CronRun,
   Integration,
   DiagResult,
   MemoryEntry,
@@ -10,6 +11,7 @@ import type {
   HealthSnapshot,
 } from '../types/api';
 import { clearToken, getToken, setToken } from './auth';
+import { basePath } from './basePath';
 
 // ---------------------------------------------------------------------------
 // Base fetch wrapper
@@ -41,7 +43,7 @@ export async function apiFetch<T = unknown>(
     headers.set('Content-Type', 'application/json');
   }
 
-  const response = await fetch(path, { ...options, headers });
+  const response = await fetch(`${basePath}${path}`, { ...options, headers });
 
   if (response.status === 401) {
     clearToken();
@@ -77,7 +79,7 @@ function unwrapField<T>(value: T | Record<string, T>, key: string): T {
 // ---------------------------------------------------------------------------
 
 export async function pair(code: string): Promise<{ token: string }> {
-  const response = await fetch('/pair', {
+  const response = await fetch(`${basePath}/pair`, {
     method: 'POST',
     headers: { 'X-Pairing-Code': code },
   });
@@ -92,12 +94,20 @@ export async function pair(code: string): Promise<{ token: string }> {
   return data;
 }
 
+export async function getAdminPairCode(): Promise<{ pairing_code: string | null; pairing_required: boolean }> {
+  const response = await fetch('/admin/paircode');
+  if (!response.ok) {
+    throw new Error(`Failed to fetch pairing code (${response.status})`);
+  }
+  return response.json() as Promise<{ pairing_code: string | null; pairing_required: boolean }>;
+}
+
 // ---------------------------------------------------------------------------
 // Public health (no auth required)
 // ---------------------------------------------------------------------------
 
 export async function getPublicHealth(): Promise<{ require_pairing: boolean; paired: boolean }> {
-  const response = await fetch('/health');
+  const response = await fetch(`${basePath}/health`);
   if (!response.ok) {
     throw new Error(`Health check failed (${response.status})`);
   }
@@ -171,6 +181,48 @@ export function addCronJob(body: {
 export function deleteCronJob(id: string): Promise<void> {
   return apiFetch<void>(`/api/cron/${encodeURIComponent(id)}`, {
     method: 'DELETE',
+  });
+}
+export function patchCronJob(
+  id: string,
+  patch: { name?: string; schedule?: string; command?: string },
+): Promise<CronJob> {
+  return apiFetch<CronJob | { status: string; job: CronJob }>(
+    `/api/cron/${encodeURIComponent(id)}`,
+    {
+      method: 'PATCH',
+      body: JSON.stringify(patch),
+    },
+  ).then((data) => (typeof (data as { job?: CronJob }).job === 'object' ? (data as { job: CronJob }).job : (data as CronJob)));
+}
+
+
+export function getCronRuns(
+  jobId: string,
+  limit: number = 20,
+): Promise<CronRun[]> {
+  const params = new URLSearchParams({ limit: String(limit) });
+  return apiFetch<CronRun[] | { runs: CronRun[] }>(
+    `/api/cron/${encodeURIComponent(jobId)}/runs?${params}`,
+  ).then((data) => unwrapField(data, 'runs'));
+}
+
+export interface CronSettings {
+  enabled: boolean;
+  catch_up_on_startup: boolean;
+  max_run_history: number;
+}
+
+export function getCronSettings(): Promise<CronSettings> {
+  return apiFetch<CronSettings>('/api/cron/settings');
+}
+
+export function patchCronSettings(
+  patch: Partial<CronSettings>,
+): Promise<CronSettings> {
+  return apiFetch<CronSettings & { status: string }>('/api/cron/settings', {
+    method: 'PATCH',
+    body: JSON.stringify(patch),
   });
 }
 
@@ -247,181 +299,4 @@ export function getCliTools(): Promise<CliTool[]> {
   return apiFetch<CliTool[] | { cli_tools: CliTool[] }>('/api/cli-tools').then((data) =>
     unwrapField(data, 'cli_tools'),
   );
-}
-
-// ---------------------------------------------------------------------------
-// GraphClaw Playground
-// ---------------------------------------------------------------------------
-
-export interface GraphNodeDto {
-  id: number;
-  labels: string[];
-  properties: Record<string, unknown>;
-}
-
-export interface GraphEdgeDto {
-  id: number;
-  from_id: number;
-  to_id: number;
-  rel_type: string;
-  properties: Record<string, unknown>;
-}
-
-export interface SubgraphDto {
-  nodes: GraphNodeDto[];
-  edges: GraphEdgeDto[];
-}
-
-export interface GraphSnapshotMetaDto {
-  truncated: boolean;
-  node_limit: number;
-  edge_limit: number;
-}
-
-export interface GraphSnapshotDto {
-  nodes: GraphNodeDto[];
-  edges: GraphEdgeDto[];
-  meta: GraphSnapshotMetaDto;
-}
-
-export interface ViewTemplateDto {
-  id: string;
-  name: string;
-  kind: string;
-  description: string;
-  extends?: string[];
-  selectors?: { node_ids?: number[]; label?: string; props?: Record<string, unknown> };
-  filters?: string[];
-  operations?: ViewOperationDto[];
-  cost_limit?: number;
-}
-
-export type ViewOperationDto =
-  | { op: 'union'; view_ids: string[] }
-  | { op: 'intersection'; view_ids: string[] }
-  | { op: 'difference'; a: string; b: string }
-  | { op: 'expand'; relation_type?: string; depth: number }
-  | { op: 'filter_nodes'; predicate: string }
-  | { op: 'filter_edges'; predicate: string }
-  | { op: 'project'; mode: string }
-  | { op: 'slice'; limit: number; order?: string };
-
-export interface ResolvedViewDto {
-  view_id: string;
-  view_kind?: string;
-  nodes: GraphNodeDto[];
-  edges: GraphEdgeDto[];
-  composition_trace?: string[];
-  completeness?: string;
-  degradations?: string[];
-  cost_estimate?: number;
-}
-
-export interface ResolvedViewExportDto {
-  format: string;
-  structured: Record<string, unknown>;
-  text: string;
-}
-
-export function playgroundCreateNode(labels: string[], properties: Record<string, unknown>): Promise<GraphNodeDto> {
-  return apiFetch<GraphNodeDto>('/api/playground/graph/nodes', {
-    method: 'POST',
-    body: JSON.stringify({ labels, properties }),
-  });
-}
-
-export function playgroundCreateEdge(
-  from_id: number,
-  to_id: number,
-  rel_type: string,
-  properties: Record<string, unknown> = {},
-): Promise<GraphEdgeDto> {
-  return apiFetch<GraphEdgeDto>('/api/playground/graph/edges', {
-    method: 'POST',
-    body: JSON.stringify({ from_id, to_id, rel_type, properties }),
-  });
-}
-
-export function playgroundGetSubgraph(node_ids: number[]): Promise<SubgraphDto> {
-  return apiFetch<SubgraphDto>('/api/playground/graph/subgraph', {
-    method: 'POST',
-    body: JSON.stringify({ node_ids }),
-  });
-}
-
-export function playgroundGetGraph(
-  options: { node_limit?: number; edge_limit?: number } = {},
-): Promise<GraphSnapshotDto> {
-  const params = new URLSearchParams();
-  if (typeof options.node_limit === 'number') {
-    params.set('node_limit', String(options.node_limit));
-  }
-  if (typeof options.edge_limit === 'number') {
-    params.set('edge_limit', String(options.edge_limit));
-  }
-  const suffix = params.toString();
-  return apiFetch<GraphSnapshotDto>(`/api/playground/graph${suffix ? `?${suffix}` : ''}`);
-}
-
-export function playgroundInspectNode(id: number): Promise<GraphNodeDto | null> {
-  return apiFetch<GraphNodeDto | { error: string }>(`/api/playground/graph/nodes/${id}`).then((data) => {
-    if (data && typeof data === 'object' && 'error' in data) return null;
-    return data as GraphNodeDto;
-  });
-}
-
-export function playgroundListViews(): Promise<string[]> {
-  return apiFetch<string[]>('/api/playground/views');
-}
-
-export function playgroundGetView(id: string): Promise<ViewTemplateDto> {
-  return apiFetch<ViewTemplateDto>(`/api/playground/views/${encodeURIComponent(id)}`);
-}
-
-export function playgroundCreateView(template: ViewTemplateDto): Promise<{ ok: boolean }> {
-  return apiFetch<{ ok: boolean }>('/api/playground/views', {
-    method: 'POST',
-    body: JSON.stringify(template),
-  });
-}
-
-export function playgroundUpdateView(id: string, template: ViewTemplateDto): Promise<{ ok: boolean }> {
-  return apiFetch<{ ok: boolean }>(`/api/playground/views/${encodeURIComponent(id)}`, {
-    method: 'PUT',
-    body: JSON.stringify(template),
-  });
-}
-
-export function playgroundBind(template_id: string, anchors: Record<string, unknown>): Promise<unknown> {
-  return apiFetch<unknown>('/api/playground/views/bind', {
-    method: 'POST',
-    body: JSON.stringify({ template_id, anchors, parameters: {}, resolution_scope: null }),
-  });
-}
-
-export function playgroundResolve(template_id: string, anchors: Record<string, unknown>): Promise<ResolvedViewDto> {
-  return apiFetch<ResolvedViewDto>('/api/playground/views/resolve', {
-    method: 'POST',
-    body: JSON.stringify({ template_id, anchors, parameters: {}, resolution_scope: null }),
-  });
-}
-
-export function playgroundExport(
-  resolved: ResolvedViewDto,
-  format: 'llm_compact' | 'llm_explained',
-  options?: { purpose?: string; constraints?: string[]; usage_hint?: string; role?: string; included?: string[]; excluded?: string[] },
-): Promise<ResolvedViewExportDto> {
-  return apiFetch<ResolvedViewExportDto>('/api/playground/views/export', {
-    method: 'POST',
-    body: JSON.stringify({
-      format,
-      resolved,
-      purpose: options?.purpose,
-      constraints: options?.constraints ?? [],
-      usage_hint: options?.usage_hint,
-      role: options?.role,
-      included: options?.included ?? [],
-      excluded: options?.excluded,
-    }),
-  });
 }

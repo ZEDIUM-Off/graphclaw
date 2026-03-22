@@ -1,8 +1,10 @@
-import { defineConfig } from "vitest/config";
+import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import path from "path";
 
+// Build-only config. The web dashboard is served by the Rust gateway
+// via rust-embed. Run `pnpm run build` then `cargo build` to update.
 export default defineConfig({
   base: "/_app/",
   plugins: [react(), tailwindcss()],
@@ -11,31 +13,7 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
-  test: {
-    environment: "jsdom",
-    setupFiles: "./src/test/setup.ts",
-  },
   build: {
     outDir: "dist",
-  },
-  server: {
-    proxy: {
-      "/health": {
-        target: "http://localhost:5555",
-        changeOrigin: true,
-      },
-      "/pair": {
-        target: "http://localhost:5555",
-        changeOrigin: true,
-      },
-      "/api": {
-        target: "http://localhost:5555",
-        changeOrigin: true,
-      },
-      "/ws": {
-        target: "ws://localhost:5555",
-        ws: true,
-      },
-    },
   },
 });

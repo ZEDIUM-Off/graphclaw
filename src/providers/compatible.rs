@@ -37,6 +37,14 @@ pub struct OpenAiCompatibleProvider {
     /// Whether this provider supports OpenAI-style native tool calling.
     /// When false, tools are injected into the system prompt as text.
     native_tool_calling: bool,
+    /// HTTP request timeout in seconds for LLM API calls.
+    timeout_secs: u64,
+    /// Extra HTTP headers applied to all API requests.
+    extra_headers: std::collections::HashMap<String, String>,
+    /// Optional reasoning effort for GPT-5/Codex-like backends.
+    reasoning_effort: Option<String>,
+    /// Optional explicit API path overriding `/chat/completions`.
+    api_path: Option<String>,
 }
 
 /// How the provider expects the API key to be sent.
@@ -170,7 +178,39 @@ impl OpenAiCompatibleProvider {
             user_agent: user_agent.map(ToString::to_string),
             merge_system_into_user,
             native_tool_calling: !merge_system_into_user,
+            timeout_secs: 120,
+            extra_headers: std::collections::HashMap::new(),
+            reasoning_effort: None,
+            api_path: None,
         }
+    }
+
+    pub fn without_native_tools(mut self) -> Self {
+        self.native_tool_calling = false;
+        self
+    }
+
+    pub fn with_timeout_secs(mut self, timeout_secs: u64) -> Self {
+        self.timeout_secs = timeout_secs;
+        self
+    }
+
+    pub fn with_extra_headers(
+        mut self,
+        headers: std::collections::HashMap<String, String>,
+    ) -> Self {
+        self.extra_headers = headers;
+        self
+    }
+
+    pub fn with_reasoning_effort(mut self, reasoning_effort: Option<String>) -> Self {
+        self.reasoning_effort = reasoning_effort;
+        self
+    }
+
+    pub fn with_api_path(mut self, api_path: Option<String>) -> Self {
+        self.api_path = api_path;
+        self
     }
 
     /// Collect all `system` role messages, concatenate their content,
@@ -205,32 +245,53 @@ impl OpenAiCompatibleProvider {
     }
 
     fn http_client(&self) -> Client {
-        if let Some(ua) = self.user_agent.as_deref() {
+        let timeout = self.timeout_secs;
+        if self.user_agent.is_some() || !self.extra_headers.is_empty() {
             let mut headers = HeaderMap::new();
-            if let Ok(value) = HeaderValue::from_str(ua) {
-                headers.insert(USER_AGENT, value);
+            if let Some(ua) = self.user_agent.as_deref() {
+                if let Ok(value) = HeaderValue::from_str(ua) {
+                    headers.insert(USER_AGENT, value);
+                }
+            }
+            for (key, value) in &self.extra_headers {
+                match (
+                    reqwest::header::HeaderName::from_bytes(key.as_bytes()),
+                    HeaderValue::from_str(value),
+                ) {
+                    (Ok(name), Ok(val)) => {
+                        headers.insert(name, val);
+                    }
+                    _ => {
+                        tracing::warn!(header = key, "Skipping invalid extra header name or value");
+                    }
+                }
             }
 
             let builder = Client::builder()
-                .timeout(std::time::Duration::from_secs(120))
+                .timeout(std::time::Duration::from_secs(timeout))
                 .connect_timeout(std::time::Duration::from_secs(10))
                 .default_headers(headers);
             let builder =
                 crate::config::apply_runtime_proxy_to_builder(builder, "provider.compatible");
 
             return builder.build().unwrap_or_else(|error| {
-                tracing::warn!("Failed to build proxied timeout client with user-agent: {error}");
+                tracing::warn!("Failed to build proxied timeout client with custom headers: {error}");
                 Client::new()
             });
         }
 
-        crate::config::build_runtime_proxy_client_with_timeouts("provider.compatible", 120, 10)
+        crate::config::build_runtime_proxy_client_with_timeouts("provider.compatible", timeout, 10)
     }
 
     /// Build the full URL for chat completions, detecting if base_url already includes the path.
     /// This allows custom providers with non-standard endpoints (e.g., VolcEngine ARK uses
     /// `/api/coding/v3/chat/completions` instead of `/v1/chat/completions`).
     fn chat_completions_url(&self) -> String {
+        if let Some(ref api_path) = self.api_path {
+            let separator = if api_path.starts_with('/') { "" } else { "/" };
+            return format!("{}{separator}{api_path}", self.base_url);
+        }
+
         let has_full_endpoint = reqwest::Url::parse(&self.base_url)
             .map(|url| {
                 url.path()
@@ -256,6 +317,23 @@ impl OpenAiCompatibleProvider {
         }
 
         self.base_url.trim_end_matches('/').ends_with(suffix)
+    }
+
+    fn requires_tool_stream(&self) -> bool {
+        let host_requires_tool_stream = reqwest::Url::parse(&self.base_url)
+            .ok()
+            .and_then(|url| url.host_str().map(str::to_ascii_lowercase))
+            .is_some_and(|host| host == "api.z.ai" || host.ends_with(".z.ai"));
+
+        host_requires_tool_stream || matches!(self.name.as_str(), "zai" | "z.ai")
+    }
+
+    fn tool_stream_for_tools(&self, has_tools: bool) -> Option<bool> {
+        if has_tools && self.requires_tool_stream() {
+            Some(true)
+        } else {
+            None
+        }
     }
 
     fn has_explicit_api_path(&self) -> bool {
@@ -304,6 +382,14 @@ impl OpenAiCompatibleProvider {
             })
             .collect()
     }
+
+    fn reasoning_effort_for_model(&self, model: &str) -> Option<String> {
+        let id = model.rsplit('/').next().unwrap_or(model);
+        let supports_reasoning_effort = id.starts_with("gpt-5") || id.contains("codex");
+        supports_reasoning_effort
+            .then(|| self.reasoning_effort.clone())
+            .flatten()
+    }
 }
 
 #[derive(Debug, Serialize)]
@@ -313,6 +399,10 @@ struct ApiChatRequest {
     temperature: f64,
     #[serde(skip_serializing_if = "Option::is_none")]
     stream: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    reasoning_effort: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    tool_stream: Option<bool>,
     #[serde(skip_serializing_if = "Option::is_none")]
     tools: Option<Vec<serde_json::Value>>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -440,20 +530,19 @@ impl ResponseMessage {
 struct ToolCall {
     #[serde(skip_serializing_if = "Option::is_none")]
     id: Option<String>,
-    #[serde(rename = "type")]
-    #[serde(default)]
+    #[serde(rename = "type", default, skip_serializing_if = "Option::is_none")]
     kind: Option<String>,
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     function: Option<Function>,
 
     // Compatibility: Some providers (e.g., older GLM) may use 'name' directly
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     name: Option<String>,
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     arguments: Option<String>,
 
     // Compatibility: DeepSeek sometimes wraps arguments differently
-    #[serde(rename = "parameters", default)]
+    #[serde(rename = "parameters", default, skip_serializing_if = "Option::is_none")]
     parameters: Option<serde_json::Value>,
 }
 
@@ -505,6 +594,10 @@ struct NativeChatRequest {
     temperature: f64,
     #[serde(skip_serializing_if = "Option::is_none")]
     stream: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    reasoning_effort: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    tool_stream: Option<bool>,
     #[serde(skip_serializing_if = "Option::is_none")]
     tools: Option<Vec<serde_json::Value>>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -1085,6 +1178,8 @@ impl OpenAiCompatibleProvider {
             "does not support tools",
             "function calling is not supported",
             "tool_choice",
+            "tool call validation failed",
+            "was not in request",
         ]
         .iter()
         .any(|hint| lower.contains(hint))
@@ -1097,6 +1192,7 @@ impl Provider for OpenAiCompatibleProvider {
         crate::providers::traits::ProviderCapabilities {
             native_tool_calling: self.native_tool_calling,
             vision: self.supports_vision,
+            prompt_caching: false,
         }
     }
 
@@ -1143,6 +1239,8 @@ impl Provider for OpenAiCompatibleProvider {
             messages,
             temperature,
             stream: Some(false),
+            reasoning_effort: self.reasoning_effort_for_model(model),
+            tool_stream: None,
             tools: None,
             tool_choice: None,
         };
@@ -1265,6 +1363,8 @@ impl Provider for OpenAiCompatibleProvider {
             messages: api_messages,
             temperature,
             stream: Some(false),
+            reasoning_effort: self.reasoning_effort_for_model(model),
+            tool_stream: None,
             tools: None,
             tool_choice: None,
         };
@@ -1375,6 +1475,8 @@ impl Provider for OpenAiCompatibleProvider {
             messages: api_messages,
             temperature,
             stream: Some(false),
+            reasoning_effort: self.reasoning_effort_for_model(model),
+            tool_stream: self.tool_stream_for_tools(!tools.is_empty()),
             tools: if tools.is_empty() {
                 None
             } else {
@@ -1418,6 +1520,7 @@ impl Provider for OpenAiCompatibleProvider {
         let usage = chat_response.usage.map(|u| TokenUsage {
             input_tokens: u.prompt_tokens,
             output_tokens: u.completion_tokens,
+            cached_input_tokens: None,
         });
         let choice = chat_response
             .choices
@@ -1479,6 +1582,9 @@ impl Provider for OpenAiCompatibleProvider {
             ),
             temperature,
             stream: Some(false),
+            reasoning_effort: self.reasoning_effort_for_model(model),
+            tool_stream: self
+                .tool_stream_for_tools(tools.as_ref().is_some_and(|tools| !tools.is_empty())),
             tool_choice: tools.as_ref().map(|_| "auto".to_string()),
             tools,
         };
@@ -1561,6 +1667,7 @@ impl Provider for OpenAiCompatibleProvider {
         let usage = native_response.usage.map(|u| TokenUsage {
             input_tokens: u.prompt_tokens,
             output_tokens: u.completion_tokens,
+            cached_input_tokens: None,
         });
         let message = native_response
             .choices
@@ -1621,6 +1728,8 @@ impl Provider for OpenAiCompatibleProvider {
             messages,
             temperature,
             stream: Some(options.enabled),
+            reasoning_effort: self.reasoning_effort_for_model(model),
+            tool_stream: None,
             tools: None,
             tool_choice: None,
         };
@@ -1762,6 +1871,8 @@ mod tests {
             ],
             temperature: 0.4,
             stream: Some(false),
+            reasoning_effort: None,
+            tool_stream: None,
             tools: None,
             tool_choice: None,
         };
@@ -2485,6 +2596,8 @@ mod tests {
             }],
             temperature: 0.7,
             stream: Some(false),
+            reasoning_effort: None,
+            tool_stream: None,
             tools: Some(tools),
             tool_choice: Some("auto".to_string()),
         };

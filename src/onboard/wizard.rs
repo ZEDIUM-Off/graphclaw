@@ -149,6 +149,7 @@ pub async fn run_wizard(force: bool) -> Result<Config> {
         heartbeat: HeartbeatConfig::default(),
         cron: crate::config::CronConfig::default(),
         channels_config,
+        nodes: crate::config::schema::NodesConfig::default(),
         memory: memory_config, // User-selected memory backend
         storage: StorageConfig::default(),
         tunnel: tunnel_config,
@@ -522,6 +523,7 @@ async fn run_quick_setup_with_home_and_mode(
         heartbeat: HeartbeatConfig::default(),
         cron: crate::config::CronConfig::default(),
         channels_config: ChannelsConfig::default(),
+        nodes: crate::config::schema::NodesConfig::default(),
         memory: memory_config,
         storage: StorageConfig::default(),
         tunnel: crate::config::TunnelConfig::default(),

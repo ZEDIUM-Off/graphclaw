@@ -15,9 +15,13 @@ use std::time::Duration;
 // immediately — avoiding wasted latency on errors that cannot self-heal.
 
 /// Check if an error is non-retryable (client errors that won't resolve with retries).
-fn is_non_retryable(err: &anyhow::Error) -> bool {
+pub fn is_non_retryable(err: &anyhow::Error) -> bool {
     if is_context_window_exceeded(err) {
-        return true;
+        return false;
+    }
+
+    if is_tool_schema_error(err) {
+        return false;
     }
 
     // 4xx errors are generally non-retryable (bad request, auth failure, etc.),
@@ -71,10 +75,22 @@ fn is_non_retryable(err: &anyhow::Error) -> bool {
             || msg_lower.contains("invalid"))
 }
 
+pub fn is_tool_schema_error(err: &anyhow::Error) -> bool {
+    let lower = err.to_string().to_lowercase();
+    let hints = [
+        "tool call validation failed",
+        "was not in request",
+        "not found in tool list",
+        "invalid_tool_call",
+    ];
+    hints.iter().any(|hint| lower.contains(hint))
+}
+
 fn is_context_window_exceeded(err: &anyhow::Error) -> bool {
     let lower = err.to_string().to_lowercase();
     let hints = [
         "exceeds the context window",
+        "exceeds the available context size",
         "context window of this model",
         "maximum context length",
         "context length exceeded",
@@ -195,6 +211,26 @@ fn compact_error_detail(err: &anyhow::Error) -> String {
         .split_whitespace()
         .collect::<Vec<_>>()
         .join(" ")
+}
+
+fn truncate_for_context(messages: &mut Vec<ChatMessage>) -> usize {
+    let non_system: Vec<usize> = messages
+        .iter()
+        .enumerate()
+        .filter(|(_, m)| m.role != "system")
+        .map(|(i, _)| i)
+        .collect();
+
+    if non_system.len() <= 1 {
+        return 0;
+    }
+
+    let drop_count = non_system.len() / 2;
+    for &idx in non_system[..drop_count].iter().rev() {
+        messages.remove(idx);
+    }
+
+    drop_count
 }
 
 fn push_failure(
@@ -338,6 +374,23 @@ impl Provider for ReliableProvider {
                             return Ok(resp);
                         }
                         Err(e) => {
+                            if is_context_window_exceeded(&e) {
+                                let error_detail = compact_error_detail(&e);
+                                push_failure(
+                                    &mut failures,
+                                    provider_name,
+                                    current_model,
+                                    attempt + 1,
+                                    self.max_retries + 1,
+                                    "non_retryable",
+                                    &error_detail,
+                                );
+                                anyhow::bail!(
+                                    "Request exceeds model context window. Attempts:\n{}",
+                                    failures.join("\n")
+                                );
+                            }
+
                             let non_retryable_rate_limit = is_non_retryable_rate_limit(&e);
                             let non_retryable = is_non_retryable(&e) || non_retryable_rate_limit;
                             let rate_limited = is_rate_limited(&e);
@@ -376,13 +429,6 @@ impl Provider for ReliableProvider {
                                     error = %error_detail,
                                     "Non-retryable error, moving on"
                                 );
-
-                                if is_context_window_exceeded(&e) {
-                                    anyhow::bail!(
-                                        "Request exceeds model context window; retries and fallbacks were skipped. Attempts:\n{}",
-                                        failures.join("\n")
-                                    );
-                                }
 
                                 break;
                             }
@@ -435,6 +481,8 @@ impl Provider for ReliableProvider {
     ) -> anyhow::Result<String> {
         let models = self.model_chain(model);
         let mut failures = Vec::new();
+        let mut effective_messages = messages.to_vec();
+        let mut context_truncated = false;
 
         for current_model in &models {
             for (provider_name, provider) in &self.providers {
@@ -442,22 +490,55 @@ impl Provider for ReliableProvider {
 
                 for attempt in 0..=self.max_retries {
                     match provider
-                        .chat_with_history(messages, current_model, temperature)
+                        .chat_with_history(&effective_messages, current_model, temperature)
                         .await
                     {
                         Ok(resp) => {
-                            if attempt > 0 || *current_model != model {
+                            if attempt > 0 || *current_model != model || context_truncated {
                                 tracing::info!(
                                     provider = provider_name,
                                     model = *current_model,
                                     attempt,
                                     original_model = model,
+                                    context_truncated,
                                     "Provider recovered (failover/retry)"
                                 );
                             }
                             return Ok(resp);
                         }
                         Err(e) => {
+                            if is_context_window_exceeded(&e) && !context_truncated {
+                                let dropped = truncate_for_context(&mut effective_messages);
+                                if dropped > 0 {
+                                    context_truncated = true;
+                                    tracing::warn!(
+                                        provider = provider_name,
+                                        model = *current_model,
+                                        dropped,
+                                        remaining = effective_messages.len(),
+                                        "Context window exceeded; truncated history and retrying"
+                                    );
+                                    continue;
+                                }
+
+                                let error_detail = compact_error_detail(&e);
+                                push_failure(
+                                    &mut failures,
+                                    provider_name,
+                                    current_model,
+                                    attempt + 1,
+                                    self.max_retries + 1,
+                                    "non_retryable",
+                                    &error_detail,
+                                );
+                                anyhow::bail!(
+                                    "Request exceeds model context window and cannot be reduced further. \
+                                     Try using a model with a larger context window, reducing the number \
+                                     of tools/skills, or enabling compact_context in config. Attempts:\n{}",
+                                    failures.join("\n")
+                                );
+                            }
+
                             let non_retryable_rate_limit = is_non_retryable_rate_limit(&e);
                             let non_retryable = is_non_retryable(&e) || non_retryable_rate_limit;
                             let rate_limited = is_rate_limited(&e);
@@ -494,13 +575,6 @@ impl Provider for ReliableProvider {
                                     error = %error_detail,
                                     "Non-retryable error, moving on"
                                 );
-
-                                if is_context_window_exceeded(&e) {
-                                    anyhow::bail!(
-                                        "Request exceeds model context window; retries and fallbacks were skipped. Attempts:\n{}",
-                                        failures.join("\n")
-                                    );
-                                }
 
                                 break;
                             }
@@ -559,6 +633,8 @@ impl Provider for ReliableProvider {
     ) -> anyhow::Result<ChatResponse> {
         let models = self.model_chain(model);
         let mut failures = Vec::new();
+        let mut effective_messages = messages.to_vec();
+        let mut context_truncated = false;
 
         for current_model in &models {
             for (provider_name, provider) in &self.providers {
@@ -566,22 +642,55 @@ impl Provider for ReliableProvider {
 
                 for attempt in 0..=self.max_retries {
                     match provider
-                        .chat_with_tools(messages, tools, current_model, temperature)
+                        .chat_with_tools(&effective_messages, tools, current_model, temperature)
                         .await
                     {
                         Ok(resp) => {
-                            if attempt > 0 || *current_model != model {
+                            if attempt > 0 || *current_model != model || context_truncated {
                                 tracing::info!(
                                     provider = provider_name,
                                     model = *current_model,
                                     attempt,
                                     original_model = model,
+                                    context_truncated,
                                     "Provider recovered (failover/retry)"
                                 );
                             }
                             return Ok(resp);
                         }
                         Err(e) => {
+                            if is_context_window_exceeded(&e) && !context_truncated {
+                                let dropped = truncate_for_context(&mut effective_messages);
+                                if dropped > 0 {
+                                    context_truncated = true;
+                                    tracing::warn!(
+                                        provider = provider_name,
+                                        model = *current_model,
+                                        dropped,
+                                        remaining = effective_messages.len(),
+                                        "Context window exceeded; truncated history and retrying"
+                                    );
+                                    continue;
+                                }
+
+                                let error_detail = compact_error_detail(&e);
+                                push_failure(
+                                    &mut failures,
+                                    provider_name,
+                                    current_model,
+                                    attempt + 1,
+                                    self.max_retries + 1,
+                                    "non_retryable",
+                                    &error_detail,
+                                );
+                                anyhow::bail!(
+                                    "Request exceeds model context window and cannot be reduced further. \
+                                     Try using a model with a larger context window, reducing the number \
+                                     of tools/skills, or enabling compact_context in config. Attempts:\n{}",
+                                    failures.join("\n")
+                                );
+                            }
+
                             let non_retryable_rate_limit = is_non_retryable_rate_limit(&e);
                             let non_retryable = is_non_retryable(&e) || non_retryable_rate_limit;
                             let rate_limited = is_rate_limited(&e);
@@ -618,13 +727,6 @@ impl Provider for ReliableProvider {
                                     error = %error_detail,
                                     "Non-retryable error, moving on"
                                 );
-
-                                if is_context_window_exceeded(&e) {
-                                    anyhow::bail!(
-                                        "Request exceeds model context window; retries and fallbacks were skipped. Attempts:\n{}",
-                                        failures.join("\n")
-                                    );
-                                }
 
                                 break;
                             }
@@ -669,6 +771,8 @@ impl Provider for ReliableProvider {
     ) -> anyhow::Result<ChatResponse> {
         let models = self.model_chain(model);
         let mut failures = Vec::new();
+        let mut effective_messages = request.messages.to_vec();
+        let mut context_truncated = false;
 
         for current_model in &models {
             for (provider_name, provider) in &self.providers {
@@ -676,23 +780,56 @@ impl Provider for ReliableProvider {
 
                 for attempt in 0..=self.max_retries {
                     let req = ChatRequest {
-                        messages: request.messages,
+                        messages: &effective_messages,
                         tools: request.tools,
                     };
                     match provider.chat(req, current_model, temperature).await {
                         Ok(resp) => {
-                            if attempt > 0 || *current_model != model {
+                            if attempt > 0 || *current_model != model || context_truncated {
                                 tracing::info!(
                                     provider = provider_name,
                                     model = *current_model,
                                     attempt,
                                     original_model = model,
+                                    context_truncated,
                                     "Provider recovered (failover/retry)"
                                 );
                             }
                             return Ok(resp);
                         }
                         Err(e) => {
+                            if is_context_window_exceeded(&e) && !context_truncated {
+                                let dropped = truncate_for_context(&mut effective_messages);
+                                if dropped > 0 {
+                                    context_truncated = true;
+                                    tracing::warn!(
+                                        provider = provider_name,
+                                        model = *current_model,
+                                        dropped,
+                                        remaining = effective_messages.len(),
+                                        "Context window exceeded; truncated history and retrying"
+                                    );
+                                    continue;
+                                }
+
+                                let error_detail = compact_error_detail(&e);
+                                push_failure(
+                                    &mut failures,
+                                    provider_name,
+                                    current_model,
+                                    attempt + 1,
+                                    self.max_retries + 1,
+                                    "non_retryable",
+                                    &error_detail,
+                                );
+                                anyhow::bail!(
+                                    "Request exceeds model context window and cannot be reduced further. \
+                                     Try using a model with a larger context window, reducing the number \
+                                     of tools/skills, or enabling compact_context in config. Attempts:\n{}",
+                                    failures.join("\n")
+                                );
+                            }
+
                             let non_retryable_rate_limit = is_non_retryable_rate_limit(&e);
                             let non_retryable = is_non_retryable(&e) || non_retryable_rate_limit;
                             let rate_limited = is_rate_limited(&e);
@@ -729,13 +866,6 @@ impl Provider for ReliableProvider {
                                     error = %error_detail,
                                     "Non-retryable error, moving on"
                                 );
-
-                                if is_context_window_exceeded(&e) {
-                                    anyhow::bail!(
-                                        "Request exceeds model context window; retries and fallbacks were skipped. Attempts:\n{}",
-                                        failures.join("\n")
-                                    );
-                                }
 
                                 break;
                             }
@@ -1071,7 +1201,7 @@ mod tests {
         assert!(!is_non_retryable(&anyhow::anyhow!(
             "model overloaded, try again later"
         )));
-        assert!(is_non_retryable(&anyhow::anyhow!(
+        assert!(!is_non_retryable(&anyhow::anyhow!(
             "OpenAI Codex stream error: Your input exceeds the context window of this model."
         )));
     }
@@ -1107,7 +1237,6 @@ mod tests {
         let msg = err.to_string();
 
         assert!(msg.contains("context window"));
-        assert!(msg.contains("skipped"));
         assert_eq!(calls.load(Ordering::SeqCst), 1);
     }
 
@@ -1979,5 +2108,42 @@ mod tests {
         // Primary should have been called only once (no retries)
         assert_eq!(primary_calls.load(Ordering::SeqCst), 1);
         assert_eq!(fallback_calls.load(Ordering::SeqCst), 1);
+    }
+
+    #[test]
+    fn context_window_error_is_not_non_retryable() {
+        assert!(!is_non_retryable(&anyhow::anyhow!("exceeds the context window")));
+        assert!(!is_non_retryable(&anyhow::anyhow!("maximum context length exceeded")));
+        assert!(!is_non_retryable(&anyhow::anyhow!(
+            "request (8968 tokens) exceeds the available context size (8448 tokens), try increasing it"
+        )));
+    }
+
+    #[test]
+    fn truncate_for_context_drops_oldest_non_system() {
+        let mut messages = vec![
+            ChatMessage::system("sys"),
+            ChatMessage::user("msg1"),
+            ChatMessage::assistant("resp1"),
+            ChatMessage::user("msg2"),
+            ChatMessage::assistant("resp2"),
+            ChatMessage::user("msg3"),
+        ];
+
+        let dropped = truncate_for_context(&mut messages);
+
+        assert_eq!(dropped, 2);
+        assert_eq!(messages[0].role, "system");
+        assert_eq!(messages.len(), 4);
+        assert_eq!(messages.last().unwrap().content, "msg3");
+    }
+
+    #[test]
+    fn tool_schema_error_detects_validation_failure() {
+        let err = anyhow::anyhow!(
+            "400 Bad Request: tool call validation failed: attempted to call tool 'x' which was not in request"
+        );
+        assert!(is_tool_schema_error(&err));
+        assert!(!is_non_retryable(&err));
     }
 }

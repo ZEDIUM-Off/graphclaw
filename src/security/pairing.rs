@@ -229,6 +229,20 @@ impl PairingGuard {
         *self.pairing_code.lock() = Some(new_code.clone());
         Some(new_code)
     }
+
+    /// Get the token hash for a given plaintext token.
+    pub fn token_hash(token: &str) -> String {
+        hash_token(token)
+    }
+
+    /// Check if a token is paired and return its hash.
+    pub fn authenticate_and_hash(&self, token: &str) -> Option<String> {
+        if self.is_authenticated(token) {
+            Some(Self::token_hash(token))
+        } else {
+            None
+        }
+    }
 }
 
 /// Normalize a client identifier: trim whitespace, map empty to `"unknown"`.

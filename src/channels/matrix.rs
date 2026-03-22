@@ -540,12 +540,7 @@ impl Channel for MatrixChannel {
     async fn send(&self, message: &SendMessage) -> anyhow::Result<()> {
         let client = self.matrix_client().await?;
         let target_room_id = if message.recipient.contains("||") {
-            message
-                .recipient
-                .splitn(2, "||")
-                .nth(1)
-                .unwrap()
-                .to_string()
+            message.recipient.split_once("||").unwrap().1.to_string()
         } else {
             self.target_room_id().await?
         };
@@ -563,6 +558,10 @@ impl Channel for MatrixChannel {
 
         if room.state() != RoomState::Joined {
             anyhow::bail!("Matrix room '{}' is not in joined state", target_room_id);
+        }
+
+        if let Err(error) = room.typing_notice(false).await {
+            tracing::warn!("Matrix failed to stop typing notification: {error}");
         }
 
         let mut content = RoomMessageEventContent::text_markdown(&message.content);

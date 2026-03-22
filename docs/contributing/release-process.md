@@ -1,6 +1,6 @@
-# ZeroClaw Release Process
+# GraphClaw Release Process
 
-This runbook defines the maintainers' standard release flow.
+This runbook defines the maintainers' standard release flow for GraphClaw.
 
 Last verified: **February 21, 2026**.
 
@@ -10,6 +10,7 @@ Last verified: **February 21, 2026**.
 - Publish only from code already in `master`.
 - Verify multi-target artifacts before publish.
 - Keep release cadence regular even with high PR volume.
+- Keep release framing truthful: GraphClaw is the repo identity, while inherited `zeroclaw` binary and package names may still remain the implementation reality.
 
 ## Standard Cadence
 
@@ -73,6 +74,7 @@ This script enforces:
 - `HEAD == origin/master`
 - non-duplicate tag
 - semver-like tag format
+- GraphClaw release-tag messaging instead of inherited ZeroClaw release-tag messaging
 
 ### 4) Monitor publish run
 
@@ -131,3 +133,13 @@ If tag-push release fails after artifacts are validated:
 - Keep release changes small and reversible.
 - Prefer one release issue/checklist per version so handoff is clear.
 - Avoid publishing from ad-hoc feature branches.
+
+## GraphClaw Alignment Releases
+
+GraphClaw may cut explicit alignment releases when it selectively absorbs maturity from upstream ZeroClaw stable releases without becoming a full upstream mirror.
+
+For these releases:
+
+- document the upstream stable base used for alignment in [`CHANGELOG.md`](../../CHANGELOG.md);
+- describe clearly which areas were adopted and which GraphClaw-owned surfaces remain sovereign;
+- do not present target-architecture documentation as already implemented runtime reality.

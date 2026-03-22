@@ -622,7 +622,18 @@ impl Channel for DiscordChannel {
                 msg = read.next() => {
                     let msg = match msg {
                         Some(Ok(Message::Text(t))) => t,
+                        Some(Ok(Message::Ping(payload))) => {
+                            if write.send(Message::Pong(payload)).await.is_err() {
+                                tracing::warn!("Discord: pong send failed, reconnecting");
+                                break;
+                            }
+                            continue;
+                        }
                         Some(Ok(Message::Close(_))) | None => break,
+                        Some(Err(e)) => {
+                            tracing::warn!("Discord: websocket read error: {e}, reconnecting");
+                            break;
+                        }
                         _ => continue,
                     };
 
@@ -700,8 +711,10 @@ impl Channel for DiscordChannel {
                     }
 
                     let content = d.get("content").and_then(|c| c.as_str()).unwrap_or("");
+                    let is_dm = d.get("guild_id").is_none();
+                    let effective_mention_only = self.mention_only && !is_dm;
                     let Some(clean_content) =
-                        normalize_incoming_content(content, self.mention_only, &bot_user_id)
+                        normalize_incoming_content(content, effective_mention_only, &bot_user_id)
                     else {
                         continue;
                     };
@@ -1014,6 +1027,33 @@ mod tests {
     fn normalize_incoming_content_rejects_empty_after_strip() {
         let cleaned = normalize_incoming_content("<@12345>", true, "12345");
         assert!(cleaned.is_none());
+    }
+
+    #[test]
+    fn mention_only_dm_bypasses_mention_gate() {
+        let mention_only = true;
+        let is_dm = true;
+        let effective = mention_only && !is_dm;
+        let cleaned = normalize_incoming_content("hello without mention", effective, "12345");
+        assert_eq!(cleaned.as_deref(), Some("hello without mention"));
+    }
+
+    #[test]
+    fn mention_only_guild_message_without_mention_is_rejected() {
+        let mention_only = true;
+        let is_dm = false;
+        let effective = mention_only && !is_dm;
+        let cleaned = normalize_incoming_content("hello without mention", effective, "12345");
+        assert!(cleaned.is_none());
+    }
+
+    #[test]
+    fn mention_only_guild_message_with_mention_passes_and_strips() {
+        let mention_only = true;
+        let is_dm = false;
+        let effective = mention_only && !is_dm;
+        let cleaned = normalize_incoming_content("<@12345> run status", effective, "12345");
+        assert_eq!(cleaned.as_deref(), Some("run status"));
     }
 
     // Message splitting tests

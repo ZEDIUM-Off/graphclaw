@@ -11,6 +11,7 @@ use axum::{
 use serde::Deserialize;
 
 const MASKED_SECRET: &str = "***MASKED***";
+const GATEWAY_SESSION_PREFIX: &str = "gw_";
 
 // ── Bearer token auth extractor ─────────────────────────────────
 
@@ -516,6 +517,74 @@ pub async fn handle_api_health(
 
     let snapshot = crate::health::snapshot();
     Json(serde_json::json!({"health": snapshot})).into_response()
+}
+
+/// GET /api/sessions — list gateway sessions
+pub async fn handle_api_sessions_list(
+    State(state): State<AppState>,
+    headers: HeaderMap,
+) -> impl IntoResponse {
+    if let Err(e) = require_auth(&state, &headers) {
+        return e.into_response();
+    }
+
+    let Some(ref backend) = state.session_backend else {
+        return Json(serde_json::json!({
+            "sessions": [],
+            "message": "Session persistence is disabled"
+        }))
+        .into_response();
+    };
+
+    let sessions: Vec<serde_json::Value> = backend
+        .list_sessions_with_metadata()
+        .into_iter()
+        .filter_map(|meta| {
+            let session_id = meta.key.strip_prefix(GATEWAY_SESSION_PREFIX)?;
+            Some(serde_json::json!({
+                "session_id": session_id,
+                "created_at": meta.created_at.to_rfc3339(),
+                "last_activity": meta.last_activity.to_rfc3339(),
+                "message_count": meta.message_count,
+            }))
+        })
+        .collect();
+
+    Json(serde_json::json!({"sessions": sessions})).into_response()
+}
+
+/// DELETE /api/sessions/{id} — delete a gateway session
+pub async fn handle_api_session_delete(
+    State(state): State<AppState>,
+    headers: HeaderMap,
+    Path(id): Path<String>,
+) -> impl IntoResponse {
+    if let Err(e) = require_auth(&state, &headers) {
+        return e.into_response();
+    }
+
+    let Some(ref backend) = state.session_backend else {
+        return (
+            StatusCode::NOT_FOUND,
+            Json(serde_json::json!({"error": "Session persistence is disabled"})),
+        )
+            .into_response();
+    };
+
+    let session_key = format!("{GATEWAY_SESSION_PREFIX}{id}");
+    match backend.delete_session(&session_key) {
+        Ok(true) => Json(serde_json::json!({"deleted": true, "session_id": id})).into_response(),
+        Ok(false) => (
+            StatusCode::NOT_FOUND,
+            Json(serde_json::json!({"error": "Session not found"})),
+        )
+            .into_response(),
+        Err(e) => (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(serde_json::json!({"error": format!("Failed to delete session: {e}")})),
+        )
+            .into_response(),
+    }
 }
 
 // ── Helpers ─────────────────────────────────────────────────────

@@ -37,7 +37,9 @@ flowchart LR
 
 ## Current State
 
-This UI still presents inherited `zeroclaw` gateway surfaces, including pairing/auth and operational pages. It is not yet a separate GraphClaw-native frontend architecture.
+This UI now tracks a more recent inherited `zeroclaw` dashboard baseline, including pairing/auth, operational pages, and the newer theme-aware dashboard shell. It is not yet a separate GraphClaw-native frontend architecture.
+
+The GraphClaw playground no longer lives here. Graph-oriented exploration is being moved into the separate Vue application under `ui/`.
 
 ## Current Dependency Direction
 
@@ -61,6 +63,7 @@ Today, this subtree contributes operator visibility over the current runtime and
 
 - Do not change docs here in a way that implies backend routes or product identity have already been migrated.
 - Keep frontend structure aligned with real gateway contracts and current package/tooling layout.
+- Keep the inherited dashboard and the future Vue UI clearly separated: `web/` is the inherited operational dashboard, `ui/` is the GraphClaw-facing migration surface.
 - Do not present a dashboard page as proof that `SessionWindow`, `ContextPack`, or `ResolutionTrace` already exist as runtime artifacts.
 
 ## Agent Guidance

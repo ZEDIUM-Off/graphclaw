@@ -18,6 +18,7 @@ This subtree owns frontend implementation detail for the current dashboard. It c
 - `App.tsx` - auth gate, locale context, and route table
 - `index.css` - shared styling entry
 - `components/` - layout and reusable UI structure
+- `contexts/` - theme and dashboard presentation state
 - `hooks/` - auth and transport-aware React hooks
 - `lib/` - API, auth, SSE, WebSocket, and i18n utilities
 - `pages/` - route-level screens
@@ -26,9 +27,10 @@ This subtree owns frontend implementation detail for the current dashboard. It c
 
 ## Routing
 
-`App.tsx` currently routes `/`, `/agent`, `/tools`, `/cron`, `/integrations`, `/memory`, `/config`, `/cost`, `/logs`, and `/doctor` through `Layout`, with unauthenticated users gated by the pairing dialog.
+`App.tsx` currently routes `/`, `/agent`, `/tools`, `/cron`, `/integrations`, `/memory`, `/config`, `/cost`, `/logs`, `/doctor`, and `/pairing` through `Layout`, with unauthenticated users gated by the pairing dialog.
 
 - page and route concerns belong in `pages/`
+- theme state belongs in `contexts/`
 - reusable presentation belongs in `components/`
 - transport helpers belong in `lib/` and `hooks/`
 - runtime contract truth still comes from `src/gateway/`
@@ -46,7 +48,7 @@ flowchart LR
 
 ## Current State
 
-The source tree is compact and still organized around inherited operational pages rather than a GraphClaw-specific information architecture.
+The source tree is still organized around inherited operational pages rather than a GraphClaw-specific information architecture. The former React playground pages have been removed from this subtree so that graph exploration can evolve independently in `ui/`.
 
 ## GraphClaw Relevance
 
