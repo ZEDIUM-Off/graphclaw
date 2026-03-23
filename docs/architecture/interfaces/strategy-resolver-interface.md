@@ -43,7 +43,7 @@ Its role is to choose, at minimum conceptually:
 - a packing strategy;
 - an orchestration strategy.
 
-It should sit after task-intent derivation and scope resolution, and before planning or execution artifacts are built.
+It should sit after task-intent derivation and scope resolution, and before the turn commits to a [`GoO`](../concepts/goo.md) proposal or executable form.
 
 ## Inputs And Outputs
 
@@ -59,6 +59,7 @@ It should sit after task-intent derivation and scope resolution, and before plan
 ### Typical Outputs
 
 - `StrategyResolution` as the coherent selected strategy set;
+- a decision regime for whether the turn should reuse a persisted [`GoO`](../concepts/goo.md), compose one from typed operations, or ask the model for a structured `GoO` proposal;
 - explicit fallback or degradation notes when the preferred set cannot be fully satisfied;
 - compatibility notes that planning or execution layers may consume;
 - traceable rationale suitable for inclusion in `ResolutionTrace`.
@@ -70,6 +71,7 @@ The interface should eventually support at least:
 - selecting a coherent strategy set instead of isolated independent picks;
 - rejecting combinations that are mutually incompatible under current policy, budget, or capability constraints;
 - degrading or substituting strategies when the preferred set is unavailable;
+- constraining how a turn may obtain its candidate [`GoO`](../concepts/goo.md) without executing that `GoO` itself;
 - remaining separate from the execution of the selected strategy;
 - exposing enough structure that planning artifacts can be built without hidden prompt-only logic.
 
@@ -78,6 +80,7 @@ The interface should eventually support at least:
 It should not become:
 
 - the full `ContextPack`;
+- the canonical definition of `GoO`;
 - the execution engine for plans;
 - a provider-owned reasoning channel;
 - a memory backend in disguise;
@@ -93,6 +96,7 @@ Its job is strategy choice and coherence checking, not the whole turn.
 4. Strategy definitions remain declarative; execution happens elsewhere.
 5. Degradation and fallback must be explicit enough to trace later.
 6. The inherited main-agent path may remain the default preset, but it should become a chosen or implied strategy set rather than the only invisible system mode.
+7. A model-proposed `GoO` remains only a proposal until GraphClaw validates, resolves, and compiles it.
 
 ## Candidate Strategy Families
 
@@ -109,6 +113,19 @@ In the current GraphClaw reading, these families should be understood against:
 - GoT distinctions between generating, refining, aggregating, and ranking thought branches before the next runtime step is chosen.
 
 This document does not freeze the full taxonomy. It only establishes that strategy families should be selectable through an explicit boundary.
+
+## Relation To Structured `GoO` Proposals
+
+GraphClaw should document a sharp boundary between strategy choice and operation-graph execution.
+
+The stable reading is:
+
+- `StrategyResolver` decides the regime under which a turn should think;
+- that regime can favor reuse of a persisted [`GoO`](../concepts/goo.md), composition from known operations, or a model-produced structured `GoO` proposal;
+- the model may propose a `GoO`, but the runtime must not execute an unresolved free-form structure directly;
+- GraphClaw keeps responsibility for validation, resolution, expansion, and compilation before execution.
+
+This preserves traceability and avoids collapsing strategy choice into hidden prompt habits.
 
 ## Degradation And Fallback
 

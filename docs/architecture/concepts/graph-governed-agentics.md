@@ -12,6 +12,7 @@ It does not redefine the linked concepts. Use it to choose the right document wh
 - `Set` / `View` / packability family: [`views-and-sets.md`](views-and-sets.md)
 - projection rules, `ProjectionRegistry`, and `NLProjection`: [`projection-governance.md`](projection-governance.md)
 - mono-agent `Graph of Thoughts`: [`got.md`](got.md)
+- `Graph of Operations` and reusable reasoning graphs: [`goo.md`](goo.md)
 - mono-agent loop: [`agent-loop.md`](agent-loop.md)
 - context artifacts and budgets: [`context-artifacts.md`](context-artifacts.md)
 

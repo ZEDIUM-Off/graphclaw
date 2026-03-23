@@ -12,6 +12,7 @@ Le but est de remplacer une lecture purement lineaire et prompt-first par une bo
 
 - la matiere portee par les [`Set`](set.md) ;
 - la composition runtime de la [`View`](view.md) ;
+- la selection, la reutilisation, ou la composition d'un [`GoO`](goo.md) ;
 - la projection gouvernee en langage naturel ;
 - l'evolution de pensee de type GoT ;
 - la recomposition du sous-graphe de travail suivant.
@@ -32,34 +33,36 @@ Le but est de remplacer une lecture purement lineaire et prompt-first par une bo
 La boucle mono-agent cible peut etre lue ainsi :
 
 1. deriver un `TaskIntent` minimal ;
-2. activer un ou plusieurs [`Set`](set.md) de depart ;
-3. composer une [`View`](view.md) initiale ;
-4. choisir le regime actif de reflexion et d'exploration ;
-5. generer, critiquer, raffiner, ou agreger des pensees dans un graphe de pensee appuye sur la [`View`](view.md) active ;
-6. utiliser ces sorties pour recomposer la `View` suivante ;
-7. iterer jusqu'a ce qu'une branche de travail soit suffisante ;
-8. choisir la phase d'invocation et sa strategie de projection ;
-9. deriver l'ensemble de [`ContextFrame`](context-frame.md) utile a cette invocation ;
-10. deriver un [`ContextPack`](../interfaces/context-pack-interface.md) ;
-11. enregistrer le chemin de selection dans une `ResolutionTrace`.
+2. resoudre le regime actif de reflexion, d'exploration, de packing, et d'orchestration ;
+3. selectionner, reutiliser, composer, ou faire proposer un [`GoO`](goo.md) structure pour le turn ;
+4. resoudre, expandre, puis compiler ce `GoO` en un seul graphe executable ;
+5. activer un ou plusieurs [`Set`](set.md) de depart et composer une [`View`](view.md) initiale ;
+6. executer le `GoO` sur la [`View`](view.md) active en faisant evoluer le `GoTState` ;
+7. utiliser ces sorties pour recomposer la `View` suivante si necessaire ;
+8. iterer jusqu'a ce qu'une branche de travail soit suffisante dans le cadre du meme `GoO` compile ;
+9. choisir la phase d'invocation et sa strategie de projection ;
+10. deriver l'ensemble de [`ContextFrame`](context-frame.md) utile a cette invocation ;
+11. deriver un [`ContextPack`](../interfaces/context-pack-interface.md) ;
+12. enregistrer le chemin de selection dans une `ResolutionTrace`.
 
 ## Diagramme De Boucle
 
 ```mermaid
 flowchart TD
     A[TaskIntent]
-    B[Set de depart]
-    C[View active]
-    D[Strategie GoT active]
-    E[Step GoT courant]
+    B[StrategyResolution]
+    C[GoO compile]
+    D[View active]
+    E[GoTState courant]
     F[Recomposer l'ensemble de ContextFrame]
     G[Recomposer le ContextPack]
-    H[Invocation provider]
+    H[Invocation provider ou sortie]
     I[Mettre a jour la branche ou la View]
 
     A --> B --> C --> D --> E --> F --> G --> H --> I
+    C --> E
     I --> E
-    I --> C
+    I --> D
 ```
 
 Ce diagramme est conceptuel uniquement.
@@ -67,7 +70,8 @@ Ce diagramme est conceptuel uniquement.
 Il montre que :
 
 - la `View` reste l'espace de travail ;
-- le step GoT courant et la strategie selectionnee peuvent changer les frames utiles ;
+- le `GoO` compile reste unique pour le turn ;
+- le `GoTState` courant et la strategie selectionnee peuvent changer les frames utiles ;
 - le [`ContextPack`](../interfaces/context-pack-interface.md) peut donc etre recompose plusieurs fois a l'interieur d'une meme chaine GoT.
 
 ## Regle De Lecture
@@ -75,6 +79,7 @@ Il montre que :
 Cette boucle doit etre lue avec :
 
 - [`got.md`](got.md) pour l'orchestration du graphe de pensee ;
+- [`goo.md`](goo.md) pour le graphe d'operations du turn ;
 - [`projection-governance.md`](projection-governance.md) pour les regles de projectabilite ;
 - [`context-artifacts.md`](context-artifacts.md) pour les distinctions entre artefacts ;
 - [`../runtime/turn-runtime-logic.md`](../runtime/turn-runtime-logic.md) pour la sequence plus large du turn.

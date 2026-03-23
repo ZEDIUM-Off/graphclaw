@@ -14,6 +14,10 @@ Use this index to find the right source quickly, then read the linked document i
 | `Set`                                 | `[set.md](set.md)`                                                                                   |
 | `ResolvedSet`                         | `[resolved-set.md](resolved-set.md)`                                                                 |
 | `View`                                | `[view.md](view.md)`                                                                                 |
+| `Graph of Thoughts` (`GoT`)           | `[got.md](got.md)`                                                                                   |
+| `Graph of Operations` (`GoO`)         | `[goo.md](goo.md)`                                                                                   |
+| `GoTState`                            | `[got.md#gotstate](got.md#gotstate)`                                                                 |
+| `Reusable GoO`                        | `[goo.md#goo-persiste-et-reutilisation](goo.md#goo-persiste-et-reutilisation)`                      |
 | `Packable Subgraph`                   | `[packability.md](packability.md)`                                                                   |
 | `Packability`                         | `[packability.md](packability.md)`                                                                   |
 | `Bounded Complement`                  | `[packability.md](packability.md)`                                                                   |

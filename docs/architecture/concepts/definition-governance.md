@@ -93,6 +93,9 @@ Forme recommandee dans un `CONTEXT.md` de code :
 | `Set` | [`set.md`](set.md) |
 | `ResolvedSet` | [`resolved-set.md`](resolved-set.md) |
 | `View` | [`view.md`](view.md) |
+| `Graph of Thoughts` (`GoT`) | [`got.md`](got.md) |
+| `Graph of Operations` (`GoO`) | [`goo.md`](goo.md) |
+| `GoTState` | [`got.md#gotstate`](got.md#gotstate) |
 | `SessionFrame` | [`session-frame.md`](session-frame.md) |
 | `ContextPack` | [`context-pack-interface.md`](../interfaces/context-pack-interface.md) |
 | `ContextFrame` | [`context-frame.md`](context-frame.md) |

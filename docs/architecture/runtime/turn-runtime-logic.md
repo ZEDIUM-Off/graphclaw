@@ -19,6 +19,8 @@ This document therefore describes the logical phases of a turn and then maps the
 
 When this document says "build the final `ContextPack`", read that as "build the current invocation-specific pack". A long turn may involve several provider invocations with different frame composition, even though the turn remains one logical unit.
 
+When this document says "execute the turn", read that as "execute one final compiled [`GoO`](../concepts/goo.md) through the main runtime loop". This target model does not imply several concurrent execution loops or a nested workflow engine.
+
 ## Logical Turn Phases
 
 The stable logical sequence should be documented as:
@@ -26,15 +28,16 @@ The stable logical sequence should be documented as:
 1. derive `TaskIntent` from the incoming turn;
 2. determine the session-scoped constraints that bound what may be accessed;
 3. resolve the coherent strategy set for reflection, exploration, packing, and orchestration;
-4. resolve or refresh the relevant `View` scope;
-5. build, expand, or refine candidate `View` objects;
-6. use GoT-style reasoning on top of the active `View` to compare candidate structures and possible mutations;
-7. evaluate packability, policy, and budget;
-8. derive a packable subgraph candidate;
-9. choose the current provider-invocation phase and frame composition;
-10. build the invocation-specific `ContextPack`;
-11. record a `ResolutionTrace`;
-12. hand the result into response generation and any post-turn persistence flow.
+4. select, reuse, compose, or request a structured [`GoO`](../concepts/goo.md) proposal for the turn;
+5. validate, resolve, expand, and compile that proposal into one final executable `GoO`;
+6. resolve or refresh the relevant [`View`](../concepts/view.md) scope;
+7. execute the compiled `GoO`, producing `GoTState` on top of the active [`View`](../concepts/view.md);
+8. evaluate packability, policy, and budget;
+9. derive a packable subgraph candidate;
+10. choose the current provider-invocation phase and frame composition;
+11. build the invocation-specific `ContextPack`;
+12. record a `ResolutionTrace`;
+13. hand the result into response generation and any post-turn persistence flow.
 
 These are logical phases, not a fixed class diagram.
 
@@ -47,21 +50,22 @@ flowchart LR
     A[TaskIntent]
     B[Session constraints]
     C[StrategyResolution]
-    D[View resolution]
-    E[View refinement]
-    F[GoT reflection on View]
-    G[Policy and budget evaluation]
-    H[Packable subgraph]
-    I[ContextPack]
-    J[ResolutionTrace]
-    K[Response generation]
-    L[Post-turn persistence]
+    D[GoO proposal or reuse]
+    E[GoO resolution and compilation]
+    F[View resolution]
+    G[GoO execution and GoTState]
+    H[Policy and budget evaluation]
+    I[Packable subgraph]
+    J[ContextPack]
+    K[ResolutionTrace]
+    L[Response generation]
+    M[Post-turn persistence]
 
-    A --> B --> C --> D --> E --> F --> G --> H --> I
-    F --> J
-    I --> J
-    I --> K
+    A --> B --> C --> D --> E --> F --> G --> H --> I --> J
+    G --> K
+    J --> K
     J --> L
+    K --> M
 ```
 
 ## Current Inherited Runtime Mapping
@@ -203,7 +207,7 @@ flowchart TD
 ### How To Read The Comparison
 
 - **Current path**: gateway/channels → agent loop → memory_loader, prompt, dispatcher → providers, tools, runtime, security. Context is implicit (prompt assembly and recall); there is no explicit strategy resolution or ContextPack.
-- **Future path**: the same modules are used, but TaskIntent and StrategyResolution precede context creation; a governed Graph Engine seam derives `ContextFrame` sets and produces `ContextPack`; prompt consumes `ContextPack`; `ResolutionTrace` is recorded along the way. Orchestration, memory, tools, providers, runtime, and security remain in their current ownership; the new behavior is the explicit strategy and context layer between turn entry and prompt assembly, not a replacement of those modules.
+- **Future path**: the same modules are used, but TaskIntent and StrategyResolution precede `GoO` selection or proposal; GraphClaw resolves and compiles one final `GoO`; a governed Graph Engine seam executes that `GoO` on the active `View`, then derives `ContextFrame` sets and produces `ContextPack`; prompt consumes `ContextPack`; `ResolutionTrace` is recorded along the way. Orchestration, memory, tools, providers, runtime, and security remain in their current ownership; the new behavior is the explicit strategy, operation-graph, and context layer between turn entry and prompt assembly, not a replacement of those modules.
 
 For interface families and seam placement, see [future-integration-seams.md](../migration/future-integration-seams.md). For migration order and coexistence, see [zero-to-graphclaw-transition.md](../migration/zero-to-graphclaw-transition.md).
 
@@ -265,6 +269,12 @@ It may use:
 But it should not be described as merely another ordinary tool alongside user-callable capabilities.
 
 That distinction matters especially for `src/agent/` and `src/tools/` documentation.
+
+The same discipline applies to reusable reasoning workflows:
+
+- a reusable reasoning workflow is a reusable persisted [`GoO`](../concepts/goo.md);
+- it does not imply a nested workflow engine;
+- the turn still converges to one final compiled `GoO` followed by one execution machine.
 
 ## Budget In The Turn
 

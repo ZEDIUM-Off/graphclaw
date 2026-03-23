@@ -23,7 +23,7 @@ This subtree is now organized by documentation family:
 - transition framing from the inherited runtime: [`zero-to-graphclaw-transition.md`](migration/zero-to-graphclaw-transition.md)
 - sets (persisted), views (runtime), and packability family: [`views-and-sets.md`](concepts/views-and-sets.md), [`set.md`](concepts/set.md), [`resolved-set.md`](concepts/resolved-set.md), [`view.md`](concepts/view.md), [`packability.md`](concepts/packability.md)
 - frame-oriented context composition: [`context-frame.md`](concepts/context-frame.md), [`session-frame.md`](concepts/session-frame.md), [`context-pack-interface.md`](interfaces/context-pack-interface.md)
-- graph theory, projection governance, `Graph of Thoughts`, and mono-agent loop framing: [`graph-governed-agentics.md`](concepts/graph-governed-agentics.md), [`projection-governance.md`](concepts/projection-governance.md), [`got.md`](concepts/got.md), [`agent-loop.md`](concepts/agent-loop.md)
+- graph theory, projection governance, `Graph of Thoughts`, `Graph of Operations`, and mono-agent loop framing: [`graph-governed-agentics.md`](concepts/graph-governed-agentics.md), [`projection-governance.md`](concepts/projection-governance.md), [`got.md`](concepts/got.md), [`goo.md`](concepts/goo.md), [`agent-loop.md`](concepts/agent-loop.md)
 - Set System v0 (lifecycle, algebra, LLM export) for the playground: [`set-system-spec-v0.md`](playground/set-system-spec-v0.md)
 - context artifacts, planning artifacts, and budgeting: [`context-artifacts.md`](concepts/context-artifacts.md)
 - logical turn phases, strategy resolution, current insertion points, and cross-cutting sequential paths (current vs future): [`turn-runtime-logic.md`](runtime/turn-runtime-logic.md)
@@ -131,6 +131,7 @@ This subtree is not for:
 | `context-frame.md` | how should invocation-oriented context composition be structured from governed graph projections |
 | `session-frame.md` | how should session-scoped provider context be projected from the active View |
 | `got.md` | how should mono-agent Graph-of-Thought reasoning be framed |
+| `goo.md` | what is the canonical meaning of `Graph of Operations` and reusable `GoO` composition |
 | `agent-loop.md` | how should the mono-agent loop be read conceptually |
 | `set-system-spec-v0.md` | Set System v0: lifecycle, composition algebra, LLM export (playground slice) |
 | `context-artifacts.md` | which context and planning artifacts are distinct and how do budget concerns relate to them |

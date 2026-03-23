@@ -47,14 +47,16 @@ The conceptual chain should be documented as:
 
 1. `TaskIntent` frames the minimum structured task;
 2. `StrategyResolution` selects the governing strategies for the turn;
-3. one or more `View` objects are built or refined from resolved Sets;
-4. GoT-style reasoning and runtime reflection operate on the active `View`;
-5. a packable subgraph is derived from the candidate working sets;
-6. one or more [`ContextFrame`](context-frame.md) objects are distilled from the relevant governed graph portions for a given provider invocation;
-7. a [`SessionFrame`](session-frame.md) may be derived when session material must be exposed;
-8. a governed composition derives the final [`ContextPack`](../interfaces/context-pack-interface.md) for the current invocation and turn phase;
-9. `ResolutionTrace` records how the result was chosen;
-10. `ContextMutationProposal` can request changes to what remains visible or packable for later turns.
+3. one `GoO` is selected, reused, composed, or proposed in structured form for the turn;
+4. GraphClaw resolves, expands, and compiles that proposal into one final executable `GoO`;
+5. one or more `View` objects are built or refined from resolved Sets;
+6. GoT-style reasoning and runtime reflection operate on the active `View`, producing `GoTState` during `GoO` execution;
+7. a packable subgraph is derived from the candidate working sets;
+8. one or more [`ContextFrame`](context-frame.md) objects are distilled from the relevant governed graph portions for a given provider invocation;
+9. a [`SessionFrame`](session-frame.md) may be derived when session material must be exposed;
+10. a governed composition derives the final [`ContextPack`](../interfaces/context-pack-interface.md) for the current invocation and turn phase;
+11. `ResolutionTrace` records how the result was chosen;
+12. `ContextMutationProposal` can request changes to what remains visible or packable for later turns.
 
 These artifacts are adjacent, but they are not synonyms.
 
@@ -66,7 +68,9 @@ This is a target-architecture artifact map. It clarifies conceptual flow, not th
 flowchart LR
     I[TaskIntent]
     S[StrategyResolution]
+    O[GoO]
     V[View]
+    G[GoTState]
     P[Packable subgraph]
     F[ContextFrame]
     SF[SessionFrame]
@@ -75,13 +79,17 @@ flowchart LR
     M[ContextMutationProposal]
     N[Navigation cost]
     B[Packable subgraph cost]
-    F[Final context cost]
+    X[Final context cost]
 
     I --> S
-    S --> V
+    S --> O
+    O --> V
+    O --> G
+    V --> G
     V --> P
     V --> F
     V --> SF
+    G --> F
     P --> F
     F --> C
     SF --> C
@@ -115,6 +123,7 @@ The most important planning-side artifacts are:
 
 - `TaskIntent`: the minimum structured interpretation of the task;
 - `StrategyResolution`: the selected coherent strategy set for the turn;
+- [`GoO`](goo.md): the typed graph of operations selected, reused, or proposed for the turn;
 - `ReflectionPlan`: the explicit reasoning plan;
 - `ExplorationPlan`: the explicit graph-navigation plan;
 - `ContextEditPlan`: the explicit plan of requested context changes;
@@ -234,6 +243,7 @@ The repo should document these boundaries carefully:
 The docs should continue to surface unresolved points such as:
 
 - which artifacts must be persistable versus transient only;
+- which `GoO` motifs deserve selective promotion into reusable persisted `GoO`;
 - whether every packable subgraph needs explicit materialization;
 - how detailed `ResolutionTrace` should become for routine turns;
 - which forms of `ContextMutationProposal` remain local to a turn versus affecting longer-lived visibility.

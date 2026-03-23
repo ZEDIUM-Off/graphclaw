@@ -127,6 +127,8 @@ Use the concept-specific canonical sources below instead of redefining those con
 - `Set`: [`set.md`](set.md)
 - `ResolvedSet`: [`resolved-set.md`](resolved-set.md)
 - `View`: [`view.md`](view.md)
+- `Graph of Thoughts` (`GoT`): [`got.md`](got.md)
+- `Graph of Operations` (`GoO`): [`goo.md`](goo.md)
 - `ContextFrame`: [`context-frame.md`](context-frame.md)
 - `SessionFrame`: [`session-frame.md`](session-frame.md)
 - `ContextPack`: [`context-pack-interface.md`](../interfaces/context-pack-interface.md)
@@ -219,6 +221,30 @@ The engine therefore resolves not only what context material is available, but a
 - how to delegate;
 - how to make those choices auditable.
 
+## GoT And GoO Boundary
+
+GraphClaw should keep three different layers explicit:
+
+- the [`View`](view.md) as the runtime working subgraph;
+- the [`GoO`](goo.md) as the typed graph of operations that governs the turn's reflection flow;
+- the [`GoT`](got.md) and `GoTState` as the runtime reasoning graph produced while that `GoO` executes.
+
+The stable reading is:
+
+- `GoT` is not the `View`;
+- `GoT` is not the semantic graph backend;
+- `GoT` is not the final [`ContextPack`](../interfaces/context-pack-interface.md);
+- `GoO` is not a second execution engine;
+- reusable "workflows" are reusable versioned [`GoO`](goo.md), not a distinct runtime species.
+
+The runtime target is therefore:
+
+- one turn;
+- one resolved and compiled `GoO` final;
+- one execution machine following that compiled `GoO`;
+- one evolving `GoTState` during reflection;
+- explicit provenance when reusable subgraphs are inlined from persisted `GoO`.
+
 ## Set Semantics
 
 Set semantics are central to the model because persisted `Set` objects, runtime `View` projections, navigation, packing, clustering, and package relationships all rely on them.
@@ -281,14 +307,15 @@ The target runtime should be described as a logical sequence, even before the im
 1. derive `TaskIntent` from the incoming turn;
 2. identify the active session scope and current visibility constraints;
 3. resolve the coherent strategy set for reflection, exploration, packing, and orchestration;
-4. resolve or refresh relevant views;
-5. build or refine candidate sets;
-6. use GoT-style reasoning to compare costs, propose mutations, and evaluate trade-offs on top of the active `View`;
-7. apply policy and budget rules;
-8. derive the `ContextFrame` set needed for the current invocation phase;
-9. compile the final `ContextPack`;
-10. record a `ResolutionTrace`;
-11. pass the pack into response generation and any post-turn persistence flow.
+4. select, reuse, compose, or request a structured [`GoO`](goo.md) proposal for the turn;
+5. validate, resolve, expand, and compile that proposal into one final executable `GoO`;
+6. resolve or refresh relevant views;
+7. execute the compiled `GoO`, producing `GoTState` over the active `View`;
+8. apply policy and budget rules to the resulting governed context state;
+9. derive the [`ContextFrame`](context-frame.md) set needed for the current invocation phase;
+10. compile the final [`ContextPack`](../interfaces/context-pack-interface.md);
+11. record a `ResolutionTrace`;
+12. pass the pack into response generation and any post-turn persistence flow.
 
 This is a runtime logic description, not a commitment to a specific class layout.
 
@@ -298,6 +325,7 @@ For the split architecture reading behind this sequence, also see:
 
 - [`agent-loop.md`](agent-loop.md) for the mono-agent loop;
 - [`got.md`](got.md) for graph-shaped thought evolution;
+- [`goo.md`](goo.md) for the typed operation graph and reusable `GoO` composition;
 - [`projection-governance.md`](projection-governance.md) for projectability and NL projection;
 - [`context-artifacts.md`](context-artifacts.md) for the artifact chain.
 
