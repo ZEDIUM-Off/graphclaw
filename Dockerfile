@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1.7
 
 # ── Stage 0: Web Dashboard Build ────────────────────────────────
-FROM node:22-bookworm-slim@sha256:6762cf835c7f3be64f01e70a9a2d293bac7acd97f4ac297565c8b4a5f9d7db1d AS web-builder
+FROM node:22-bookworm-slim AS web-builder
 
 WORKDIR /web
 ENV PNPM_HOME=/pnpm
@@ -19,7 +19,7 @@ RUN --mount=type=cache,id=zeroclaw-pnpm-store,target=/pnpm/store,sharing=locked 
     pnpm run build
 
 # ── Stage 1: Build ────────────────────────────────────────────
-FROM rust:1.93-slim@sha256:9663b80a1621253d30b146454f903de48f0af925c967be48c84745537cd35d8b AS builder
+FROM rust:1.93-slim AS builder
 
 WORKDIR /app
 ARG CARGO_FEATURES=""
@@ -34,11 +34,15 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
 # 1. Copy manifests to cache dependencies
 COPY Cargo.toml Cargo.lock ./
 COPY crates/robot-kit/Cargo.toml crates/robot-kit/Cargo.toml
+COPY crates/memgraph/Cargo.toml crates/memgraph/Cargo.toml
+COPY crates/sets/Cargo.toml crates/sets/Cargo.toml
 # Create dummy targets declared in Cargo.toml so manifest parsing succeeds.
-RUN mkdir -p src benches crates/robot-kit/src \
+RUN mkdir -p src benches crates/robot-kit/src crates/memgraph/src crates/sets/src \
     && echo "fn main() {}" > src/main.rs \
     && echo "fn main() {}" > benches/agent_benchmarks.rs \
-    && echo "pub fn placeholder() {}" > crates/robot-kit/src/lib.rs
+    && echo "pub fn placeholder() {}" > crates/robot-kit/src/lib.rs \
+    && echo "pub fn placeholder() {}" > crates/memgraph/src/lib.rs \
+    && echo "pub fn placeholder() {}" > crates/sets/src/lib.rs
 RUN --mount=type=cache,id=zeroclaw-cargo-registry,target=/usr/local/cargo/registry,sharing=locked \
     --mount=type=cache,id=zeroclaw-cargo-git,target=/usr/local/cargo/git,sharing=locked \
     --mount=type=cache,id=zeroclaw-target,target=/app/target,sharing=locked \
@@ -47,7 +51,7 @@ RUN --mount=type=cache,id=zeroclaw-cargo-registry,target=/usr/local/cargo/regist
     else \
       cargo build --release --locked; \
     fi
-RUN rm -rf src benches crates/robot-kit/src
+RUN rm -rf src benches crates/robot-kit/src crates/memgraph/src crates/sets/src
 
 # 2. Copy only build-relevant source paths (avoid cache-busting on docs/tests/scripts)
 COPY src/ src/
@@ -102,7 +106,7 @@ RUN mkdir -p /zeroclaw-data/.zeroclaw /zeroclaw-data/workspace && \
     chown -R 65534:65534 /zeroclaw-data
 
 # ── Stage 2: Development Runtime (Debian) ────────────────────
-FROM debian:trixie-slim@sha256:f6e2cfac5cf956ea044b4bd75e6397b4372ad88fe00908045e9a0d21712ae3ba AS dev
+FROM debian:trixie-slim AS dev
 
 # Install essential runtime dependencies only (use docker-compose.override.yml for dev tools)
 RUN apt-get update && apt-get install -y \
@@ -136,7 +140,7 @@ ENTRYPOINT ["zeroclaw"]
 CMD ["gateway"]
 
 # ── Stage 3: Production Runtime (Distroless) ─────────────────
-FROM gcr.io/distroless/cc-debian13:nonroot@sha256:84fcd3c223b144b0cb6edc5ecc75641819842a9679a3a58fd6294bec47532bf7 AS release
+FROM gcr.io/distroless/cc-debian13:nonroot AS release
 
 COPY --from=builder /app/zeroclaw /usr/local/bin/zeroclaw
 COPY --from=builder /zeroclaw-data /zeroclaw-data
