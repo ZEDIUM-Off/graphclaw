@@ -33,7 +33,7 @@ services:
     ports:
       - "127.0.0.1:${HOST_GATEWAY_PORT:-42617}:${ZEROCLAW_GATEWAY_PORT:-42617}"
     healthcheck:
-      test: ["/usr/local/bin/zeroclaw", "status"]
+      test: ["CMD", "/usr/local/bin/zeroclaw", "status"]
       interval: 30s
       timeout: 10s
       retries: 5
