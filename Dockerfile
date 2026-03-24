@@ -37,14 +37,14 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
 COPY Cargo.toml Cargo.lock ./
 COPY crates/robot-kit/Cargo.toml crates/robot-kit/Cargo.toml
 COPY crates/memgraph/Cargo.toml crates/memgraph/Cargo.toml
-COPY crates/views/Cargo.toml crates/views/Cargo.toml
+COPY crates/sets/Cargo.toml crates/sets/Cargo.toml
 # Create dummy targets declared in Cargo.toml so manifest parsing succeeds.
-RUN mkdir -p src benches crates/robot-kit/src crates/memgraph/src crates/views/src \
+RUN mkdir -p src benches crates/robot-kit/src crates/memgraph/src crates/sets/src \
     && echo "fn main() {}" > src/main.rs \
     && echo "fn main() {}" > benches/agent_benchmarks.rs \
     && echo "pub fn placeholder() {}" > crates/robot-kit/src/lib.rs \
     && echo "pub fn placeholder() {}" > crates/memgraph/src/lib.rs \
-    && echo "pub fn placeholder() {}" > crates/views/src/lib.rs
+    && echo "pub fn placeholder() {}" > crates/sets/src/lib.rs
 RUN --mount=type=cache,id=zeroclaw-cargo-registry,target=/usr/local/cargo/registry,sharing=locked \
     --mount=type=cache,id=zeroclaw-cargo-git,target=/usr/local/cargo/git,sharing=locked \
     --mount=type=cache,id=zeroclaw-target,target=/app/target,sharing=locked \
@@ -53,7 +53,7 @@ RUN --mount=type=cache,id=zeroclaw-cargo-registry,target=/usr/local/cargo/regist
     else \
       cargo build --release --locked; \
     fi
-RUN rm -rf src benches crates/robot-kit/src crates/memgraph/src crates/views/src
+RUN rm -rf src benches crates/robot-kit/src crates/memgraph/src crates/sets/src
 
 # 2. Copy only build-relevant source paths (avoid cache-busting on docs/tests/scripts)
 COPY src/ src/
