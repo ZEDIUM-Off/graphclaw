@@ -1,0 +1,16 @@
+# Optional named-tunnel configuration.
+# The default compose stack uses token-based `cloudflared tunnel run --token ...`
+# because it is simpler for a first internal deployment.
+#
+# Use this file only if you prefer the credentials-file flow:
+# 1. Create a named tunnel in Cloudflare Zero Trust.
+# 2. Download the credentials JSON next to this file.
+# 3. Replace placeholders below.
+
+tunnel: REPLACE_WITH_TUNNEL_ID
+credentials-file: /etc/cloudflared/REPLACE_WITH_TUNNEL_ID.json
+
+ingress:
+  - hostname: graphclaw.highfinity.internal
+    service: http://graphclaw:42617
+  - service: http_status:404

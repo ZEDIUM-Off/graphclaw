@@ -4,6 +4,7 @@ For operators running ZeroClaw in persistent or production-like environments.
 
 ## Core Operations
 
+- OVH VPS + Cloudflare internal deployment: [./ovh-vps-cloudflare-deployment.md](./ovh-vps-cloudflare-deployment.md)
 - Day-2 runbook: [./operations-runbook.md](./operations-runbook.md)
 - Release runbook: [../contributing/release-process.md](../contributing/release-process.md)
 - Troubleshooting matrix: [./troubleshooting.md](./troubleshooting.md)
@@ -20,5 +21,6 @@ For operators running ZeroClaw in persistent or production-like environments.
 
 ## Related
 
+- Deploy assets: [../../deploy/ovh-vps/README.md](../../deploy/ovh-vps/README.md)
 - Config reference: [../reference/api/config-reference.md](../reference/api/config-reference.md)
 - Security collection: [../security/README.md](../security/README.md)

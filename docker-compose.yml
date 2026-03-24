@@ -5,13 +5,19 @@
 #   2. Run: docker compose up -d
 #   3. Access gateway at http://localhost:42617
 #
+# This file is a localhost-oriented convenience example, not the recommended
+# internal production deployment. For the OVH VPS + Cloudflare Tunnel profile,
+# use deploy/ovh-vps/.
+#
 # For more info: https://github.com/zeroclaw-labs/zeroclaw
 
 services:
   zeroclaw:
-    image: ghcr.io/zeroclaw-labs/zeroclaw:latest
-    # Or build locally:
-    # build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: release
+    image: graphclaw-local:latest
     container_name: zeroclaw
     restart: unless-stopped
     
@@ -38,8 +44,8 @@ services:
       - zeroclaw-data:/zeroclaw-data
       
     ports:
-      # Gateway API port (override HOST_PORT if 42617 is taken)
-      - "${HOST_PORT:-42617}:${ZEROCLAW_GATEWAY_PORT:-42617}"
+      # Bind to localhost only; do not expose the gateway directly to the internet.
+      - "127.0.0.1:${HOST_PORT:-42617}:${ZEROCLAW_GATEWAY_PORT:-42617}"
     
     # Resource limits
     deploy:

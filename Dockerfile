@@ -1,9 +1,28 @@
 # syntax=docker/dockerfile:1.7
 
+# ── Stage 0: Web Dashboard Build ────────────────────────────────
+FROM node:22-bookworm-slim@sha256:6762cf835c7f3be64f01e70a9a2d293bac7acd97f4ac297565c8b4a5f9d7db1d AS web-builder
+
+WORKDIR /web
+ENV PNPM_HOME=/pnpm
+ENV PATH=/pnpm:$PATH
+
+RUN corepack enable
+
+COPY web/package.json web/pnpm-lock.yaml ./
+RUN --mount=type=cache,id=zeroclaw-pnpm-store,target=/pnpm/store,sharing=locked \
+    pnpm config set store-dir /pnpm/store && \
+    pnpm install --frozen-lockfile
+
+COPY web/ ./
+RUN --mount=type=cache,id=zeroclaw-pnpm-store,target=/pnpm/store,sharing=locked \
+    pnpm run build
+
 # ── Stage 1: Build ────────────────────────────────────────────
 FROM rust:1.93-slim@sha256:9663b80a1621253d30b146454f903de48f0af925c967be48c84745537cd35d8b AS builder
 
 WORKDIR /app
+ARG CARGO_FEATURES=""
 
 # Install build dependencies
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
@@ -23,7 +42,11 @@ RUN mkdir -p src benches crates/robot-kit/src \
 RUN --mount=type=cache,id=zeroclaw-cargo-registry,target=/usr/local/cargo/registry,sharing=locked \
     --mount=type=cache,id=zeroclaw-cargo-git,target=/usr/local/cargo/git,sharing=locked \
     --mount=type=cache,id=zeroclaw-target,target=/app/target,sharing=locked \
-    cargo build --release --locked
+    if [ -n "$CARGO_FEATURES" ]; then \
+      cargo build --release --locked --features "$CARGO_FEATURES"; \
+    else \
+      cargo build --release --locked; \
+    fi
 RUN rm -rf src benches crates/robot-kit/src
 
 # 2. Copy only build-relevant source paths (avoid cache-busting on docs/tests/scripts)
@@ -32,27 +55,32 @@ COPY benches/ benches/
 COPY crates/ crates/
 COPY firmware/ firmware/
 COPY web/ web/
-# Keep release builds resilient when frontend dist assets are not prebuilt in Git.
-RUN mkdir -p web/dist && \
-    if [ ! -f web/dist/index.html ]; then \
+COPY ui/ ui/
+COPY --from=web-builder /web/dist/ web/dist/
+RUN mkdir -p ui/dist && \
+    if [ ! -f ui/dist/index.html ]; then \
       printf '%s\n' \
         '<!doctype html>' \
         '<html lang="en">' \
         '  <head>' \
         '    <meta charset="utf-8" />' \
         '    <meta name="viewport" content="width=device-width,initial-scale=1" />' \
-        '    <title>ZeroClaw Dashboard</title>' \
+        '    <title>GraphClaw UI Placeholder</title>' \
         '  </head>' \
         '  <body>' \
-        '    <h1>ZeroClaw Dashboard Unavailable</h1>' \
-        '    <p>Frontend assets are not bundled in this build. Build the web UI to populate <code>web/dist</code>.</p>' \
+        '    <h1>GraphClaw UI Not Bundled</h1>' \
+        '    <p>The inherited operator dashboard is available at the root gateway path. The separate <code>ui/</code> app is not part of this deployable profile.</p>' \
         '  </body>' \
-        '</html>' > web/dist/index.html; \
+        '</html>' > ui/dist/index.html; \
     fi
 RUN --mount=type=cache,id=zeroclaw-cargo-registry,target=/usr/local/cargo/registry,sharing=locked \
     --mount=type=cache,id=zeroclaw-cargo-git,target=/usr/local/cargo/git,sharing=locked \
     --mount=type=cache,id=zeroclaw-target,target=/app/target,sharing=locked \
-    cargo build --release --locked && \
+    if [ -n "$CARGO_FEATURES" ]; then \
+      cargo build --release --locked --features "$CARGO_FEATURES"; \
+    else \
+      cargo build --release --locked; \
+    fi && \
     cp target/release/zeroclaw /app/zeroclaw && \
     strip /app/zeroclaw
 

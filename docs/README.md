@@ -23,6 +23,7 @@ Read the docs with the transition in mind:
 - sets, views, packability, artifacts, and turn logic: [`architecture/concepts/views-and-sets.md`](architecture/concepts/views-and-sets.md), [`architecture/concepts/set.md`](architecture/concepts/set.md), [`architecture/concepts/view.md`](architecture/concepts/view.md), [`architecture/concepts/packability.md`](architecture/concepts/packability.md), [`architecture/playground/set-system-spec-v0.md`](architecture/playground/set-system-spec-v0.md), [`architecture/concepts/context-artifacts.md`](architecture/concepts/context-artifacts.md), [`architecture/runtime/turn-runtime-logic.md`](architecture/runtime/turn-runtime-logic.md)
 - first interface fiches for likely runtime seams: [`architecture/interfaces/context-pack-interface.md`](architecture/interfaces/context-pack-interface.md), [`architecture/interfaces/strategy-resolver-interface.md`](architecture/interfaces/strategy-resolver-interface.md), [`architecture/interfaces/graph-context-store-and-retriever-interface.md`](architecture/interfaces/graph-context-store-and-retriever-interface.md), [`architecture/interfaces/mutation-guard-interface.md`](architecture/interfaces/mutation-guard-interface.md), [`architecture/interfaces/orchestration-policies-interface.md`](architecture/interfaces/orchestration-policies-interface.md), [`architecture/interfaces/hook-bus-interface.md`](architecture/interfaces/hook-bus-interface.md). [`architecture/interfaces/session-window-interface.md`](architecture/interfaces/session-window-interface.md) remains only as a retired migration note.
 - backend references: [`backends/README.md`](backends/README.md)
+- OVH VPS + Cloudflare deployment for the current inherited runtime: [`ops/ovh-vps-cloudflare-deployment.md`](ops/ovh-vps-cloudflare-deployment.md)
 - contributor workflow: [`../CONTRIBUTING.md`](../CONTRIBUTING.md)
 
 ## Docs Routing
@@ -41,6 +42,7 @@ Use this page to choose the right documentation branch before editing or relying
 | setup and onboarding instructions | [`setup-guides/README.md`](setup-guides/README.md) |
 | CLI, API, and SOP references | [`reference/README.md`](reference/README.md) |
 | operations, deployment, or troubleshooting | [`ops/README.md`](ops/README.md) |
+| OVH VPS + Cloudflare internal deployment | [`ops/ovh-vps-cloudflare-deployment.md`](ops/ovh-vps-cloudflare-deployment.md) |
 | security guidance | [`security/README.md`](security/README.md) |
 | hardware and peripherals | [`hardware/README.md`](hardware/README.md) |
 | maintainer responsibilities | [`maintainers/README.md`](maintainers/README.md) |
@@ -56,6 +58,7 @@ Use this page to choose the right documentation branch before editing or relying
 - getting started and setup: [`setup-guides/README.md`](setup-guides/README.md)
 - CLI and API references: [`reference/README.md`](reference/README.md)
 - operations and troubleshooting: [`ops/README.md`](ops/README.md)
+- OVH VPS + Cloudflare internal deployment guide for the current inherited runtime: [`ops/ovh-vps-cloudflare-deployment.md`](ops/ovh-vps-cloudflare-deployment.md)
 - security guidance: [`security/README.md`](security/README.md)
 - hardware and peripherals: [`hardware/README.md`](hardware/README.md)
 - contributor and maintainer material: [`contributing/README.md`](contributing/README.md), [`maintainers/README.md`](maintainers/README.md)

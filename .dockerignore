@@ -5,6 +5,10 @@
 
 # Rust build artifacts (can be multiple GB)
 target
+web/node_modules
+ui/node_modules
+web/dist
+ui/dist
 
 # Documentation and examples (not needed for runtime)
 docs
@@ -58,6 +62,7 @@ LICENSE
 .env
 .env.*
 !.env.example
+deploy/**/*.env
 
 # Coverage and profiling
 *.profraw

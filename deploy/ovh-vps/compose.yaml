@@ -1,0 +1,103 @@
+name: graphclaw-ovh
+
+services:
+  graphclaw:
+    build:
+      context: ../..
+      dockerfile: Dockerfile
+      target: ${GRAPHCLAW_BUILD_TARGET:-release}
+      args:
+        CARGO_FEATURES: ${GRAPHCLAW_CARGO_FEATURES:-memory-postgres}
+    image: ${GRAPHCLAW_IMAGE:-graphclaw-highfinity:local}
+    container_name: graphclaw-runtime
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    env_file:
+      - .env
+    environment:
+      ZEROCLAW_CONFIG_DIR: /zeroclaw-data/.zeroclaw
+      ZEROCLAW_WORKSPACE: /zeroclaw-data/workspace
+      ZEROCLAW_GATEWAY_HOST: 0.0.0.0
+      ZEROCLAW_GATEWAY_PORT: ${ZEROCLAW_GATEWAY_PORT:-42617}
+      ZEROCLAW_ALLOW_PUBLIC_BIND: "true"
+      ZEROCLAW_STORAGE_PROVIDER: ${ZEROCLAW_STORAGE_PROVIDER:-postgres}
+      ZEROCLAW_STORAGE_DB_URL: ${ZEROCLAW_STORAGE_DB_URL}
+      ZEROCLAW_STORAGE_CONNECT_TIMEOUT_SECS: ${ZEROCLAW_STORAGE_CONNECT_TIMEOUT_SECS:-15}
+      RUST_LOG: ${RUST_LOG:-info}
+    command: ["gateway"]
+    volumes:
+      - graphclaw-data:/zeroclaw-data
+      - ./config/config.toml:/zeroclaw-data/.zeroclaw/config.toml:ro
+    ports:
+      - "127.0.0.1:${HOST_GATEWAY_PORT:-42617}:${ZEROCLAW_GATEWAY_PORT:-42617}"
+    healthcheck:
+      test: ["/usr/local/bin/zeroclaw", "status"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 25s
+    read_only: true
+    tmpfs:
+      - /tmp:size=64m,noexec,nosuid,nodev
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    networks:
+      - private
+
+  postgres:
+    image: postgres:17-alpine
+    container_name: graphclaw-postgres
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-graphclaw}
+      POSTGRES_USER: ${POSTGRES_USER:-graphclaw}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-graphclaw} -d ${POSTGRES_DB:-graphclaw}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 15s
+    security_opt:
+      - no-new-privileges:true
+    networks:
+      - private
+
+  cloudflared:
+    image: cloudflare/cloudflared:2026.3.1
+    container_name: graphclaw-cloudflared
+    restart: unless-stopped
+    depends_on:
+      graphclaw:
+        condition: service_healthy
+    env_file:
+      - .env
+    command:
+      - tunnel
+      - --no-autoupdate
+      - run
+      - --token
+      - ${CLOUDFLARE_TUNNEL_TOKEN}
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    cap_drop:
+      - ALL
+    networks:
+      - private
+
+volumes:
+  graphclaw-data:
+  postgres-data:
+
+networks:
+  private:
+    driver: bridge

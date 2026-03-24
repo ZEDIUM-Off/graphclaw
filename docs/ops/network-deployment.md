@@ -2,6 +2,8 @@
 
 This document covers deploying ZeroClaw on a Raspberry Pi or other host on your local network, with Telegram and optional webhook channels.
 
+For the OVH VPS internal operator deployment behind Cloudflare Tunnel and Cloudflare Access, use [ovh-vps-cloudflare-deployment.md](./ovh-vps-cloudflare-deployment.md).
+
 ---
 
 ## 1. Overview

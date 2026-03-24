@@ -23,12 +23,14 @@ Reference documentation under `docs/` defines concepts. `AGENTS.md` and `CONTEXT
 - `docs/README.md` - documentation entrypoint
 - `docs/architecture/` - canonical concept and architecture docs
 - `docs/backends/` - backend capability mapping docs
+- `deploy/` - deployment packaging and operator bootstrap assets
 - `src/`, `tests/`, `web/`, `ui/`, `python/`, `firmware/` - primary implementation subtrees
 
 ## Task Routing
 
 - repo framing or root docs: read `README.md`, `AGENTS.md`, then this file
 - architecture concepts or migration docs: read `docs/CONTEXT.md`, then `docs/architecture/CONTEXT.md`
+- deployment packaging or OVH VPS rollout work: read `deploy/CONTEXT.md`
 - implementation work: move to the nearest subtree `CONTEXT.md`
 - future Vue UI work: read `ui/CONTEXT.md`
 - backend stack or Memgraph setup: read `docs/backends/CONTEXT.md` or `memgraph/CONTEXT.md`

@@ -75,6 +75,7 @@ Use these entry points to orient work quickly:
 | workspace crates | [`crates/CONTEXT.md`](crates/CONTEXT.md) |
 | web UI | [`web/CONTEXT.md`](web/CONTEXT.md) |
 | future Vue UI | [`ui/CONTEXT.md`](ui/CONTEXT.md) |
+| deployable OVH VPS runtime assets | [`deploy/CONTEXT.md`](deploy/CONTEXT.md), [`deploy/ovh-vps/README.md`](deploy/ovh-vps/README.md) |
 | Python tooling | [`python/CONTEXT.md`](python/CONTEXT.md) |
 | firmware or board-side code | [`firmware/CONTEXT.md`](firmware/CONTEXT.md) |
 | tests | [`tests/CONTEXT.md`](tests/CONTEXT.md) |
@@ -95,9 +96,20 @@ Always move from the root framing to the closest local `CONTEXT.md` before editi
 | `firmware/` | hardware-side experiments and board support |
 | `tests/` | component, integration, live, manual, and system test areas |
 | `docs/` | documentation hub, architecture references, backend references, contributor guides, and operations material |
+| `deploy/` | production-oriented deployment assets for current-state runtime profiles |
 | `scripts/` | CI, release, and maintenance scripts |
 | `dev/` | local development and CI helper surfaces |
 | `.github/` | workflow automation and repository policy metadata |
+
+## Deployable Current State
+
+GraphClaw now includes a production-oriented current-state deployment profile for an OVH VPS behind Cloudflare Tunnel and Cloudflare Access.
+
+- the deployed runtime remains the inherited `zeroclaw` gateway and runtime;
+- the deployed browser UI for this profile remains `web/`;
+- the separate `ui/` subtree remains out of scope for the first internal operator deployment;
+- deploy assets live under [`deploy/ovh-vps/`](deploy/ovh-vps/README.md);
+- operator guidance lives under [`docs/ops/ovh-vps-cloudflare-deployment.md`](docs/ops/ovh-vps-cloudflare-deployment.md).
 
 ## Current Technical Reality
 

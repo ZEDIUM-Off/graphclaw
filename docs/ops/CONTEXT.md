@@ -13,6 +13,7 @@ This subtree documents how to operate, troubleshoot, and deploy the current runt
 ## File Map
 
 - `README.md` - operations docs entrypoint
+- `ovh-vps-cloudflare-deployment.md` - first-production OVH VPS deployment guide for the current inherited runtime
 - `operations-runbook.md` - main runtime operations guide
 - `troubleshooting.md` and `troubleshooting.vi.md` - troubleshooting material
 - `resource-limits.md` - runtime/resource envelope notes

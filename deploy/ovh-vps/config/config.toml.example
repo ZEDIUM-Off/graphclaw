@@ -1,0 +1,52 @@
+default_provider = "openrouter"
+default_model = "anthropic/claude-sonnet-4-20250514"
+default_temperature = 0.2
+
+[gateway]
+host = "0.0.0.0"
+port = 42617
+require_pairing = true
+allow_public_bind = true
+trust_forwarded_headers = false
+session_persistence = true
+session_ttl_hours = 168
+pair_rate_limit_per_minute = 10
+webhook_rate_limit_per_minute = 60
+
+[gateway.pairing_dashboard]
+code_length = 8
+code_ttl_secs = 900
+max_pending_codes = 5
+
+[memory]
+backend = "postgres"
+auto_save = true
+hygiene_enabled = true
+archive_after_days = 7
+purge_after_days = 30
+conversation_retention_days = 90
+response_cache_enabled = true
+response_cache_ttl_minutes = 120
+response_cache_max_entries = 10000
+snapshot_enabled = true
+snapshot_on_hygiene = true
+auto_hydrate = true
+
+[storage.provider.config]
+provider = "postgres"
+# db_url is injected at runtime via ZEROCLAW_STORAGE_DB_URL
+
+[observability]
+backend = "prometheus"
+runtime_trace_mode = "rolling"
+runtime_trace_path = "state/runtime-trace.jsonl"
+runtime_trace_max_entries = 500
+
+[cron]
+enabled = true
+
+[scheduler]
+enabled = true
+
+[hooks]
+enabled = true
