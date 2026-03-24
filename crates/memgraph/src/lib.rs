@@ -2,7 +2,7 @@
 //!
 //! This crate provides graph primitives only: connection, create node/edge,
 //! read subgraph, neighborhood. It does not contain View logic; that lives in
-//! the `views` crate.
+//! the `sets` crate.
 
 mod client;
 mod config;

@@ -1,4 +1,4 @@
-//! Playground API: graph primitives and view composition/resolution/export.
+//! Playground API: graph primitives and set composition/resolution/export.
 //! Routes under /api/playground/*. DTOs only; no leakage of internal types.
 
 use super::AppState;
@@ -10,19 +10,20 @@ use axum::{
 };
 use memgraph::{GraphSnapshot, MemgraphClient, MemgraphConfig};
 use serde::{Deserialize, Serialize};
+use sets::{export_for_llm, BoundSet, ResolvedSet, SetDefinition, SetSelectors, SetsService};
 use std::collections::HashMap;
 use std::sync::Arc;
-use views::{export_for_llm, BoundView, ViewTemplate, ViewsService};
 
 const DEFAULT_GRAPH_NODE_LIMIT: u32 = 200;
 const DEFAULT_GRAPH_EDGE_LIMIT: u32 = 400;
 const MAX_GRAPH_NODE_LIMIT: u32 = 1_000;
 const MAX_GRAPH_EDGE_LIMIT: u32 = 5_000;
+const ROOT_SET_ID: &str = "root";
 
-/// Playground state (views service; holds Memgraph client internally).
+/// Playground state (sets service; holds Memgraph client internally).
 #[derive(Clone)]
 pub struct PlaygroundState {
-    pub views: Arc<ViewsService>,
+    pub sets: Arc<SetsService>,
     pub memgraph: Arc<MemgraphClient>,
 }
 
@@ -30,22 +31,18 @@ pub struct PlaygroundState {
 pub async fn create_playground_state() -> Option<PlaygroundState> {
     let config = MemgraphConfig::default();
     let memgraph = Arc::new(MemgraphClient::connect(&config).await.ok()?);
-    let views = Arc::new(ViewsService::new(memgraph.clone()));
-    Some(PlaygroundState { views, memgraph })
+    let sets = Arc::new(SetsService::new(memgraph.clone()));
+    Some(PlaygroundState { sets, memgraph })
 }
 
-// ═══════════════════════════════════════════════════════════════════════════
-// DTOs (public surface; do not expose internal types)
-// ═══════════════════════════════════════════════════════════════════════════
-
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone)]
 pub struct GraphNodeDto {
     pub id: i64,
     pub labels: Vec<String>,
     pub properties: HashMap<String, serde_json::Value>,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone)]
 pub struct GraphEdgeDto {
     pub id: i64,
     pub from_id: i64,
@@ -60,22 +57,22 @@ pub struct SubgraphDto {
     pub edges: Vec<GraphEdgeDto>,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone)]
 pub struct GraphSnapshotMetaDto {
     pub truncated: bool,
     pub node_limit: u32,
     pub edge_limit: u32,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone)]
 pub struct GraphSnapshotDto {
     pub nodes: Vec<GraphNodeDto>,
     pub edges: Vec<GraphEdgeDto>,
     pub meta: GraphSnapshotMetaDto,
 }
 
-#[derive(Serialize, Deserialize)]
-pub struct ViewTemplateDto {
+#[derive(Serialize, Deserialize, Clone)]
+pub struct SetDefinitionDto {
     pub id: String,
     pub name: String,
     pub kind: String,
@@ -83,18 +80,18 @@ pub struct ViewTemplateDto {
     #[serde(default)]
     pub extends: Vec<String>,
     #[serde(default)]
-    pub selectors: views::Selectors,
+    pub selectors: SetSelectors,
     #[serde(default)]
     pub filters: Vec<String>,
     #[serde(default)]
-    pub operations: Vec<views::ViewOperation>,
+    pub operations: Vec<sets::SetOperation>,
     pub cost_limit: Option<u32>,
 }
 
-#[derive(Serialize, Deserialize)]
-pub struct ResolvedViewDto {
-    pub view_id: String,
-    pub view_kind: Option<String>,
+#[derive(Serialize, Deserialize, Clone)]
+pub struct ResolvedSetDto {
+    pub set_id: String,
+    pub set_kind: Option<String>,
     pub nodes: Vec<GraphNodeDto>,
     pub edges: Vec<GraphEdgeDto>,
     #[serde(default)]
@@ -106,13 +103,12 @@ pub struct ResolvedViewDto {
 }
 
 #[derive(Serialize, Deserialize)]
-pub struct ResolvedViewExportDto {
+pub struct SetExportDto {
     pub format: String,
     pub structured: serde_json::Value,
     pub text: String,
 }
 
-// Request bodies
 #[derive(Deserialize)]
 pub struct CreateNodeRequest {
     pub labels: Vec<String>,
@@ -142,7 +138,7 @@ pub struct GetGraphRequest {
 
 #[derive(Deserialize)]
 pub struct ExportRequest {
-    pub format: String, // "llm_compact" | "llm_explained"
+    pub format: String,
     #[serde(default)]
     pub purpose: Option<String>,
     #[serde(default)]
@@ -155,29 +151,36 @@ pub struct ExportRequest {
     pub included: Vec<String>,
     #[serde(default)]
     pub excluded: Option<Vec<String>>,
-    /// Resolved view to export (from resolve endpoint)
-    pub resolved: ResolvedViewDto,
+    pub resolved: ResolvedSetDto,
 }
 
-// ═══════════════════════════════════════════════════════════════════════════
-// Handlers (require PlaygroundState in app state; see gateway/mod.rs)
-// ═══════════════════════════════════════════════════════════════════════════
+#[derive(Deserialize)]
+pub struct CreateSetFromSelectionRequest {
+    pub name: String,
+    #[serde(default)]
+    pub description: String,
+    #[serde(default)]
+    pub kind: Option<String>,
+    pub node_ids: Vec<i64>,
+    #[serde(default)]
+    pub cost_limit: Option<u32>,
+}
 
-fn node_to_dto(n: &memgraph::GraphNode) -> GraphNodeDto {
+fn node_to_dto(node: &memgraph::GraphNode) -> GraphNodeDto {
     GraphNodeDto {
-        id: n.id,
-        labels: n.labels.clone(),
-        properties: n.properties.clone(),
+        id: node.id,
+        labels: node.labels.clone(),
+        properties: node.properties.clone(),
     }
 }
 
-fn edge_to_dto(e: &memgraph::GraphEdge) -> GraphEdgeDto {
+fn edge_to_dto(edge: &memgraph::GraphEdge) -> GraphEdgeDto {
     GraphEdgeDto {
-        id: e.id,
-        from_id: e.from_id,
-        to_id: e.to_id,
-        rel_type: e.rel_type.clone(),
-        properties: e.properties.clone(),
+        id: edge.id,
+        from_id: edge.from_id,
+        to_id: edge.to_id,
+        rel_type: edge.rel_type.clone(),
+        properties: edge.properties.clone(),
     }
 }
 
@@ -197,39 +200,186 @@ fn snapshot_to_dto(snapshot: GraphSnapshot) -> GraphSnapshotDto {
     }
 }
 
-fn view_template_from_dto(
+fn kind_from_string(kind: &str) -> sets::SetKind {
+    match kind {
+        "boundary" => sets::SetKind::Boundary,
+        "projection" => sets::SetKind::Projection,
+        _ => sets::SetKind::Semantic,
+    }
+}
+
+fn kind_to_string(kind: &sets::SetKind) -> String {
+    match kind {
+        sets::SetKind::Semantic => "semantic",
+        sets::SetKind::Boundary => "boundary",
+        sets::SetKind::Projection => "projection",
+    }
+    .to_string()
+}
+
+fn set_definition_from_dto(
     route_id: Option<&str>,
-    template: ViewTemplateDto,
-) -> Result<ViewTemplate, String> {
+    definition: SetDefinitionDto,
+) -> Result<SetDefinition, String> {
     if let Some(route_id) = route_id {
-        if route_id != template.id {
+        if route_id != definition.id {
             return Err(format!(
-                "route id '{route_id}' does not match template id '{}'",
-                template.id
+                "route id '{route_id}' does not match set id '{}'",
+                definition.id
             ));
         }
     }
 
-    let kind = match template.kind.as_str() {
-        "boundary" => views::ViewKind::Boundary,
-        "projection" => views::ViewKind::Projection,
-        _ => views::ViewKind::Semantic,
-    };
-
-    Ok(ViewTemplate {
-        id: template.id,
-        name: template.name,
-        kind,
-        description: template.description,
-        extends: template.extends,
-        selectors: template.selectors,
-        filters: template.filters,
-        operations: template.operations,
-        cost_limit: template.cost_limit,
+    Ok(SetDefinition {
+        id: definition.id,
+        name: definition.name,
+        kind: kind_from_string(&definition.kind),
+        description: definition.description,
+        extends: definition.extends,
+        selectors: definition.selectors,
+        filters: definition.filters,
+        operations: definition.operations,
+        cost_limit: definition.cost_limit,
     })
 }
 
-/// GET /api/playground/graph — get a bounded snapshot of the graph
+fn set_definition_to_dto(definition: SetDefinition) -> SetDefinitionDto {
+    SetDefinitionDto {
+        id: definition.id,
+        name: definition.name,
+        kind: kind_to_string(&definition.kind),
+        description: definition.description,
+        extends: definition.extends,
+        selectors: definition.selectors,
+        filters: definition.filters,
+        operations: definition.operations,
+        cost_limit: definition.cost_limit,
+    }
+}
+
+fn resolved_set_to_dto(resolved: ResolvedSet) -> ResolvedSetDto {
+    ResolvedSetDto {
+        set_id: resolved.set_id,
+        set_kind: resolved.set_kind,
+        nodes: resolved.nodes.iter().map(node_to_dto).collect(),
+        edges: resolved.edges.iter().map(edge_to_dto).collect(),
+        composition_trace: resolved.composition_trace,
+        completeness: resolved.completeness,
+        degradations: resolved.degradations,
+        cost_estimate: resolved.cost_estimate,
+    }
+}
+
+fn dto_to_resolved_set(dto: &ResolvedSetDto) -> ResolvedSet {
+    ResolvedSet {
+        set_id: dto.set_id.clone(),
+        set_kind: dto.set_kind.clone(),
+        nodes: dto
+            .nodes
+            .iter()
+            .map(|node| memgraph::GraphNode {
+                id: node.id,
+                labels: node.labels.clone(),
+                properties: node.properties.clone(),
+            })
+            .collect(),
+        edges: dto
+            .edges
+            .iter()
+            .map(|edge| memgraph::GraphEdge {
+                id: edge.id,
+                from_id: edge.from_id,
+                to_id: edge.to_id,
+                rel_type: edge.rel_type.clone(),
+                properties: edge.properties.clone(),
+            })
+            .collect(),
+        composition_trace: dto.composition_trace.clone(),
+        completeness: dto.completeness.clone(),
+        degradations: dto.degradations.clone(),
+        cost_estimate: dto.cost_estimate,
+    }
+}
+
+fn root_set_definition() -> SetDefinitionDto {
+    SetDefinitionDto {
+        id: ROOT_SET_ID.to_string(),
+        name: "Root Set".to_string(),
+        kind: "boundary".to_string(),
+        description: "Synthetic root set exposing the widest bounded graph scope available to the playground.".to_string(),
+        extends: Vec::new(),
+        selectors: SetSelectors::default(),
+        filters: Vec::new(),
+        operations: Vec::new(),
+        cost_limit: None,
+    }
+}
+
+fn root_resolved_set(snapshot: GraphSnapshotDto) -> ResolvedSetDto {
+    let mut degradations = Vec::new();
+    if snapshot.meta.truncated {
+        degradations.push("root set truncated by gateway graph limits".to_string());
+    }
+
+    ResolvedSetDto {
+        set_id: ROOT_SET_ID.to_string(),
+        set_kind: Some("boundary".to_string()),
+        nodes: snapshot.nodes.clone(),
+        edges: snapshot.edges.clone(),
+        composition_trace: vec!["resolve root".to_string()],
+        completeness: Some(
+            if snapshot.meta.truncated {
+                "degraded"
+            } else {
+                "full"
+            }
+            .to_string(),
+        ),
+        degradations,
+        cost_estimate: Some((snapshot.nodes.len() + snapshot.edges.len()) as u64),
+    }
+}
+
+fn root_limits(bound: &BoundSet) -> (u32, u32) {
+    let node_limit = bound
+        .parameters
+        .get("node_limit")
+        .and_then(|value| value.as_u64())
+        .map(|value| value as u32);
+    let edge_limit = bound
+        .parameters
+        .get("edge_limit")
+        .and_then(|value| value.as_u64())
+        .map(|value| value as u32);
+
+    (
+        normalize_limit(node_limit, DEFAULT_GRAPH_NODE_LIMIT, MAX_GRAPH_NODE_LIMIT),
+        normalize_limit(edge_limit, DEFAULT_GRAPH_EDGE_LIMIT, MAX_GRAPH_EDGE_LIMIT),
+    )
+}
+
+fn slugify_set_name(name: &str) -> String {
+    let mut slug = String::new();
+    let mut last_was_dash = false;
+
+    for ch in name.chars() {
+        if ch.is_ascii_alphanumeric() {
+            slug.push(ch.to_ascii_lowercase());
+            last_was_dash = false;
+        } else if !last_was_dash {
+            slug.push('-');
+            last_was_dash = true;
+        }
+    }
+
+    let slug = slug.trim_matches('-').to_string();
+    if slug.is_empty() {
+        "set".to_string()
+    } else {
+        slug
+    }
+}
+
 pub async fn handle_get_graph(
     State(state): State<AppState>,
     Query(query): Query<GetGraphRequest>,
@@ -259,15 +409,14 @@ pub async fn handle_get_graph(
             Json(serde_json::json!(snapshot_to_dto(snapshot))),
         )
             .into_response(),
-        Err(e) => (
+        Err(error) => (
             StatusCode::BAD_REQUEST,
-            Json(serde_json::json!({"error": e.to_string()})),
+            Json(serde_json::json!({"error": error.to_string()})),
         )
             .into_response(),
     }
 }
 
-/// POST /api/playground/graph/nodes — create a node
 pub async fn handle_create_node(
     State(state): State<AppState>,
     Json(req): Json<CreateNodeRequest>,
@@ -279,21 +428,21 @@ pub async fn handle_create_node(
         )
             .into_response();
     };
+
     match pg.memgraph.create_node(&req.labels, &req.properties).await {
         Ok(node) => (
             StatusCode::CREATED,
             Json(serde_json::json!(node_to_dto(&node))),
         )
             .into_response(),
-        Err(e) => (
+        Err(error) => (
             StatusCode::BAD_REQUEST,
-            Json(serde_json::json!({"error": e.to_string()})),
+            Json(serde_json::json!({"error": error.to_string()})),
         )
             .into_response(),
     }
 }
 
-/// POST /api/playground/graph/edges — create an edge
 pub async fn handle_create_edge(
     State(state): State<AppState>,
     Json(req): Json<CreateEdgeRequest>,
@@ -305,6 +454,7 @@ pub async fn handle_create_edge(
         )
             .into_response();
     };
+
     match pg
         .memgraph
         .create_edge(req.from_id, req.to_id, &req.rel_type, &req.properties)
@@ -315,15 +465,14 @@ pub async fn handle_create_edge(
             Json(serde_json::json!(edge_to_dto(&edge))),
         )
             .into_response(),
-        Err(e) => (
+        Err(error) => (
             StatusCode::BAD_REQUEST,
-            Json(serde_json::json!({"error": e.to_string()})),
+            Json(serde_json::json!({"error": error.to_string()})),
         )
             .into_response(),
     }
 }
 
-/// POST /api/playground/graph/subgraph — get subgraph by node ids
 pub async fn handle_get_subgraph(
     State(state): State<AppState>,
     Json(req): Json<GetSubgraphRequest>,
@@ -335,24 +484,24 @@ pub async fn handle_get_subgraph(
         )
             .into_response();
     };
+
     match pg.memgraph.get_subgraph(&req.node_ids).await {
-        Ok(sg) => (
+        Ok(subgraph) => (
             StatusCode::OK,
             Json(serde_json::json!(SubgraphDto {
-                nodes: sg.nodes.iter().map(node_to_dto).collect(),
-                edges: sg.edges.iter().map(edge_to_dto).collect(),
+                nodes: subgraph.nodes.iter().map(node_to_dto).collect(),
+                edges: subgraph.edges.iter().map(edge_to_dto).collect(),
             })),
         )
             .into_response(),
-        Err(e) => (
+        Err(error) => (
             StatusCode::BAD_REQUEST,
-            Json(serde_json::json!({"error": e.to_string()})),
+            Json(serde_json::json!({"error": error.to_string()})),
         )
             .into_response(),
     }
 }
 
-/// GET /api/playground/graph/nodes/:id — inspect a node
 pub async fn handle_inspect_node(
     State(state): State<AppState>,
     Path(id): Path<i64>,
@@ -364,6 +513,7 @@ pub async fn handle_inspect_node(
         )
             .into_response();
     };
+
     match pg.memgraph.inspect_node(id).await {
         Ok(Some(node)) => {
             (StatusCode::OK, Json(serde_json::json!(node_to_dto(&node)))).into_response()
@@ -373,18 +523,17 @@ pub async fn handle_inspect_node(
             Json(serde_json::json!({"error": "node not found"})),
         )
             .into_response(),
-        Err(e) => (
+        Err(error) => (
             StatusCode::BAD_REQUEST,
-            Json(serde_json::json!({"error": e.to_string()})),
+            Json(serde_json::json!({"error": error.to_string()})),
         )
             .into_response(),
     }
 }
 
-/// POST /api/playground/views — create a view template
-pub async fn handle_views_create(
+pub async fn handle_sets_create(
     State(state): State<AppState>,
-    Json(template): Json<ViewTemplateDto>,
+    Json(definition): Json<SetDefinitionDto>,
 ) -> impl IntoResponse {
     let Some(pg) = &state.playground else {
         return (
@@ -393,8 +542,9 @@ pub async fn handle_views_create(
         )
             .into_response();
     };
-    let t = match view_template_from_dto(None, template) {
-        Ok(template) => template,
+
+    let definition = match set_definition_from_dto(None, definition) {
+        Ok(definition) => definition,
         Err(error) => {
             return (
                 StatusCode::BAD_REQUEST,
@@ -403,21 +553,21 @@ pub async fn handle_views_create(
                 .into_response();
         }
     };
-    match pg.views.create_template(t).await {
+
+    match pg.sets.create_set(definition).await {
         Ok(()) => (StatusCode::CREATED, Json(serde_json::json!({"ok": true}))).into_response(),
-        Err(e) => (
+        Err(error) => (
             StatusCode::BAD_REQUEST,
-            Json(serde_json::json!({"error": e.to_string()})),
+            Json(serde_json::json!({"error": error.to_string()})),
         )
             .into_response(),
     }
 }
 
-/// PUT /api/playground/views/:id — update a view template
-pub async fn handle_views_update(
+pub async fn handle_sets_update(
     State(state): State<AppState>,
     Path(id): Path<String>,
-    Json(template): Json<ViewTemplateDto>,
+    Json(definition): Json<SetDefinitionDto>,
 ) -> impl IntoResponse {
     let Some(pg) = &state.playground else {
         return (
@@ -426,8 +576,9 @@ pub async fn handle_views_update(
         )
             .into_response();
     };
-    let t = match view_template_from_dto(Some(&id), template) {
-        Ok(template) => template,
+
+    let definition = match set_definition_from_dto(Some(&id), definition) {
+        Ok(definition) => definition,
         Err(error) => {
             return (
                 StatusCode::BAD_REQUEST,
@@ -436,20 +587,20 @@ pub async fn handle_views_update(
                 .into_response();
         }
     };
-    match pg.views.update_template(t).await {
+
+    match pg.sets.update_set(definition).await {
         Ok(()) => (StatusCode::OK, Json(serde_json::json!({"ok": true}))).into_response(),
-        Err(e) => (
+        Err(error) => (
             StatusCode::BAD_REQUEST,
-            Json(serde_json::json!({"error": e.to_string()})),
+            Json(serde_json::json!({"error": error.to_string()})),
         )
             .into_response(),
     }
 }
 
-/// POST /api/playground/views/bind — bind a template (return BoundView)
-pub async fn handle_views_bind(
+pub async fn handle_sets_bind(
     State(state): State<AppState>,
-    Json(bound): Json<BoundView>,
+    Json(bound): Json<BoundSet>,
 ) -> impl IntoResponse {
     let Some(pg) = &state.playground else {
         return (
@@ -458,20 +609,24 @@ pub async fn handle_views_bind(
         )
             .into_response();
     };
-    match pg.views.bind(bound).await {
-        Ok(b) => (StatusCode::OK, Json(serde_json::json!(b))).into_response(),
-        Err(e) => (
+
+    if bound.set_id == ROOT_SET_ID {
+        return (StatusCode::OK, Json(serde_json::json!(bound))).into_response();
+    }
+
+    match pg.sets.bind(bound).await {
+        Ok(bound) => (StatusCode::OK, Json(serde_json::json!(bound))).into_response(),
+        Err(error) => (
             StatusCode::BAD_REQUEST,
-            Json(serde_json::json!({"error": e.to_string()})),
+            Json(serde_json::json!({"error": error.to_string()})),
         )
             .into_response(),
     }
 }
 
-/// POST /api/playground/views/resolve — resolve a bound view
-pub async fn handle_views_resolve(
+pub async fn handle_sets_resolve(
     State(state): State<AppState>,
-    Json(bound): Json<BoundView>,
+    Json(bound): Json<BoundSet>,
 ) -> impl IntoResponse {
     let Some(pg) = &state.playground else {
         return (
@@ -480,91 +635,68 @@ pub async fn handle_views_resolve(
         )
             .into_response();
     };
-    match pg.views.resolve(bound).await {
+
+    if bound.set_id == ROOT_SET_ID {
+        let (node_limit, edge_limit) = root_limits(&bound);
+        return match pg.memgraph.get_graph_snapshot(node_limit, edge_limit).await {
+            Ok(snapshot) => {
+                let snapshot = snapshot_to_dto(snapshot);
+                (
+                    StatusCode::OK,
+                    Json(serde_json::json!(root_resolved_set(snapshot))),
+                )
+                    .into_response()
+            }
+            Err(error) => (
+                StatusCode::BAD_REQUEST,
+                Json(serde_json::json!({"error": error.to_string()})),
+            )
+                .into_response(),
+        };
+    }
+
+    match pg.sets.resolve(bound).await {
         Ok(resolved) => (
             StatusCode::OK,
-            Json(serde_json::json!(ResolvedViewDto {
-                view_id: resolved.view_id,
-                view_kind: resolved.view_kind,
-                nodes: resolved.nodes.iter().map(node_to_dto).collect(),
-                edges: resolved.edges.iter().map(edge_to_dto).collect(),
-                composition_trace: resolved.composition_trace,
-                completeness: resolved.completeness,
-                degradations: resolved.degradations,
-                cost_estimate: resolved.cost_estimate,
-            })),
+            Json(serde_json::json!(resolved_set_to_dto(resolved))),
         )
             .into_response(),
-        Err(e) => (
+        Err(error) => (
             StatusCode::BAD_REQUEST,
-            Json(serde_json::json!({"error": e.to_string()})),
+            Json(serde_json::json!({"error": error.to_string()})),
         )
             .into_response(),
     }
 }
 
-fn dto_to_resolved(dto: &ResolvedViewDto) -> views::ResolvedView {
-    views::ResolvedView {
-        view_id: dto.view_id.clone(),
-        view_kind: dto.view_kind.clone(),
-        nodes: dto
-            .nodes
-            .iter()
-            .map(|n| memgraph::GraphNode {
-                id: n.id,
-                labels: n.labels.clone(),
-                properties: n.properties.clone(),
-            })
-            .collect(),
-        edges: dto
-            .edges
-            .iter()
-            .map(|e| memgraph::GraphEdge {
-                id: e.id,
-                from_id: e.from_id,
-                to_id: e.to_id,
-                rel_type: e.rel_type.clone(),
-                properties: e.properties.clone(),
-            })
-            .collect(),
-        composition_trace: dto.composition_trace.clone(),
-        completeness: dto.completeness.clone(),
-        degradations: dto.degradations.clone(),
-        cost_estimate: dto.cost_estimate,
-    }
-}
-
-/// POST /api/playground/views/export — export a resolved view (body: resolved DTO + format options)
-pub async fn handle_views_export(
+pub async fn handle_sets_export(
     State(_state): State<AppState>,
     Json(req): Json<ExportRequest>,
 ) -> impl IntoResponse {
-    let resolved = dto_to_resolved(&req.resolved);
-    let constraints = req.constraints.clone();
-    let excluded = req.excluded.clone();
-    let exp = export_for_llm(
+    let resolved = dto_to_resolved_set(&req.resolved);
+    let export = export_for_llm(
         &resolved,
         &req.format,
         req.purpose.as_deref(),
-        &constraints,
+        &req.constraints,
         req.usage_hint.as_deref(),
         req.role.as_deref(),
         &req.included,
-        excluded.as_deref(),
+        req.excluded.as_deref(),
     );
+
     (
         StatusCode::OK,
-        Json(serde_json::json!(ResolvedViewExportDto {
-            format: exp.format,
-            structured: exp.structured,
-            text: exp.text,
+        Json(serde_json::json!(SetExportDto {
+            format: export.format,
+            structured: export.structured,
+            text: export.text,
         })),
     )
         .into_response()
 }
 
-/// GET /api/playground/views — list template ids
-pub async fn handle_views_list(State(state): State<AppState>) -> impl IntoResponse {
+pub async fn handle_sets_list(State(state): State<AppState>) -> impl IntoResponse {
     let Some(pg) = &state.playground else {
         return (
             StatusCode::SERVICE_UNAVAILABLE,
@@ -572,18 +704,26 @@ pub async fn handle_views_list(State(state): State<AppState>) -> impl IntoRespon
         )
             .into_response();
     };
-    match pg.views.list_templates().await {
-        Ok(ids) => (StatusCode::OK, Json(serde_json::json!(ids))).into_response(),
-        Err(e) => (
+
+    match pg.sets.list_sets().await {
+        Ok(ids) => {
+            let mut definitions = vec![root_set_definition()];
+            for id in ids {
+                if let Ok(Some(definition)) = pg.sets.get_set(&id).await {
+                    definitions.push(set_definition_to_dto(definition));
+                }
+            }
+            (StatusCode::OK, Json(serde_json::json!(definitions))).into_response()
+        }
+        Err(error) => (
             StatusCode::INTERNAL_SERVER_ERROR,
-            Json(serde_json::json!({"error": e.to_string()})),
+            Json(serde_json::json!({"error": error.to_string()})),
         )
             .into_response(),
     }
 }
 
-/// GET /api/playground/views/:id — get a template
-pub async fn handle_views_get(
+pub async fn handle_sets_get(
     State(state): State<AppState>,
     Path(id): Path<String>,
 ) -> impl IntoResponse {
@@ -594,38 +734,100 @@ pub async fn handle_views_get(
         )
             .into_response();
     };
-    match pg.views.get_template(&id).await {
-        Ok(Some(t)) => (
+
+    if id == ROOT_SET_ID {
+        return (
             StatusCode::OK,
-            Json(serde_json::json!(ViewTemplateDto {
-                id: t.id,
-                name: t.name,
-                kind: format!("{:?}", t.kind).to_lowercase(),
-                description: t.description,
-                extends: t.extends,
-                selectors: t.selectors,
-                filters: t.filters,
-                operations: t.operations,
-                cost_limit: t.cost_limit,
-            })),
+            Json(serde_json::json!(root_set_definition())),
+        )
+            .into_response();
+    }
+
+    match pg.sets.get_set(&id).await {
+        Ok(Some(definition)) => (
+            StatusCode::OK,
+            Json(serde_json::json!(set_definition_to_dto(definition))),
         )
             .into_response(),
         Ok(None) => (
             StatusCode::NOT_FOUND,
-            Json(serde_json::json!({"error": "template not found"})),
+            Json(serde_json::json!({"error": "set not found"})),
         )
             .into_response(),
-        Err(e) => (
+        Err(error) => (
             StatusCode::INTERNAL_SERVER_ERROR,
-            Json(serde_json::json!({"error": e.to_string()})),
+            Json(serde_json::json!({"error": error.to_string()})),
         )
             .into_response(),
     }
 }
 
-/// Build playground routes (to be merged into app with AppState).
+pub async fn handle_sets_from_selection(
+    State(state): State<AppState>,
+    Json(req): Json<CreateSetFromSelectionRequest>,
+) -> impl IntoResponse {
+    let Some(pg) = &state.playground else {
+        return (
+            StatusCode::SERVICE_UNAVAILABLE,
+            Json(serde_json::json!({"error": "playground unavailable"})),
+        )
+            .into_response();
+    };
+
+    if req.node_ids.is_empty() {
+        return (
+            StatusCode::BAD_REQUEST,
+            Json(serde_json::json!({"error": "node_ids must not be empty"})),
+        )
+            .into_response();
+    }
+
+    let set_id = slugify_set_name(&req.name);
+    let definition = SetDefinition {
+        id: set_id.clone(),
+        name: req.name,
+        kind: kind_from_string(req.kind.as_deref().unwrap_or("boundary")),
+        description: req.description,
+        extends: Vec::new(),
+        selectors: SetSelectors {
+            node_ids: req.node_ids,
+            label: None,
+            props: HashMap::new(),
+        },
+        filters: Vec::new(),
+        operations: Vec::new(),
+        cost_limit: req.cost_limit,
+    };
+
+    match pg.sets.create_set(definition).await {
+        Ok(()) => match pg.sets.get_set(&set_id).await {
+            Ok(Some(definition)) => (
+                StatusCode::CREATED,
+                Json(serde_json::json!(set_definition_to_dto(definition))),
+            )
+                .into_response(),
+            Ok(None) => (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(serde_json::json!({"error": "created set could not be reloaded"})),
+            )
+                .into_response(),
+            Err(error) => (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(serde_json::json!({"error": error.to_string()})),
+            )
+                .into_response(),
+        },
+        Err(error) => (
+            StatusCode::BAD_REQUEST,
+            Json(serde_json::json!({"error": error.to_string()})),
+        )
+            .into_response(),
+    }
+}
+
 pub fn playground_routes() -> axum::Router<AppState> {
     use axum::routing::{get, post};
+
     axum::Router::new()
         .route("/api/playground/graph", get(handle_get_graph))
         .route("/api/playground/graph/nodes", post(handle_create_node))
@@ -633,24 +835,28 @@ pub fn playground_routes() -> axum::Router<AppState> {
         .route("/api/playground/graph/subgraph", post(handle_get_subgraph))
         .route("/api/playground/graph/nodes/{id}", get(handle_inspect_node))
         .route(
-            "/api/playground/views",
-            get(handle_views_list).post(handle_views_create),
+            "/api/playground/sets",
+            get(handle_sets_list).post(handle_sets_create),
         )
-        .route("/api/playground/views/bind", post(handle_views_bind))
-        .route("/api/playground/views/resolve", post(handle_views_resolve))
-        .route("/api/playground/views/export", post(handle_views_export))
         .route(
-            "/api/playground/views/{id}",
-            get(handle_views_get).put(handle_views_update),
+            "/api/playground/sets/{id}",
+            get(handle_sets_get).put(handle_sets_update),
+        )
+        .route("/api/playground/sets/bind", post(handle_sets_bind))
+        .route("/api/playground/sets/resolve", post(handle_sets_resolve))
+        .route("/api/playground/sets/export", post(handle_sets_export))
+        .route(
+            "/api/playground/sets/from-selection",
+            post(handle_sets_from_selection),
         )
 }
 
 #[cfg(test)]
 mod tests {
     use super::{
-        dto_to_resolved, edge_to_dto, node_to_dto, normalize_limit, snapshot_to_dto,
-        view_template_from_dto, GraphEdgeDto, GraphNodeDto, GraphSnapshotDto, ResolvedViewDto,
-        ViewTemplateDto,
+        dto_to_resolved_set, edge_to_dto, node_to_dto, normalize_limit, root_set_definition,
+        slugify_set_name, snapshot_to_dto, GraphEdgeDto, GraphNodeDto, GraphSnapshotDto,
+        ResolvedSetDto, SetDefinitionDto,
     };
     use memgraph::{GraphEdge, GraphNode, GraphSnapshot, Subgraph};
     use std::collections::HashMap;
@@ -690,10 +896,10 @@ mod tests {
     }
 
     #[test]
-    fn dto_to_resolved_round_trips_public_payload_into_domain_type() {
-        let resolved = dto_to_resolved(&ResolvedViewDto {
-            view_id: "business_logic_shared".to_string(),
-            view_kind: Some("projection".to_string()),
+    fn dto_to_resolved_set_round_trips_public_payload_into_domain_type() {
+        let resolved = dto_to_resolved_set(&ResolvedSetDto {
+            set_id: "business_logic_shared".to_string(),
+            set_kind: Some("projection".to_string()),
             nodes: vec![GraphNodeDto {
                 id: 1,
                 labels: vec!["Concept".to_string()],
@@ -715,8 +921,8 @@ mod tests {
             cost_estimate: Some(3),
         });
 
-        assert_eq!(resolved.view_id, "business_logic_shared");
-        assert_eq!(resolved.view_kind.as_deref(), Some("projection"));
+        assert_eq!(resolved.set_id, "business_logic_shared");
+        assert_eq!(resolved.set_kind.as_deref(), Some("projection"));
         assert_eq!(resolved.nodes[0].properties["name"], "Pricing");
         assert_eq!(resolved.edges[0].rel_type, "RELATES_TO");
         assert_eq!(resolved.composition_trace.len(), 1);
@@ -761,21 +967,37 @@ mod tests {
     }
 
     #[test]
-    fn view_template_from_dto_rejects_route_id_mismatch() {
-        let template = ViewTemplateDto {
-            id: "view_actual".to_string(),
-            name: "Actual".to_string(),
-            kind: "semantic".to_string(),
-            description: "desc".to_string(),
-            extends: Vec::new(),
-            selectors: views::Selectors::default(),
-            filters: Vec::new(),
+    fn root_set_definition_uses_set_vocabulary() {
+        let root = root_set_definition();
+
+        assert_eq!(root.id, "root");
+        assert_eq!(root.name, "Root Set");
+        assert_eq!(root.kind, "boundary");
+        assert!(root.description.contains("Synthetic root set"));
+    }
+
+    #[test]
+    fn slugify_set_name_creates_stable_ids() {
+        assert_eq!(slugify_set_name("Pricing + Margin"), "pricing-margin");
+        assert_eq!(slugify_set_name("!!!"), "set");
+    }
+
+    #[test]
+    fn set_definition_dto_shape_is_serializable() {
+        let dto = SetDefinitionDto {
+            id: "shared-business".to_string(),
+            name: "Shared business".to_string(),
+            kind: "projection".to_string(),
+            description: "Shared business logic".to_string(),
+            extends: vec!["core".to_string()],
+            selectors: sets::SetSelectors::default(),
+            filters: vec!["label:Business".to_string()],
             operations: Vec::new(),
-            cost_limit: Some(5),
+            cost_limit: Some(12),
         };
 
-        let error = view_template_from_dto(Some("view_path"), template)
-            .expect_err("route id mismatch should fail");
-        assert!(error.contains("route id 'view_path'"));
+        let value = serde_json::to_value(dto).expect("set definition dto should serialize");
+        assert_eq!(value["kind"], "projection");
+        assert_eq!(value["id"], "shared-business");
     }
 }

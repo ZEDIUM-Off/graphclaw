@@ -5,6 +5,7 @@ import { cn } from '@/lib/utils';
 const props = defineProps<{
   class?: string;
 }>();
+const model = defineModel<string | number>();
 
 const classes = computed(() =>
   cn(
@@ -15,5 +16,5 @@ const classes = computed(() =>
 </script>
 
 <template>
-  <input :class="classes" />
+  <input v-model="model" :class="classes" />
 </template>

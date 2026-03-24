@@ -5,6 +5,11 @@
       "source": "peterskoett/self-improving-agent",
       "sourceType": "github",
       "computedHash": "941bf1f3d2862e2b5a0f7dfa8f86103b84922df15e155eb86bcadd7d6bdeacfc"
+    },
+    "shadcn-vue": {
+      "source": "noartem/laravel-vue-skills",
+      "sourceType": "github",
+      "computedHash": "be51072c8a02539c500dcb81a60680f36778ba9064fa2ea95181e40eb9564073"
     }
   }
 }

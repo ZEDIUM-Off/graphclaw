@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Low-level Memgraph client for GraphClaw. This crate provides graph primitives only: connection, create node/edge, read subgraph, neighborhood, and selector-oriented fetches. It does **not** contain View logic; that lives in the `views` crate.
+Low-level Memgraph client for GraphClaw. This crate provides graph primitives only: connection, create node/edge, read subgraph, neighborhood, and selector-oriented fetches. It does **not** contain set-composition logic; that lives in the `sets` crate.
 
 ## What belongs here
 
@@ -13,7 +13,7 @@ Low-level Memgraph client for GraphClaw. This crate provides graph primitives on
 
 ## What does not belong here
 
-- ViewTemplate, BoundView, ResolvedView, or any view composition logic
+- `SetDefinition`, `BoundSet`, `ResolvedSet`, or any set composition logic
 - Gateway or API layer
 
 ## Current Notes
@@ -24,4 +24,4 @@ Low-level Memgraph client for GraphClaw. This crate provides graph primitives on
 ## References
 
 - `docs/backends/memgraph.md` — GraphClaw backend reference
-- `docs/architecture/view-system-spec-v0.md` — View System v0 (consumes this crate via `views`)
+- `docs/architecture/playground/set-system-spec-v0.md` — Set System v0 (consumes this crate via `sets`)

@@ -334,7 +334,7 @@ pub struct AppState {
     pub pending_pairings: Option<Arc<api_pairing::PairingStore>>,
     /// Optional reverse-proxy path prefix where the gateway is mounted.
     pub path_prefix: String,
-    /// GraphClaw playground (Memgraph + views). None if Memgraph unreachable.
+    /// GraphClaw playground (Memgraph + sets). None if Memgraph unreachable.
     pub playground: Option<std::sync::Arc<playground::PlaygroundState>>,
 }
 
@@ -787,7 +787,7 @@ pub async fn run_gateway(host: &str, port: u16, config: Config) -> Result<()> {
         )
         // ── SSE event stream ──
         .route("/api/events", get(sse::handle_sse_events))
-        // ── GraphClaw playground (graph + views) ──
+        // ── GraphClaw playground (graph + sets) ──
         .merge(playground::playground_routes())
         // ── WebSocket agent chat ──
         .route("/ws/chat", get(ws::handle_ws_chat))

@@ -2,47 +2,60 @@
   <aside class="grid gap-4">
     <Card>
       <CardHeader>
-        <CardTitle class="text-base">Snapshot</CardTitle>
-        <CardDescription>Bounded gateway metadata for the current graph read.</CardDescription>
+        <CardTitle class="text-base">Active Set</CardTitle>
+        <CardDescription>The graph map is currently derived from this set.</CardDescription>
       </CardHeader>
       <CardContent class="grid gap-3 text-sm">
         <div class="flex items-center justify-between gap-3">
-          <span class="text-muted-foreground">Node limit</span>
-          <span>{{ activeNodeLimit }}</span>
+          <span class="text-muted-foreground">Name</span>
+          <span class="text-right font-medium">{{ activeSet?.name ?? resolvedSet?.set_id ?? 'None' }}</span>
         </div>
         <div class="flex items-center justify-between gap-3">
-          <span class="text-muted-foreground">Edge limit</span>
-          <span>{{ activeEdgeLimit }}</span>
-        </div>
-        <Separator />
-        <div class="flex items-center justify-between gap-3">
-          <span class="text-muted-foreground">Gateway bounded</span>
-          <span>{{ snapshotMeta?.truncated ? 'Yes' : 'No' }}</span>
+          <span class="text-muted-foreground">Kind</span>
+          <span>{{ activeSet?.kind ?? resolvedSet?.set_kind ?? 'Unknown' }}</span>
         </div>
         <div class="flex items-center justify-between gap-3">
-          <span class="text-muted-foreground">Snapshot caps</span>
-          <span class="text-right">
-            {{
-              snapshotMeta
-                ? `${snapshotMeta.node_limit} nodes / ${snapshotMeta.edge_limit} edges`
-                : 'Unavailable'
-            }}
-          </span>
+          <span class="text-muted-foreground">Completeness</span>
+          <span>{{ resolvedSet?.completeness ?? 'Unavailable' }}</span>
         </div>
         <div class="flex items-center justify-between gap-3">
           <span class="text-muted-foreground">Last refresh</span>
           <span>{{ lastLoadedAt ? lastLoadedAt.toLocaleTimeString() : 'Not loaded yet' }}</span>
         </div>
         <div class="flex items-center justify-between gap-3">
-          <span class="text-muted-foreground">Status</span>
-          <span>{{ isRefreshing ? 'Loading snapshot...' : 'Idle' }}</span>
+          <span class="text-muted-foreground">Cost estimate</span>
+          <span>{{ resolvedSet?.cost_estimate ?? 'Unknown' }}</span>
         </div>
+        <Separator />
+        <p class="text-xs leading-6 text-muted-foreground">
+          {{ activeSet?.description || 'Synthetic root set exposing the widest playground scope.' }}
+        </p>
+        <p
+          v-if="resolvedSet?.degradations.length"
+          class="rounded-lg border border-amber-300/20 bg-amber-300/10 p-3 text-xs leading-6 text-amber-100"
+        >
+          {{ resolvedSet.degradations.join(' · ') }}
+        </p>
       </CardContent>
     </Card>
 
     <Card>
       <CardHeader>
-        <CardTitle class="text-base">Selected node</CardTitle>
+        <CardTitle class="text-base">Selection</CardTitle>
+        <CardDescription>Current graph focus.</CardDescription>
+      </CardHeader>
+      <CardContent class="grid gap-3">
+        <p class="text-sm text-muted-foreground">{{ selectedNodeIds.length }} selected nodes</p>
+        <p class="text-xs leading-6 text-muted-foreground">
+          Build a Set from the current selection in the left module rail, then activate it from the
+          `Sets` table.
+        </p>
+      </CardContent>
+    </Card>
+
+    <Card>
+      <CardHeader>
+        <CardTitle class="text-base">Selected Node</CardTitle>
       </CardHeader>
       <CardContent>
         <template v-if="selectedNode">
@@ -59,7 +72,7 @@
 
     <Card>
       <CardHeader>
-        <CardTitle class="text-base">Selected edge</CardTitle>
+        <CardTitle class="text-base">Selected Edge</CardTitle>
       </CardHeader>
       <CardContent>
         <template v-if="selectedEdge">
@@ -77,32 +90,35 @@
 
     <Card>
       <CardHeader>
-        <CardTitle class="text-base">Gateway contract</CardTitle>
+        <CardTitle class="text-base">Composition Trace</CardTitle>
       </CardHeader>
-      <CardContent class="space-y-2 text-sm text-muted-foreground">
-        <p><code>GET /api/playground/graph</code> for bounded snapshots.</p>
-        <p><code>GET /api/playground/graph/nodes/:id</code> for node inspection.</p>
-        <p>This Vue UI is intentionally playground-only in the current migration step.</p>
+      <CardContent class="space-y-2">
+        <p
+          v-for="step in resolvedSet?.composition_trace ?? []"
+          :key="step"
+          class="rounded-md border border-border/70 bg-background/60 px-3 py-2 text-xs text-muted-foreground"
+        >
+          {{ step }}
+        </p>
+        <p v-if="!(resolvedSet?.composition_trace.length)" class="text-sm text-muted-foreground">
+          No trace available for this set yet.
+        </p>
       </CardContent>
     </Card>
   </aside>
 </template>
 
 <script setup lang="ts">
-import type {
-  GraphEdgeDto,
-  GraphNodeDto,
-  GraphSnapshotMetaDto,
-} from '@/lib/playground';
+import type { GraphEdgeDto, GraphNodeDto, ResolvedSetDto, SetDefinitionDto } from '@/lib/playground';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 
 defineProps<{
+  activeSet: SetDefinitionDto | null;
+  resolvedSet: ResolvedSetDto | null;
   selectedNode: GraphNodeDto | null;
   selectedEdge: GraphEdgeDto | null;
-  snapshotMeta: GraphSnapshotMetaDto | null;
-  activeNodeLimit: number;
-  activeEdgeLimit: number;
+  selectedNodeIds: number[];
   lastLoadedAt: Date | null;
   isRefreshing: boolean;
 }>();

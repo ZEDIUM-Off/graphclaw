@@ -4,7 +4,7 @@
 
 This document is the **first documentary pass** on the Set concept for GraphClaw. It defines the minimal Set lifecycle, composition algebra, and LLM export formats for the initial playground implementation. It is a deliberately bounded v0: it does not specify the full Context Engine, `ContextFrame`, `SessionFrame`, `ContextPack`, or governance.
 
-This spec supersedes the earlier `view-system-spec-v0.md` following the vocabulary pivot in Revision v0.1. The current playground code still uses `ViewTemplate` / `ResolvedView` naming; a future code migration will align those types with this specification.
+This spec supersedes the earlier `view-system-spec-v0.md` following the vocabulary pivot in Revision v0.1. The current playground code now uses `SetDefinition` / `BoundSet` / `ResolvedSet` naming aligned to this specification.
 
 For the broader operational semantics of the `Set` / `View` family (governed perimeter, packability, lazy vs materialized), see [views-and-sets.md](../concepts/views-and-sets.md), [set.md](../concepts/set.md), [view.md](../concepts/view.md), and [packability.md](../concepts/packability.md). For terminology routing, see [glossary.md](../concepts/glossary.md).
 
@@ -323,7 +323,7 @@ This is the kind of flow the playground must support end-to-end.
 
 ## 8. Code Migration Note
 
-The current playground implementation (`crates/views/`, `src/gateway/playground.rs`, `web/src/`) still uses the `ViewTemplate` / `BoundView` / `ResolvedView` / `ViewsService` naming from the pre-revision vocabulary. A future code scaffold plan will rename these types to align with this specification. Until that migration, treat the code-level `View*` names as implementation aliases for the `Set` concepts defined here.
+The current playground implementation (`crates/sets/`, `src/gateway/playground.rs`, `ui/src/`) now uses the `SetDefinition` / `BoundSet` / `ResolvedSet` / `SetsService` naming directly. `View` remains a canonical runtime concept, but it is no longer the persisted playground vocabulary.
 
 ---
 

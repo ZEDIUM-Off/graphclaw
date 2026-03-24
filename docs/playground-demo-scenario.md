@@ -1,6 +1,6 @@
 # GraphClaw Playground — Demo scenario v0
 
-This document describes a minimal end-to-end scenario for the View System playground: create demo graph data, define views, resolve, and export for LLM.
+This document describes a minimal end-to-end scenario for the Set-first playground: create demo graph data, define sets, resolve them, and export for LLM use.
 
 ## Prerequisites
 
@@ -38,52 +38,52 @@ MATCH (p:Concept {name: 'Pricing'}), (m:Concept {name: 'Margin'}) CREATE (p)-[:R
 MATCH (f:Concept {name: 'Forecasting'}), (p:Concept {name: 'Pricing'}) CREATE (f)-[:DEPENDS_ON]->(p);
 ```
 
-Then read node ids (e.g. `MATCH (n:Concept) RETURN id(n), n.name`) to use as anchors in views.
+Then read node ids (e.g. `MATCH (n:Concept) RETURN id(n), n.name`) to use as anchors in sets.
 
-## 2. Define view templates
+## 2. Define sets
 
-In the Playground **View** tab:
+In the Playground `Graph` tab, create selections and turn them into sets. In the `Data > Sets` table, confirm that they were persisted.
 
-1. **view_business_class**
-   - Id: `view_business_class`
+1. **shared_business_class**
+   - Id: `shared-business-class`
    - Name: `Business concepts only`
    - Kind: `boundary`
    - Description: `Concepts used for business reasoning (Pricing, Margin, Forecasting).`
    - Node ids: the comma-separated ids of Pricing, Margin, Forecasting (e.g. `0, 1, 2`).
-   - Create view.
+   - Create set from selection.
 
-2. (Optional) **view_highfinity_core** and **view_mc_studio_core**: same pattern with different node id sets if you have more nodes.
+2. (Optional) Create other sets the same way from alternative selections.
 
-## 3. Resolve a view
+## 3. Resolve a set
 
-In the **Resolved** tab:
+In the `Sets` table:
 
-1. Template id: `view_business_class`.
-2. Anchors: either leave empty (template’s selectors used) or JSON: `{"node_ids": [0, 1, 2]}` (replace with your ids).
-3. Click **Resolve**. You should see the resolved nodes and edges (and composition trace).
+1. Activate `shared-business-class`.
+2. The graph map should narrow to the resolved subgraph for that set.
+3. The right inspector should show the composition trace and metadata for the active set.
 
 ## 4. Export for LLM
 
-In the **Export LLM** tab:
+Call the playground export route for the active resolved set:
 
-1. Ensure a view is resolved (step 3) so that “Resolved view” state is set.
-2. Choose format: `llm_compact` or `llm_explained`.
-3. Click **Export**. The text appears below (YAML-like or Markdown).
-4. Use **Copy to clipboard** to inject the result into an LLM context.
+1. Resolve the set first (step 3).
+2. POST the resolved payload to `/api/playground/sets/export`.
+3. Choose format: `llm_compact` or `llm_explained`.
+4. Use the returned text as agent context or documentation material.
 
 ## Expected export shapes
 
-- **llm_compact**: `view_id`, `view_kind`, `purpose`, `nodes`, `edges`, `constraints`, `usage_hint`.
+- **llm_compact**: `set_id`, `set_kind`, `purpose`, `nodes`, `edges`, `constraints`, `usage_hint`.
 - **llm_explained**: Markdown with Role, Included concepts, Excluded concepts, Relations.
 
 ## Success criteria
 
-- Notion of View is clearer after using the playground.
+- Notion of Set is clearer after using the playground.
 - Composition (selectors + operations) is concretely manipulable.
 - Export is usable as context for another agent or for documentation.
 
 ## References
 
-- [View System Spec v0](../architecture/view-system-spec-v0.md)
+- [Set System Spec v0](../architecture/playground/set-system-spec-v0.md)
 - [Set / View family](../architecture/concepts/views-and-sets.md)
 - [Memgraph backend](backends/memgraph.md)

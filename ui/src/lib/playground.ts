@@ -12,20 +12,62 @@ export interface GraphEdgeDto {
   properties: Record<string, unknown>;
 }
 
-export interface GraphSnapshotMetaDto {
-  truncated: boolean;
-  node_limit: number;
-  edge_limit: number;
+export interface SetSelectorsDto {
+  node_ids: number[];
+  label?: string | null;
+  props: Record<string, unknown>;
 }
 
-export interface GraphSnapshotDto {
+export interface SetOperationDto {
+  op: string;
+  [key: string]: unknown;
+}
+
+export interface SetDefinitionDto {
+  id: string;
+  name: string;
+  kind: string;
+  description: string;
+  extends: string[];
+  selectors: SetSelectorsDto;
+  filters: string[];
+  operations: SetOperationDto[];
+  cost_limit?: number | null;
+}
+
+export interface ResolvedSetDto {
+  set_id: string;
+  set_kind?: string | null;
   nodes: GraphNodeDto[];
   edges: GraphEdgeDto[];
-  meta: GraphSnapshotMetaDto;
+  composition_trace: string[];
+  completeness?: string | null;
+  degradations: string[];
+  cost_estimate?: number | null;
 }
 
-async function apiFetch<T>(path: string): Promise<T> {
-  const response = await fetch(path);
+export interface CreateSetFromSelectionRequest {
+  name: string;
+  description: string;
+  kind?: string;
+  node_ids: number[];
+  cost_limit?: number | null;
+}
+
+export interface CreateNodeRequest {
+  labels: string[];
+  properties: Record<string, unknown>;
+}
+
+export interface CreateEdgeRequest {
+  from_id: number;
+  to_id: number;
+  rel_type: string;
+  properties: Record<string, unknown>;
+}
+
+async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
+  const response = await fetch(path, init);
   if (!response.ok) {
     const text = await response.text().catch(() => '');
     throw new Error(`API ${response.status}: ${text || response.statusText}`);
@@ -33,19 +75,32 @@ async function apiFetch<T>(path: string): Promise<T> {
   return response.json() as Promise<T>;
 }
 
-export function getGraphSnapshot(options: {
+export function getSets(): Promise<SetDefinitionDto[]> {
+  return apiFetch<SetDefinitionDto[]>('/api/playground/sets');
+}
+
+export function getSet(id: string): Promise<SetDefinitionDto> {
+  return apiFetch<SetDefinitionDto>(`/api/playground/sets/${id}`);
+}
+
+export function resolveSet(options: {
+  setId: string;
   nodeLimit?: number;
   edgeLimit?: number;
-} = {}): Promise<GraphSnapshotDto> {
-  const params = new URLSearchParams();
-  if (typeof options.nodeLimit === 'number') {
-    params.set('node_limit', String(options.nodeLimit));
-  }
-  if (typeof options.edgeLimit === 'number') {
-    params.set('edge_limit', String(options.edgeLimit));
-  }
-  const suffix = params.toString();
-  return apiFetch<GraphSnapshotDto>(`/api/playground/graph${suffix ? `?${suffix}` : ''}`);
+}): Promise<ResolvedSetDto> {
+  return apiFetch<ResolvedSetDto>('/api/playground/sets/resolve', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      set_id: options.setId,
+      anchors: {},
+      parameters: {
+        ...(typeof options.nodeLimit === 'number' ? { node_limit: options.nodeLimit } : {}),
+        ...(typeof options.edgeLimit === 'number' ? { edge_limit: options.edgeLimit } : {}),
+      },
+      resolution_scope: 'playground',
+    }),
+  });
 }
 
 export function inspectGraphNode(id: number): Promise<GraphNodeDto | null> {
@@ -57,4 +112,30 @@ export function inspectGraphNode(id: number): Promise<GraphNodeDto | null> {
       return data as GraphNodeDto;
     },
   );
+}
+
+export function createSetFromSelection(
+  payload: CreateSetFromSelectionRequest,
+): Promise<SetDefinitionDto> {
+  return apiFetch<SetDefinitionDto>('/api/playground/sets/from-selection', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+}
+
+export function createNode(payload: CreateNodeRequest): Promise<GraphNodeDto> {
+  return apiFetch<GraphNodeDto>('/api/playground/graph/nodes', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+}
+
+export function createEdge(payload: CreateEdgeRequest): Promise<GraphEdgeDto> {
+  return apiFetch<GraphEdgeDto>('/api/playground/graph/edges', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
 }

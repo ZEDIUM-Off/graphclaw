@@ -143,13 +143,13 @@ The architecture documentation now distinguishes:
 
 This vocabulary pivot is documented in [`docs/architecture/concepts/views-and-sets.md`](../architecture/concepts/views-and-sets.md), [`docs/architecture/concepts/set.md`](../architecture/concepts/set.md), [`docs/architecture/concepts/view.md`](../architecture/concepts/view.md), [`docs/architecture/concepts/packability.md`](../architecture/concepts/packability.md), [`docs/architecture/playground/set-system-spec-v0.md`](../architecture/playground/set-system-spec-v0.md), and routed through [`docs/architecture/concepts/glossary.md`](../architecture/concepts/glossary.md).
 
-The current code (`crates/views/`, `src/gateway/playground.rs`, `web/src/`) still uses the pre-revision `ViewTemplate` / `ResolvedView` / `ViewsService` naming. A future code migration plan will align those types. Until then, treat the code-level `View*` names as implementation aliases for the `Set` concepts defined in the architecture docs.
+The current code (`crates/sets/`, `src/gateway/playground.rs`, `ui/src/`) now uses `SetDefinition` / `BoundSet` / `ResolvedSet` / `SetsService` naming directly for the playground slice. `View` remains the canonical runtime-only concept in architecture docs, not the persisted playground object.
 
 Key implementation seams this revision will eventually touch:
 
-- `crates/views/` -- type renames and composition invariant enforcement;
+- `crates/sets/` -- type renames and composition invariant enforcement;
 - `src/gateway/playground.rs` -- route and DTO renames;
-- `web/src/` -- TypeScript type and component renames;
+- `ui/src/` -- TypeScript type and component renames;
 - `memgraph/` -- schema additions for `(:Set)` nodes and composition relations;
 - `src/agent/` and `src/memory/` -- future graph adapter seams that will consume `Set` definitions.
 
