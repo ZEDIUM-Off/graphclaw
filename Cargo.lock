@@ -5869,6 +5869,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "sets"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "async-recursion",
+ "async-trait",
+ "memgraph",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.18",
+ "tokio",
+]
+
+[[package]]
 name = "sha1"
 version = "0.10.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -6997,20 +7011,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0b928f33d975fc6ad9f86c8f283853ad26bdd5b10b7f1542aa2fa15e2289105a"
 
 [[package]]
-name = "views"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "async-recursion",
- "async-trait",
- "memgraph",
- "serde",
- "serde_json",
- "thiserror 2.0.18",
- "tokio",
-]
-
-[[package]]
 name = "virtue"
 version = "0.0.18"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -8085,6 +8085,7 @@ dependencies = [
  "serde-big-array",
  "serde_ignored",
  "serde_json",
+ "sets",
  "sha2",
  "shellexpand",
  "tempfile",
@@ -8102,7 +8103,6 @@ dependencies = [
  "tracing-subscriber",
  "urlencoding",
  "uuid",
- "views",
  "wa-rs",
  "wa-rs-binary",
  "wa-rs-core",
