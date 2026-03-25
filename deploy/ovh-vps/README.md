@@ -52,6 +52,10 @@ cp config/config.toml.example config/config.toml
 
 2. Fill in the secrets in `.env`.
 
+   The PostgreSQL connection URL is derived automatically by `compose.yaml` from
+   `POSTGRES_USER`, `POSTGRES_PASSWORD`, and `POSTGRES_DB`. Do not maintain a
+   separate `ZEROCLAW_STORAGE_DB_URL` value in `.env` for this profile.
+
 3. Review `config/config.toml` and keep `gateway.require_pairing = true`.
 
 4. Run the preflight:

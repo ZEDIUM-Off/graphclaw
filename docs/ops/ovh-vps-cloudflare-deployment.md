@@ -96,6 +96,12 @@ Recommended non-secret edits:
 - `GRAPHCLAW_IMAGE`
 - `HOST_GATEWAY_PORT`
 
+For this profile, the PostgreSQL connection URL is composed automatically from
+`POSTGRES_USER`, `POSTGRES_PASSWORD`, and `POSTGRES_DB` inside
+[`../../deploy/ovh-vps/compose.yaml`](../../deploy/ovh-vps/compose.yaml). Keep
+those values coherent and do not maintain a separate
+`ZEROCLAW_STORAGE_DB_URL` line in `deploy/ovh-vps/.env`.
+
 ## Cloudflare Setup
 
 1. Create a tunnel in Cloudflare Zero Trust.
